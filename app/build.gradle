@@ -57,7 +57,7 @@ dependencies {
 
     // Logging
     compile 'com.jakewharton.timber:timber:4.1.0'
-    
+
     compile 'io.reactivex:rxandroid:1.1.0'
 
     apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"

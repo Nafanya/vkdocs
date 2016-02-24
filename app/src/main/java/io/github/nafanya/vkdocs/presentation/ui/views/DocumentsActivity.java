@@ -10,15 +10,17 @@ import com.vk.sdk.api.model.VKApiDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.nafanya.docer.R;
+import io.github.nafanya.vkdocs.App;
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.mapper.DbToDomainMapper;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
-import io.github.nafanya.vkdocs.data.net.SyncNetworkRepository;
+import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -38,7 +40,7 @@ public class DocumentsActivity extends ListActivity implements DocumentsPresente
 
         eventBus = ((App)getApplication()).getEventBus();
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbToDomainMapper());
-        NetworkRepository networkRepository = new SyncNetworkRepository();
+        NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
 
         documentsPresenter = new DocumentsPresenter(

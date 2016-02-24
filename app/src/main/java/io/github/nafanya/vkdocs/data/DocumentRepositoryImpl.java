@@ -2,16 +2,16 @@ package io.github.nafanya.vkdocs.data;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.data.database.model.VKDocument;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
-import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 
@@ -40,11 +40,11 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void delete(final VKApiDocument document) throws Exception {
+    public void delete(final VKApiDocument document) {
         try {
             networkRepository.delete(document);
             databaseRepository.delete(mapper.transformInv(document));
-        } catch (VKException e) {
+        } catch (Exception e) {
             VKDocument doc = mapper.transformInv(document);
             doc.setSync(VKDocument.DELETED);
             databaseRepository.update(doc);
@@ -57,18 +57,19 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void synchronize() throws Exception {//TODO batch insert here
+    public void synchronize() throws Exception {
         List<VKApiDocument> netDocs = networkRepository.getMyDocuments();
-        Map<Integer, Integer> syncState = new HashMap<>();
+        Map<Integer, Integer> syncState = new TreeMap<>();
         Set<VKDocument> deleteDbDocs = new TreeSet<>(COMPARATOR);
 
-        List<VKDocument> dbDocs = databaseRepository.getMyDocuments();
+        List<VKDocument> dbDocs = databaseRepository.getAllRecords();
         for (int i = 0; i < dbDocs.size(); ++i) {
             syncState.put(dbDocs.get(i).getId(), dbDocs.get(i).getSync());
             deleteDbDocs.add(dbDocs.get(i));
         }
-
+        List<VKDocument> newDocuments = new ArrayList<>();
         VKDocument dummyDoc = new VKDocument();
+
         for (int i = 0; i < netDocs.size(); ++i) {
             VKApiDocument cur = netDocs.get(i);
             Integer state =  syncState.get(cur.getId());
@@ -76,13 +77,17 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             deleteDbDocs.remove(dummyDoc);
 
             if (state == null)
-                mapper.transformInv(cur).insert();
+                newDocuments.add(mapper.transformInv(cur));
             else if (state == VKDocument.DELETED) {
-                //TODO delete document from server
+                try {
+                    networkRepository.delete(cur);
+                } catch (Exception ignore) {
+                    //этот документ удалится в следующий раз
+                }
             }
         }
 
-        for (VKDocument deleteDbDoc : deleteDbDocs)
-            deleteDbDoc.delete();
+        databaseRepository.addAll(newDocuments);//batch synchronously insert
+        databaseRepository.deleteAll(deleteDbDocs);//batch synchronously delete
     }
 }

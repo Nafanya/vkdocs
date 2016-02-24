@@ -48,16 +48,18 @@ public abstract class UseCase<T> {
         if (isCached) {
             observable = (Observable<T>)eventBus.getEvent(getClass());
             if (observable == null)
-                observable = (Observable<T>)eventBus.putEvent(getClass(), buildUseCase());
+                observable = (Observable<T>)eventBus.putEvent(getClass(), applySchedulers(buildUseCase()));
         } else
-            observable = buildUseCase();
-
-        return observable.observeOn(observerScheduler).
-                subscribeOn(subscriberScheduler);
+            observable = applySchedulers(buildUseCase());
+        return observable;
     }
 
     public void unsubscribe() {
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
+    }
+
+    private Observable<T> applySchedulers(Observable<T> observable) {
+        return observable.observeOn(observerScheduler).subscribeOn(subscriberScheduler);
     }
 }

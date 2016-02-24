@@ -12,11 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
+import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.utils.Utils;
+import rx.Observable;
 
 
-public class SyncNetworkRepository implements NetworkRepository {
-    public SyncNetworkRepository() {
+public class NetworkRepositoryImpl implements NetworkRepository {
+
+    private InternetService internetService;//TODO check internet connection
+
+    public NetworkRepositoryImpl(InternetService internetService) {
+        this.internetService = internetService;
     }
 
     @Override
@@ -36,8 +42,10 @@ public class SyncNetworkRepository implements NetworkRepository {
         return documents;
     }
 
+    //async delete
     @Override
     public void delete(final VKApiDocument document) throws VKException {
-        Utils.syncVKRequest(VKApi.docs().getDeleteRequest(document.owner_id, document.id));
+        //Utils.syncVKRequest(VKApi.docs().getDeleteRequest(document.owner_id, document.id));
+        VKApi.docs().getDeleteRequest(document.owner_id, document.id).start();
     }
 }
