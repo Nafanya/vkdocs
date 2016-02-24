@@ -1,0 +1,5 @@
+<resources>
+    <!-- Strings related to login -->
+    <string name="action_sign_in_short">Sign in with VK</string>
+    <string name="send_request_title">Choose friend</string>
+</resources>
