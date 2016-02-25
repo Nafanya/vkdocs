@@ -27,7 +27,7 @@ public class DbRequestStorage implements RequestStorage<DownloadRequest> {
     }
 
     @Override
-    public void add(DownloadRequest request) {
+    public void insert(DownloadRequest request) {
         mapper.transformInv(request).insert();
     }
 

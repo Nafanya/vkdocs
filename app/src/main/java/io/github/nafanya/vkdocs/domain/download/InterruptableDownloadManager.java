@@ -26,8 +26,11 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         this.storage = storage;
         queue = storage.getAll();
         Timber.d("queue size %d", queue.size());
-        for (int i = 0; i < queue.size(); ++i)
-            Timber.d("down record " + queue.get(i).getUrl() + " bytes: " + queue.get(i).getBytes() + " from " + queue.get(i).getTotalBytes());
+        for (DownloadRequest req: queue) {
+            if (req.getId() > numDownloads)
+                numDownloads = req.getId();
+            Timber.d("down record " + req.getUrl() + " bytes: " + req.getBytes() + " from " + req.getTotalBytes());
+        }
     }
 
     //public final int SAVE_EVERY_BYTES = 1024 * 1024; //bytes
@@ -45,6 +48,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
+                storage.insert(request);
                 HttpURLConnection connection = null;
                 try {
                     URL url = new URL(request.getUrl());
@@ -58,7 +62,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
                     if (connection.getResponseCode() != HttpURLConnection.HTTP_PARTIAL &&
                         connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        queue.remove(request);
                         subscriber.onError(new RuntimeException("Server returned HTTP " +
                                 connection.getResponseCode() + " " +
                                 connection.getResponseMessage()));
@@ -68,6 +71,8 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     // this will be useful to display download percentage
                     // might be -1: server did not report the length
                     fileLength = connection.getContentLength();
+                    request.setTotalBytes(fileLength);
+
                     // download the file
                     InputStream input = connection.getInputStream();
                     try {
@@ -78,15 +83,15 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                             int count;
                             while ((count = input.read(data)) != -1) {
                                 // allow canceling with back button
-
                                 if (request.isCanceled()) {
                                     queue.remove(request);
+                                    storage.delete(request);
                                     input.close();
-                                    //remove from table
                                     return;
                                 }
                                 total += count;
                                 output.write(data, 0, count);
+                                request.setBytes(total);
                                 storage.update(request);
                                 publishProgress(subscriber, total);
                             }
@@ -102,7 +107,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                         input.close();
                     }
                 } catch (Exception e) {
-                    queue.remove(request);
                     subscriber.onError(e);
                 } finally {
                     if (connection != null)

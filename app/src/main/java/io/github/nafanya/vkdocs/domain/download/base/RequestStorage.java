@@ -14,6 +14,6 @@ public interface RequestStorage<T extends BaseDownloadRequest> {
 
     List<T> getAll();
     void update(T request);
-    void add(T request);
+    void insert(T request);
     void delete(T request);
 }

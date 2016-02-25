@@ -77,7 +77,7 @@ public class DocumentsActivity extends Activity
             }
         });
         downloadManager.enqueue(request);*/
-
+        //downloadManager.getQueue().get(0).
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
