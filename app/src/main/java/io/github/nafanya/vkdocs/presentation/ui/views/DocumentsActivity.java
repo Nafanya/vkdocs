@@ -20,6 +20,8 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
+import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
@@ -34,6 +36,8 @@ public class DocumentsActivity extends Activity
         implements DocumentsPresenter.Callback, DocumentAdapter.DocumentViewHolder.DocumentClickListener {
 
     private EventBus eventBus;
+    private DownloadManager downloadManager;
+
     private DocumentsPresenter documentsPresenter;
     private DocumentRepository repository;
     private DocumentAdapter adapter;
@@ -46,6 +50,34 @@ public class DocumentsActivity extends Activity
         setContentView(R.layout.activity_documents);
 
         eventBus = ((App)getApplication()).getEventBus();
+        downloadManager = ((App)getApplication()).getDownloadManager();
+
+        /*DownloadRequest request = new DownloadRequest(
+                "http://mupdf.com/downloads/mupdf-1.8-android-83-mips.apk",
+                "/sdcard/aaaaa.apk", new DownloadManager.RequestObserver() {
+            @Override
+            public void onProgress(int percentage) {
+                Timber.d("progress downloading: %s perc", percentage);
+            }
+
+            @Override
+            public void onComplete() {
+                Timber.d("on complete downloading");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Timber.d("download exception");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onInfiniteProgress() {
+                Timber.d("infinite progress");
+            }
+        });
+        downloadManager.enqueue(request);*/
+
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);

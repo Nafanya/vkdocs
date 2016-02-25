@@ -1,8 +1,6 @@
 package io.github.nafanya.vkdocs.data.net;
 
 import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiDocument;
 
@@ -14,8 +12,6 @@ import java.util.List;
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.utils.Utils;
-import rx.Observable;
-import timber.log.Timber;
 
 
 public class NetworkRepositoryImpl implements NetworkRepository {

@@ -9,8 +9,15 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
+import java.util.concurrent.Executors;
+
+import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
+import io.github.nafanya.vkdocs.data.database.mapper.DownloadRequestMapper;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -19,6 +26,7 @@ import timber.log.Timber;
 public class App extends Application {
 
     private EventBus eventBus;
+    private DownloadManager downloadManager;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -45,9 +53,16 @@ public class App extends Application {
         Timber.plant(new Timber.DebugTree());
 
         eventBus = new LruEventBus(10);
+        downloadManager = new InterruptableDownloadManager(
+                Schedulers.from(Executors.newFixedThreadPool(5)),
+                new DbRequestStorage(new DownloadRequestMapper()));
     }
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public DownloadManager getDownloadManager() {
+        return downloadManager;
     }
 }

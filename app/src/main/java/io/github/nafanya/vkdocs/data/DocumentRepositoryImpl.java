@@ -10,22 +10,22 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import io.github.nafanya.vkdocs.data.database.model.VKDocument;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 
 public class DocumentRepositoryImpl implements DocumentRepository {
-    private static final Comparator<VKDocument> COMPARATOR = new Comparator<VKDocument>() {
+    private static final Comparator<VKDocumentEntity> COMPARATOR = new Comparator<VKDocumentEntity>() {
         @Override
-        public int compare(VKDocument lhs, VKDocument rhs) {
+        public int compare(VKDocumentEntity lhs, VKDocumentEntity rhs) {
             return lhs.getId() - rhs.getId();
         }
     };
 
     private DatabaseRepository databaseRepository;
     private NetworkRepository networkRepository;
-    private Mapper<VKDocument, VKApiDocument> mapper;
+    private Mapper<VKDocumentEntity, VKApiDocument> mapper;
 
     public DocumentRepositoryImpl(DatabaseRepository databaseRepository,
                                   NetworkRepository networkRepository) {
@@ -42,8 +42,8 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public void delete(final VKApiDocument document) {
         try {
-            VKDocument doc = mapper.transformInv(document);
-            doc.setSync(VKDocument.DELETED);
+            VKDocumentEntity doc = mapper.transformInv(document);
+            doc.setSync(VKDocumentEntity.DELETED);
             databaseRepository.update(doc);
             networkRepository.delete(document);
         } catch (Exception e) {
@@ -60,15 +60,15 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     public void synchronize() throws Exception {
         List<VKApiDocument> netDocs = networkRepository.getMyDocuments();
         Map<Integer, Integer> syncState = new TreeMap<>();
-        Set<VKDocument> deleteDbDocs = new TreeSet<>(COMPARATOR);
+        Set<VKDocumentEntity> deleteDbDocs = new TreeSet<>(COMPARATOR);
 
-        List<VKDocument> dbDocs = databaseRepository.getAllRecords();
+        List<VKDocumentEntity> dbDocs = databaseRepository.getAllRecords();
         for (int i = 0; i < dbDocs.size(); ++i) {
             syncState.put(dbDocs.get(i).getId(), dbDocs.get(i).getSync());
             deleteDbDocs.add(dbDocs.get(i));
         }
-        List<VKDocument> newDocuments = new ArrayList<>();
-        VKDocument dummyDoc = new VKDocument();
+        List<VKDocumentEntity> newDocuments = new ArrayList<>();
+        VKDocumentEntity dummyDoc = new VKDocumentEntity();
 
         for (int i = 0; i < netDocs.size(); ++i) {
             VKApiDocument cur = netDocs.get(i);
@@ -78,7 +78,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
             if (state == null)
                 newDocuments.add(mapper.transformInv(cur));
-            else if (state == VKDocument.DELETED) {
+            else if (state == VKDocumentEntity.DELETED) {
                 try {
                     networkRepository.delete(cur);
                 } catch (Exception ignore) {

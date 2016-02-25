@@ -9,7 +9,7 @@ import com.vk.sdk.api.model.VKApiDocument;
 import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
 
 @Table(database = DocumentsDatabase.class)
-public class VKDocument extends BaseModel {
+public class VKDocumentEntity extends BaseModel {
     public static int DELETED = 1;
     public static int SYNCHRONIZED = 0;
 
@@ -29,14 +29,14 @@ public class VKDocument extends BaseModel {
     @Column
     private int ownerId;
 
-    public VKDocument() {}
+    public VKDocumentEntity() {}
 
-    public VKDocument(int id, String title) {
+    public VKDocumentEntity(int id, String title) {
         this.id = id;
         this.title = title;
     }
 
-    public VKDocument(VKApiDocument vkDoc) {
+    public VKDocumentEntity(VKApiDocument vkDoc) {
         this.id = vkDoc.id;
         this.title = vkDoc.title;
     }

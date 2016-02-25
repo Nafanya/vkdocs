@@ -8,50 +8,50 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
-import io.github.nafanya.vkdocs.data.database.model.VKDocument;
-import io.github.nafanya.vkdocs.data.database.model.VKDocument_Table;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity_Table;
 
 public class DatabaseRepositoryImpl implements DatabaseRepository {
-    private Mapper<VKDocument, VKApiDocument> mapper;
+    private Mapper<VKDocumentEntity, VKApiDocument> mapper;
 
-    public DatabaseRepositoryImpl(Mapper<VKDocument, VKApiDocument> mapper) {
+    public DatabaseRepositoryImpl(Mapper<VKDocumentEntity, VKApiDocument> mapper) {
         this.mapper = mapper;
     }
 
     @Override
-    public List<VKDocument> getMyDocuments() {
-        return SQLite.select().from(VKDocument.class).
-                where(VKDocument_Table.sync.notEq(VKDocument.DELETED)).orderBy(VKDocument_Table.id, false).queryList();
+    public List<VKDocumentEntity> getMyDocuments() {
+        return SQLite.select().from(VKDocumentEntity.class).
+                where(VKDocumentEntity_Table.sync.notEq(VKDocumentEntity.DELETED)).orderBy(VKDocumentEntity_Table.id, false).queryList();
     }
 
     @Override
-    public List<VKDocument> getAllRecords() {
-        return SQLite.select().from(VKDocument.class).queryList();
+    public List<VKDocumentEntity> getAllRecords() {
+        return SQLite.select().from(VKDocumentEntity.class).queryList();
     }
 
     @Override
-    public Mapper<VKDocument, VKApiDocument> getMapper() {
+    public Mapper<VKDocumentEntity, VKApiDocument> getMapper() {
         return mapper;
     }
 
 
     @Override
-    public void delete(VKDocument document) {
+    public void delete(VKDocumentEntity document) {
         document.delete();
     }
 
     @Override
-    public void update(VKDocument document) {
+    public void update(VKDocumentEntity document) {
         document.update();
     }
 
     //Batch insert
     @Override
-    public void addAll(final Iterable<VKDocument> list) {
+    public void addAll(final Iterable<VKDocumentEntity> list) {
         TransactionManager.transact(DocumentsDatabase.NAME, new Runnable() {
             @Override
             public void run() {
-                for (VKDocument doc : list)
+                for (VKDocumentEntity doc : list)
                     doc.save();
             }
         });
@@ -59,11 +59,11 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
 
     //Batch delete
     @Override
-    public void deleteAll(final Iterable<VKDocument> list) {
+    public void deleteAll(final Iterable<VKDocumentEntity> list) {
         TransactionManager.transact(DocumentsDatabase.NAME, new Runnable() {
             @Override
             public void run() {
-                for (VKDocument doc : list)
+                for (VKDocumentEntity doc : list)
                     doc.delete();
             }
         });

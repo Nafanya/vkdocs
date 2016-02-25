@@ -1,13 +1,7 @@
-package io.github.nafanya.vkdocs.domain.download;
+package io.github.nafanya.vkdocs.domain.download.base;
 
 
-public class BaseRequest {
-    public interface RequestObserver {
-        void onProgress(int percentage);
-        void onComplete();
-        void onError(Exception e);
-        void onInfiniteProgress();
-    }
+public class BaseDownloadRequest {
 
     private int id;
     private String url;
@@ -15,7 +9,7 @@ public class BaseRequest {
     private long bytes;
     private long totalBytes;
 
-    public BaseRequest(String url, String dest) {
+    public BaseDownloadRequest(String url, String dest) {
         this.url = url;
         this.dest = dest;
     }
@@ -44,11 +38,19 @@ public class BaseRequest {
         return dest;
     }
 
+    public void setBytes(long bytes) {
+        this.bytes = bytes;
+    }
+
+    public void setTotalBytes(long totalBytes) {
+        this.totalBytes = totalBytes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BaseRequest request = (BaseRequest) o;
+        BaseDownloadRequest request = (BaseDownloadRequest) o;
         return id == request.id;
     }
 

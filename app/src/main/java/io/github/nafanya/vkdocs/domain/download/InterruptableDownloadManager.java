@@ -8,66 +8,36 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
-public class DownloadManagerImpl implements DownloadManager {
+public class InterruptableDownloadManager implements DownloadManager<DownloadRequest> {
     private Scheduler workerScheduler;
-    private List<Request> queue = new ArrayList<>();
+    private List<DownloadRequest> queue = new ArrayList<>();
     private int numDownloads;
-    private RequestStorage storage;
+    private RequestStorage<DownloadRequest> storage;
 
-    class Request extends BaseRequest {
-        private volatile boolean isCanceled;
-
-        private RequestObserver observer;
-        private Scheduler scheduler = AndroidSchedulers.mainThread();
-
-        public Request(String url, String destination, BaseRequest.RequestObserver observer) {
-            super(url, destination);
-            this.observer = observer;
-        }
-
-        public Request(String url, String dest, Scheduler scheduler, RequestObserver observer) {
-            super(url, dest);
-            this.scheduler = scheduler;
-            this.observer = observer;
-        }
-
-        public void cancel() {
-            isCanceled = true;
-        }
-
-        public boolean isCanceled() {
-            return isCanceled;
-        }
-
-        public RequestObserver getObserver() {
-            return observer;
-        }
-
-        public Scheduler getScheduler() {
-            return scheduler;
-        }
-    }
-
-
-    public DownloadManagerImpl(Scheduler workScheduler, RequestStorage storage) {
+    public InterruptableDownloadManager(Scheduler workScheduler, RequestStorage<DownloadRequest> storage) {
         this.workerScheduler = workScheduler;
         this.storage = storage;
+        queue = storage.getAll();
+        Timber.d("queue size %d", queue.size());
+        for (int i = 0; i < queue.size(); ++i)
+            Timber.d("down record " + queue.get(i).getUrl() + " bytes: " + queue.get(i).getBytes() + " from " + queue.get(i).getTotalBytes());
     }
 
-    @Override
-    public void enqueue(final BaseRequest abRequest) {
-        if (!(abRequest instanceof Request))
-            throw new AssertionError("request isn't instance of DownloadRequest");
+    //public final int SAVE_EVERY_BYTES = 1024 * 1024; //bytes
 
-        final Request request = (Request)abRequest;
+    //TODO remove from storage when canceled and something error
+    @Override
+    public void enqueue(final DownloadRequest request) {
         queue.add(request);
         request.setId(++numDownloads);
-        final BaseRequest.RequestObserver callback = request.getObserver();
+        final RequestObserver callback = request.getObserver();
 
         Observable.create(new Observable.OnSubscribe<Integer>() {
             private int fileLength;
@@ -82,9 +52,14 @@ public class DownloadManagerImpl implements DownloadManager {
                     connection.setRequestProperty("Range", "bytes=" + request.getBytes() + "-" );
                     connection.connect();
                     // expect HTTP 206 Partial content, so we don't mistakenly save error report instead of the file
-                    if (connection.getResponseCode() != HttpURLConnection.HTTP_PARTIAL) {
+                    Timber.d("Server returned HTTP " +
+                            connection.getResponseCode() + " " +
+                            connection.getResponseMessage());
+
+                    if (connection.getResponseCode() != HttpURLConnection.HTTP_PARTIAL &&
+                        connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         queue.remove(request);
-                        subscriber.onError(new AssertionError("Server returned HTTP " +
+                        subscriber.onError(new RuntimeException("Server returned HTTP " +
                                 connection.getResponseCode() + " " +
                                 connection.getResponseMessage()));
                         return;
@@ -103,9 +78,11 @@ public class DownloadManagerImpl implements DownloadManager {
                             int count;
                             while ((count = input.read(data)) != -1) {
                                 // allow canceling with back button
+
                                 if (request.isCanceled()) {
                                     queue.remove(request);
                                     input.close();
+                                    //remove from table
                                     return;
                                 }
                                 total += count;
@@ -113,6 +90,8 @@ public class DownloadManagerImpl implements DownloadManager {
                                 storage.update(request);
                                 publishProgress(subscriber, total);
                             }
+                            Timber.d("count = " + count);
+                            Timber.d("total = " + total);
                             queue.remove(request);
                             storage.delete(request);
                             subscriber.onCompleted();
@@ -167,5 +146,10 @@ public class DownloadManagerImpl implements DownloadManager {
                 }
             }
         });
+    }
+
+    @Override
+    public List<DownloadRequest> getQueue() {
+        return queue;
     }
 }

@@ -8,7 +8,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
 
 @Table(database = DocumentsDatabase.class)
-public class DownloadRequest extends BaseModel {
+public class DownloadRequestEntity extends BaseModel {
 
     @PrimaryKey
     private int id;
@@ -25,7 +25,7 @@ public class DownloadRequest extends BaseModel {
     @Column
     private long totalBytes;
 
-    public DownloadRequest() {
+    public DownloadRequestEntity() {
     }
 
     public int getId() {

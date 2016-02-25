@@ -4,9 +4,7 @@ import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.Random;
 
-import io.github.nafanya.vkdocs.data.database.model.VKDocument;
-import rx.Observable;
-import rx.Subscriber;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 
 /**
  * Created by pva701 on 24.02.16.
@@ -29,9 +27,9 @@ public class Utils {
 
     private static int docId = 0;
 
-    public static VKDocument randVkDocument() {
+    public static VKDocumentEntity randVkDocument() {
         int id = ++docId;
-        VKDocument doc = new VKDocument();
+        VKDocumentEntity doc = new VKDocumentEntity();
         doc.setId(id);
         doc.setTitle("rand vkdoc" + id);
         return doc;

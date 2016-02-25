@@ -11,12 +11,12 @@ import java.util.TreeSet;
 import io.github.nafanya.vkdocs.Utils;
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
-import io.github.nafanya.vkdocs.data.database.model.VKDocument;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 
 public class InMemoryDatabaseRepository implements DatabaseRepository {
-    private Set<VKDocument> database = new TreeSet<>(new Comparator<VKDocument>() {
+    private Set<VKDocumentEntity> database = new TreeSet<>(new Comparator<VKDocumentEntity>() {
         @Override
-        public int compare(VKDocument lhs, VKDocument rhs) {
+        public int compare(VKDocumentEntity lhs, VKDocumentEntity rhs) {
             return lhs.getId() - rhs.getId();
         }
     });
@@ -30,12 +30,12 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public List<VKDocument> getMyDocuments() {
+    public List<VKDocumentEntity> getMyDocuments() {
         try {
             Thread.sleep(Utils.randInt(20, OPERATION_TIME));
-            List<VKDocument> docs = new ArrayList<>();
-            for (VKDocument d: database)
-                if (d.getSync() == VKDocument.SYNCHRONIZED)
+            List<VKDocumentEntity> docs = new ArrayList<>();
+            for (VKDocumentEntity d: database)
+                if (d.getSync() == VKDocumentEntity.SYNCHRONIZED)
                     docs.add(d);
             return docs;
         } catch (InterruptedException ignore) {}
@@ -43,11 +43,11 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public List<VKDocument> getAllRecords() {
+    public List<VKDocumentEntity> getAllRecords() {
         try {
             Thread.sleep(Utils.randInt(20, OPERATION_TIME));
-            List<VKDocument> docs = new ArrayList<>();
-            for (VKDocument d: database)
+            List<VKDocumentEntity> docs = new ArrayList<>();
+            for (VKDocumentEntity d: database)
                 docs.add(d);
             return docs;
         } catch (InterruptedException ignore) {}
@@ -55,17 +55,17 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public Mapper<VKDocument, VKApiDocument> getMapper() {
+    public Mapper<VKDocumentEntity, VKApiDocument> getMapper() {
         return mapper;
     }
 
     @Override
-    public void delete(VKDocument document) {
+    public void delete(VKDocumentEntity document) {
         database.remove(document);
     }
 
     @Override
-    public void update(VKDocument document) {
+    public void update(VKDocumentEntity document) {
         if (!database.contains(document))
             throw new AssertionError("No element!");
         database.remove(document);
@@ -73,10 +73,10 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public void addAll(Iterable<VKDocument> list) {
+    public void addAll(Iterable<VKDocumentEntity> list) {
         try {
             Thread.sleep(Utils.randInt(20, OPERATION_TIME));
-            for (VKDocument d : list)
+            for (VKDocumentEntity d : list)
                 if (database.contains(d))
                     throw new AssertionError("Already contains element! Element = " + d.getId() + " title = " + d.getTitle());
                 else
@@ -85,10 +85,10 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public void deleteAll(Iterable<VKDocument> list) {
+    public void deleteAll(Iterable<VKDocumentEntity> list) {
         try {
             Thread.sleep(Utils.randInt(20, OPERATION_TIME));
-            for (VKDocument d : list)
+            for (VKDocumentEntity d : list)
                     database.remove(d);
         } catch (InterruptedException ignore) {}
     }

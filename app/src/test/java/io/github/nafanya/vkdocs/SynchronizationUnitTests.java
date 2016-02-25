@@ -17,7 +17,7 @@ import java.util.TreeSet;
 import io.github.nafanya.vkdocs.Utils.Reference;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
-import io.github.nafanya.vkdocs.data.database.model.VKDocument;
+import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.InMemoryDatabaseRepository;
 import io.github.nafanya.vkdocs.data.net.SyncNetworkRepository;
@@ -82,11 +82,11 @@ public class SynchronizationUnitTests {
                 correct.remove(vkApiDocument);
                 networkRepository.deleteSS(vkApiDocument);
             } else if (event == EventType.DELETE_DOCUMENT && databaseRepository.getMyDocuments().size() != 0) {
-                List<VKDocument> dbDocs = databaseRepository.getMyDocuments();
-                VKDocument vkDocument = dbDocs.get(Utils.randInt(dbDocs.size()));
-                documentRepository.delete(mapper.transform(vkDocument));
+                List<VKDocumentEntity> dbDocs = databaseRepository.getMyDocuments();
+                VKDocumentEntity vkDocumentEntity = dbDocs.get(Utils.randInt(dbDocs.size()));
+                documentRepository.delete(mapper.transform(vkDocumentEntity));
 
-                correct.remove(mapper.transform(vkDocument));
+                correct.remove(mapper.transform(vkDocumentEntity));
             } else if (event == EventType.SYNCHRONIZE) {
                 final Reference<AssertionFailedError> exception = new Reference<>();
 
