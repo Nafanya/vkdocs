@@ -26,13 +26,8 @@ public class VKDocument extends BaseModel {
     @Column
     private int sync;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    @Column
+    private int ownerId;
 
     public VKDocument() {}
 
@@ -44,6 +39,15 @@ public class VKDocument extends BaseModel {
     public VKDocument(VKApiDocument vkDoc) {
         this.id = vkDoc.id;
         this.title = vkDoc.title;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getId() {
@@ -65,5 +69,13 @@ public class VKDocument extends BaseModel {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

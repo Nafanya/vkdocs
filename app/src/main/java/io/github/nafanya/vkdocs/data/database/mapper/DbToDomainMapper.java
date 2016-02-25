@@ -18,6 +18,7 @@ public class DbToDomainMapper implements Mapper<VKDocument, VKApiDocument> {
         VKApiDocument ret = new VKApiDocument();
         ret.id = vkDocument.getId();
         ret.title = vkDocument.getTitle();
+        ret.owner_id = vkDocument.getOwnerId();
         return ret;
     }
 
@@ -33,6 +34,7 @@ public class DbToDomainMapper implements Mapper<VKDocument, VKApiDocument> {
         VKDocument vk = new VKDocument();
         vk.setId(vkApiDoc.getId());
         vk.setTitle(vkApiDoc.title);
+        vk.setOwnerId(vkApiDoc.owner_id);
         return vk;
     }
 }

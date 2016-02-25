@@ -21,7 +21,7 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
     @Override
     public List<VKDocument> getMyDocuments() {
         return SQLite.select().from(VKDocument.class).
-                where(VKDocument_Table.sync.notEq(VKDocument.DELETED)).queryList();
+                where(VKDocument_Table.sync.notEq(VKDocument.DELETED)).orderBy(VKDocument_Table.id, false).queryList();
     }
 
     @Override

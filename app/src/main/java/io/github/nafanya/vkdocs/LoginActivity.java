@@ -16,8 +16,10 @@ import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.util.VKUtil;
 
 import io.github.nafanya.vkdocs.presentation.ui.views.DocumentsActivity;
+import timber.log.Timber;
 
 
 /**
@@ -68,9 +70,6 @@ public class LoginActivity extends FragmentActivity {
 
             }
         });
-
-        //String[] fingerprint = VKUtil.getCertificateFingerprint(this, this.getPackageName());
-        //Log.d("Fingerprint", fingerprint[0]);
     }
 
     private void showLogout() {

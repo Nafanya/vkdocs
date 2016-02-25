@@ -10,6 +10,8 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /*
 Получает доки из локальной базы данных.

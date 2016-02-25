@@ -61,7 +61,7 @@ public class SynchronizationUnitTests {
         for (VKApiDocument d: networkRepository.getMyDocuments())
             correct.add(d);
 
-        for (int iteration = 1; iteration < ITERATIONS; ++iteration) {
+        for (int iteration = 1; iteration <= ITERATIONS; ++iteration) {
             if (iteration % 100 == 0) {
                 System.out.println("iteration: " + iteration + " from " + ITERATIONS);
                 System.out.println("db reposritory size = " + databaseRepository.getMyDocuments().size());

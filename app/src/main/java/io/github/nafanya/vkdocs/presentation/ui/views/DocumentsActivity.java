@@ -1,13 +1,16 @@
 package io.github.nafanya.vkdocs.presentation.ui.views;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.vk.sdk.api.model.VKApiDocument;
+import com.vk.sdk.util.VKUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
@@ -19,43 +22,65 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentAdapter;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
-public class DocumentsActivity extends ListActivity implements DocumentsPresenter.Callback {
-    public final String TAG = this.getClass().toString();
+public class DocumentsActivity extends Activity
+        implements DocumentsPresenter.Callback, DocumentAdapter.DocumentViewHolder.DocumentClickListener {
 
     private EventBus eventBus;
     private DocumentsPresenter documentsPresenter;
     private DocumentRepository repository;
+    private DocumentAdapter adapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documents);
-        setListAdapter(null);
 
         eventBus = ((App)getApplication()).getEventBus();
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbToDomainMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
 
-        documentsPresenter = new DocumentsPresenter(
-                AndroidSchedulers.mainThread(),
-                Schedulers.newThread(),
-                eventBus,
-                repository);
-        documentsPresenter.setCallback(this);
+        recyclerView = (RecyclerView)findViewById(R.id.document_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        documentsPresenter = new DocumentsPresenter(eventBus, repository, this);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Timber.d("CR MENU");
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.documents_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+         int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            documentsPresenter.loadNetworkDocuments();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        documentsPresenter.loadDatabaseDocuments();
-        //documentsPresenter.loadNetworkDocuments();
+        documentsPresenter.loadNetworkDocuments();
     }
 
     @Override
@@ -65,40 +90,35 @@ public class DocumentsActivity extends ListActivity implements DocumentsPresente
     }
 
     @Override
-    public void onDatabaseDocuments(List<VKApiDocument> documents) {
-        List<String> docs = new ArrayList<>();
-        for (int i = 0; i < documents.size(); ++i)
-            docs.add(documents.get(i).title);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(DocumentsActivity.this,
-                android.R.layout.simple_list_item_1, docs);
-        setListAdapter(adapter);
-    }
-
-    @Override
-    public void onNetworkDocuments(List<VKApiDocument> documents) {
-        List<String> docs = new ArrayList<>();
-        for (VKApiDocument doc : documents)
-            docs.add(doc.title);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(DocumentsActivity.this,
-                android.R.layout.simple_list_item_1, docs);
-        setListAdapter(adapter);
+    public void onGetDocuments(List<VKApiDocument> documents) {
+        if (adapter == null) {
+            adapter = new DocumentAdapter(this);
+            recyclerView.setAdapter(adapter);
+        }
+        adapter.setData(documents);
     }
 
     @Override
     public void onNetworkError(Exception ex) {
-        Log.d("NETWORK", "naher shel");
+        Timber.d("network error");
     }
 
     @Override
     public void onDatabaseError(Exception ex) {
-        Log.d("DB", "naher shel from db");
+        Timber.d("db error");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "on destroy!!");
+        Timber.d("on destroy");
+    }
+
+    @Override
+    public void onClickDelete(int position) {
+        Timber.d("ON CLICK DELETE");
+        new DeleteDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
+                eventBus, false, repository, adapter.getItem(position)).execute();
+        adapter.removeIndex(position);
     }
 }

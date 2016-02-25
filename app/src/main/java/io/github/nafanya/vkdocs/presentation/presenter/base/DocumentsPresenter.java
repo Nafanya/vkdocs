@@ -11,14 +11,15 @@ import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
+import rx.schedulers.Schedulers;
 
 
-public class DocumentsPresenter extends AbstractPresenter {
+public class DocumentsPresenter extends BasePresenter {
 
     public interface Callback {
-        void onDatabaseDocuments(List<VKApiDocument> documents);
-        void onNetworkDocuments(List<VKApiDocument> documents);
+        void onGetDocuments(List<VKApiDocument> documents);
         void onNetworkError(Exception ex);
         void onDatabaseError(Exception ex);
     }
@@ -29,18 +30,10 @@ public class DocumentsPresenter extends AbstractPresenter {
     private Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
 
     private Callback callback;
-    private DocumentRepository repository;
 
-    public DocumentsPresenter(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                              EventBus eventBus,
-                              DocumentRepository repository) {
-        super(observerScheduler, subscriberScheduler);
-
-        this.databaseInteractor = new GetMyDocuments(observerScheduler, subscriberScheduler, eventBus, true, repository);
-        this.networkInteractor = new LoadMyDocuments(observerScheduler, subscriberScheduler, eventBus, true, repository);
-    }
-
-    public void setCallback(Callback callback) {
+    public DocumentsPresenter(EventBus eventBus, DocumentRepository repository, Callback callback) {
+        this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+        this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.callback = callback;
     }
 
@@ -66,7 +59,7 @@ public class DocumentsPresenter extends AbstractPresenter {
         @Override
         public void onNext(List<VKApiDocument> vkApiDocuments) {
             if (callback != null)
-                callback.onDatabaseDocuments(vkApiDocuments);
+                callback.onGetDocuments(vkApiDocuments);
         }
 
         @Override
@@ -80,7 +73,7 @@ public class DocumentsPresenter extends AbstractPresenter {
         @Override
         public void onNext(List<VKApiDocument> vkApiDocuments) {
             if (callback != null)
-                callback.onNetworkDocuments(vkApiDocuments);
+                callback.onGetDocuments(vkApiDocuments);
         }
 
         @Override

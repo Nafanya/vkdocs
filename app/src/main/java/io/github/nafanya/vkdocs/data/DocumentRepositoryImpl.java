@@ -42,12 +42,12 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public void delete(final VKApiDocument document) {
         try {
-            networkRepository.delete(document);
-            databaseRepository.delete(mapper.transformInv(document));
-        } catch (Exception e) {
             VKDocument doc = mapper.transformInv(document);
             doc.setSync(VKDocument.DELETED);
             databaseRepository.update(doc);
+            networkRepository.delete(document);
+        } catch (Exception e) {
+            //документ удалится в следующий раз
         }
     }
 

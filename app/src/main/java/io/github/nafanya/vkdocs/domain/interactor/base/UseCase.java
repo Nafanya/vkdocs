@@ -5,7 +5,9 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public abstract class UseCase<T> {
@@ -14,6 +16,14 @@ public abstract class UseCase<T> {
     private final Scheduler observerScheduler;
     private boolean isCached;
     private EventBus eventBus;
+
+    /*public UseCase(EventBus eventBus, boolean isCached) {
+        this.subscriberScheduler = Schedulers.io();
+        this.observerScheduler = AndroidSchedulers.mainThread();
+        this.isCached = isCached;
+        this.eventBus = eventBus;
+    }*/
+
 
     public UseCase(Scheduler observerScheduler, Scheduler subscriberScheduler,
                    EventBus eventBus, boolean isCached) {
