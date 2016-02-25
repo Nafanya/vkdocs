@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.Utils.Reference;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
-import io.github.nafanya.vkdocs.data.database.mapper.DbToDomainMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
 import io.github.nafanya.vkdocs.data.database.model.VKDocument;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.InMemoryDatabaseRepository;
@@ -42,7 +42,7 @@ public class SynchronizationUnitTests {
     private DocumentRepository documentRepository;
 
     public enum EventType {ADD_SERVER, DELETE_SERVER, DELETE_DOCUMENT, SYNCHRONIZE};
-    private DbToDomainMapper mapper = new DbToDomainMapper();
+    private DocsMapper mapper = new DocsMapper();
     private InternetService randomIS = new RandomInternetService();
 
     @Test

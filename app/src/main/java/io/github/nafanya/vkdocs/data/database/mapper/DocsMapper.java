@@ -9,8 +9,8 @@ import java.util.List;
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.VKDocument;
 
-public class DbToDomainMapper implements Mapper<VKDocument, VKApiDocument> {
-    public DbToDomainMapper() {
+public class DocsMapper implements Mapper<VKDocument, VKApiDocument> {
+    public DocsMapper() {
 
     }
 

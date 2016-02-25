@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.Utils;
 import io.github.nafanya.vkdocs.data.Mapper;
-import io.github.nafanya.vkdocs.data.database.mapper.DbToDomainMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
 import io.github.nafanya.vkdocs.data.database.model.VKDocument;
 
 public class InMemoryDatabaseRepository implements DatabaseRepository {
@@ -22,9 +22,9 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     });
 
     public final int OPERATION_TIME;
-    private DbToDomainMapper mapper;
+    private DocsMapper mapper;
 
-    public InMemoryDatabaseRepository(DbToDomainMapper mapper, int operationTime) {
+    public InMemoryDatabaseRepository(DocsMapper mapper, int operationTime) {
         OPERATION_TIME = operationTime;
         this.mapper = mapper;
     }

@@ -9,14 +9,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.vk.sdk.api.model.VKApiDocument;
-import com.vk.sdk.util.VKUtil;
 
 import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
-import io.github.nafanya.vkdocs.data.database.mapper.DbToDomainMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
@@ -47,7 +46,7 @@ public class DocumentsActivity extends Activity
         setContentView(R.layout.activity_documents);
 
         eventBus = ((App)getApplication()).getEventBus();
-        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbToDomainMapper());
+        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
 
