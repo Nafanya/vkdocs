@@ -43,6 +43,7 @@ public class LoginActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_start);
+
         VKSdk.wakeUpSession(this, new VKCallback<VKSdk.LoginState>() {
             @Override
             public void onResult(VKSdk.LoginState res) {
@@ -52,7 +53,6 @@ public class LoginActivity extends FragmentActivity {
                             showLogin();
                             break;
                         case LoggedIn:
-                            //showLogout();
                             startMainActivity();
                             break;
                         case Pending:
@@ -89,7 +89,7 @@ public class LoginActivity extends FragmentActivity {
         super.onResume();
         isResumed = true;
         if (VKSdk.isLoggedIn()) {
-            showLogout();
+            startMainActivity();
         } else {
             showLogin();
         }
