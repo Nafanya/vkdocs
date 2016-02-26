@@ -1,14 +1,11 @@
 package io.github.nafanya.vkdocs.domain.download;
 
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
@@ -20,14 +17,14 @@ import timber.log.Timber;
 
 public class InterruptableDownloadManager implements DownloadManager<DownloadRequest> {
     private Scheduler workerScheduler;
-    private List<DownloadRequest> queue = new ArrayList<>();
     private int numDownloads;
     private RequestStorage<DownloadRequest> storage;
 
     public InterruptableDownloadManager(Scheduler workScheduler, RequestStorage<DownloadRequest> storage) {
         this.workerScheduler = workScheduler;
         this.storage = storage;
-        queue = storage.getAll();
+
+        List<DownloadRequest> queue = storage.getAll();
         Timber.d("queue size %d", queue.size());
         for (DownloadRequest req: queue) {
             if (req.getId() > numDownloads)
@@ -59,15 +56,41 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
-            if (!isRetry)
-                storage.insert(request);
-            request.setActive(true);
 
+            if (isRetry) {
+                if (request.getId() == 0) {
+                    subscriber.onError(new RuntimeException("This request isn't executed yet!"));
+                    return;
+                }
+                /*if (!queue.contains(request))
+                    throw new RuntimeException("Request doesn't contain in DownloadManager queue!");*/
+
+                fileLength = request.getTotalBytes();
+            } else
+                storage.insert(request);
+
+            request.setActive(true);
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(request.getUrl());
                 connection = (HttpURLConnection) url.openConnection();
+
+
+                //connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36");
                 connection.setRequestProperty("Range", "bytes=" + request.getBytes() + "-" );
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestMethod("GET");
+                //connection.addRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+
+                //connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
+                //connection.setRequestProperty("Accept-Language", "ru,en-US;q=0.8,en;q=0.6");
+                //connection.setReadTimeout(20000);
+                //connection.setConnectTimeout(20000 + 5000);
+                //connection.setRequestMethod("GET");
+                //connection.setUseCaches(false);
+                //connection.setDoInput(true);
+                //connection.setDoOutput(true);
+
                 connection.connect();
                 // expect HTTP 206 Partial content, so we don't mistakenly save error report instead of the file
                 Timber.d("Server returned HTTP " +
@@ -87,41 +110,35 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                 if (!isRetry) {
                     fileLength = connection.getContentLength();
                     request.setTotalBytes(fileLength);
-                } else
-                    fileLength = request.getTotalBytes();
+                }
+
 
                 // download the file
                 InputStream input = connection.getInputStream();
                 try {
                     RandomAccessFile output = new RandomAccessFile(request.getDest(), "rw"); //new FileOutputStream(request.getDest());
-                    //FileChannel channel = output.getChannel();
 
                     try {
                         byte data[] = new byte[4096];
                         long total = request.getBytes();
                         int count;
                         output.seek(total);
-                        //channel.position(total);
 
                         while ((count = input.read(data)) != -1) {
                             // allow canceling with back button
                             if (request.isCanceled()) {
-                                queue.remove(request);
                                 storage.delete(request);
                                 input.close();
                                 return;
                             }
                             total += count;
                             output.write(data, 0, count);
-                            //output.write(data, 0, count);
-                            //channel.write(ByteBuffer.wrap(data, 0, count));
                             request.setBytes(total);
                             storage.update(request);
                             publishProgress(subscriber, total);
                         }
                         Timber.d("count = " + count);
                         Timber.d("total = " + total);
-                        queue.remove(request);
                         storage.delete(request);
                         subscriber.onCompleted();
                     } finally {
@@ -154,10 +171,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
     }
 
     public void retry(DownloadRequest request) {
-        if (request.getId() == 0)
-            throw new RuntimeException("This request isn't executed yet!");
-        if (!queue.contains(request))
-            throw new RuntimeException("Request doesn't contain in DownloadManager queue!");
         runTask(new DownloadTask(request, true));
     }
 
@@ -166,7 +179,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         if (request.getId() != 0)
             throw new RuntimeException("This request already executing!");
 
-        queue.add(request);
         request.setId(++numDownloads);
         runTask(new DownloadTask(request));
     }
@@ -204,6 +216,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
     @Override
     public List<DownloadRequest> getQueue() {
-        return queue;
+        return storage.getAll();
     }
 }

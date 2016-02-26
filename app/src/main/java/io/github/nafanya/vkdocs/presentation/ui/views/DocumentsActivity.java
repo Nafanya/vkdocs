@@ -10,16 +10,25 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.vk.sdk.api.httpClient.VKHttpClient;
+import com.vk.sdk.api.httpClient.VKModelOperation;
+import com.vk.sdk.api.methods.VKApiAudio;
+import com.vk.sdk.api.methods.VKApiDocs;
+import com.vk.sdk.api.methods.VKApiPhotos;
 import com.vk.sdk.api.model.VKApiDocument;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
+import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
 import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DownloadRequestMapper;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
@@ -33,6 +42,8 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentAdapter;
+import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -73,8 +84,8 @@ public class DocumentsActivity extends AppCompatActivity
         downloadManager = ((App)getApplication()).getDownloadManager();
 
         /*DownloadRequest request = new DownloadRequest(
-                "http://www.cimec.org.ar/twiki/pub/Cimec/GeometriaComputacional/DeBerg_-_Computational_Geometry_-_Algorithms_and_Applications_2e.pdf",
-                "/sdcard/aaaa_de_berg.pdf", new DownloadManager.RequestObserver() {
+                "https://psv4.vk.me/c422618/u50298521/audios/0b3db12fed9d.mp3?extra=2-kXzFNBROhztbePQlyhcXgsMLp7-63lNaxN5umkLm9TkbvslELAdcVddvL4lDGU7ZgbVeom4cvp9cVsryhssQM9Zs6H4I9XOsWblsFap1ZkXQ",
+                "/sdcard/lnk.mp3", new DownloadManager.RequestObserver() {
             @Override
             public void onProgress(int percentage) {
                 Timber.d("progress downloading: %s perc", percentage);
@@ -98,7 +109,7 @@ public class DocumentsActivity extends AppCompatActivity
         });
         downloadManager.enqueue(request);*/
 
-        /*DownloadRequest request = downloadManager.getQueue().get(1);
+        /*DownloadRequest request = downloadManager.getQueue().get(downloadManager.getQueue().size() - 1);
         request.setObserver(new DownloadManager.RequestObserver() {
             @Override
             public void onProgress(int percentage) {
@@ -122,6 +133,7 @@ public class DocumentsActivity extends AppCompatActivity
             }
         });
         downloadManager.retry(request);*/
+
 
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
