@@ -11,6 +11,8 @@ import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 
 public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.DocumentViewHolder> {
@@ -26,7 +28,7 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Docume
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.document_view, parent, false);
+        View view = inflater.inflate(R.layout.item_document, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 
@@ -64,18 +66,20 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Docume
             void onClickDelete(int position);
         }
 
+        @Bind(R.id.text_doctitle)
+        TextView title;
+
         private DocumentClickListener listener;
 
         public DocumentViewHolder(View view, DocumentClickListener listener) {
             super(view);
             this.listener = listener;
 
-            view.setTag(view.findViewById(R.id.title));
-            view.findViewById(R.id.delete).setOnClickListener(this);
+            ButterKnife.bind(this, view);
         }
 
         public void setup(VKApiDocument doc) {
-            ((TextView)itemView.getTag()).setText(doc.title);
+            title.setText(doc.title);
         }
 
 
