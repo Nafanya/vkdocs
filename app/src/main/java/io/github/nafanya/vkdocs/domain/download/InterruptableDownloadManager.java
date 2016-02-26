@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.domain.download;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -31,7 +32,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         for (DownloadRequest req: queue) {
             if (req.getId() > numDownloads)
                 numDownloads = req.getId();
-            //Timber.d("down record " + req.getUrl() + " bytes: " + req.getBytes() + " from " + req.getTotalBytes());
+            Timber.d("down record " + req.getUrl() + " bytes: " + req.getBytes() + " from " + req.getTotalBytes() + ", perc = " + (req.getBytes() * 1.0 / req.getTotalBytes()));
         }
     }
 
@@ -92,14 +93,15 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                 // download the file
                 InputStream input = connection.getInputStream();
                 try {
-                    FileOutputStream output = new FileOutputStream(request.getDest());
-                    FileChannel channel = output.getChannel();
+                    RandomAccessFile output = new RandomAccessFile(request.getDest(), "rw"); //new FileOutputStream(request.getDest());
+                    //FileChannel channel = output.getChannel();
 
                     try {
                         byte data[] = new byte[4096];
                         long total = request.getBytes();
                         int count;
-                        channel.position(total);
+                        output.seek(total);
+                        //channel.position(total);
 
                         while ((count = input.read(data)) != -1) {
                             // allow canceling with back button
@@ -110,8 +112,9 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                                 return;
                             }
                             total += count;
+                            output.write(data, 0, count);
                             //output.write(data, 0, count);
-                            channel.write(ByteBuffer.wrap(data, 0, count));
+                            //channel.write(ByteBuffer.wrap(data, 0, count));
                             request.setBytes(total);
                             storage.update(request);
                             publishProgress(subscriber, total);
