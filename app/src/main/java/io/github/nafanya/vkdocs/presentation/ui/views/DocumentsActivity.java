@@ -1,9 +1,11 @@
 package io.github.nafanya.vkdocs.presentation.ui.views;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +14,8 @@ import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
@@ -20,7 +24,6 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
@@ -32,7 +35,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DocumentsActivity extends Activity
+public class DocumentsActivity extends AppCompatActivity
         implements DocumentsPresenter.Callback, DocumentAdapter.DocumentViewHolder.DocumentClickListener {
 
     private EventBus eventBus;
@@ -41,13 +44,28 @@ public class DocumentsActivity extends Activity
     private DocumentsPresenter documentsPresenter;
     private DocumentRepository repository;
     private DocumentAdapter adapter;
-    private RecyclerView recyclerView;
+
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
+
+    @Bind(R.id.list_documents)
+    RecyclerView recyclerView;
+
+//    @Bind(R.id.toolbar)
+//    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documents);
+
+        ButterKnife.bind(this);
+
+//        setSupportActionBar(toolbar);
+//        toolbar.setTitle(getTitle());
+        setTitle(R.string.title_activity_documents);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         eventBus = ((App)getApplication()).getEventBus();
         downloadManager = ((App)getApplication()).getDownloadManager();
@@ -82,12 +100,8 @@ public class DocumentsActivity extends Activity
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
 
-        recyclerView = (RecyclerView)findViewById(R.id.document_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         documentsPresenter = new DocumentsPresenter(eventBus, repository, this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
