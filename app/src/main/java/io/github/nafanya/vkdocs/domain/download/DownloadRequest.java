@@ -9,6 +9,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
     private DownloadManager.RequestObserver observer;
     private Scheduler scheduler = AndroidSchedulers.mainThread();
+    private volatile boolean isActive;
 
     public DownloadRequest(String url, String destination) {
         super(url, destination);
@@ -34,6 +35,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     }
 
     public void cancel() {
+        isActive = false;
         isCanceled = true;
     }
 
@@ -47,5 +49,13 @@ public class DownloadRequest extends BaseDownloadRequest {
 
     public Scheduler getScheduler() {
         return scheduler;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
