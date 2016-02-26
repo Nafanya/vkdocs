@@ -16,10 +16,8 @@ import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.util.VKUtil;
 
 import io.github.nafanya.vkdocs.presentation.ui.views.DocumentsActivity;
-import timber.log.Timber;
 
 
 /**
@@ -35,7 +33,7 @@ public class LoginActivity extends FragmentActivity {
      *
      * @see <a href="https://vk.com/dev/permissions">vk.com api permissions documentation</a>
      */
-    private static final String[] sMyScope = new String[]{
+    private static final String[] APP_PERMISSIONS_SCOPE = new String[]{
             VKScope.FRIENDS,
             VKScope.DOCS
     };
@@ -143,7 +141,7 @@ public class LoginActivity extends FragmentActivity {
             v.findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    VKSdk.login(getActivity(), sMyScope);
+                    VKSdk.login(getActivity(), APP_PERMISSIONS_SCOPE);
                 }
             });
             return v;
