@@ -98,7 +98,7 @@ public class DocumentsActivity extends AppCompatActivity
         });
         downloadManager.enqueue(request);*/
 
-        DownloadRequest request = downloadManager.getQueue().get(1);
+        /*DownloadRequest request = downloadManager.getQueue().get(1);
         request.setObserver(new DownloadManager.RequestObserver() {
             @Override
             public void onProgress(int percentage) {
@@ -121,7 +121,7 @@ public class DocumentsActivity extends AppCompatActivity
                 Timber.d("infinite progress");
             }
         });
-        downloadManager.retry(request);
+        downloadManager.retry(request);*/
 
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
