@@ -140,12 +140,7 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_login, container, false);
-            v.findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    VKSdk.login(getActivity(), APP_PERMISSIONS_SCOPE);
-                }
-            });
+            v.findViewById(R.id.sign_in_button).setOnClickListener(view -> VKSdk.login(getActivity(), APP_PERMISSIONS_SCOPE));
             return v;
         }
 
@@ -159,20 +154,12 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_logout, container, false);
-            v.findViewById(R.id.continue_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ((LoginActivity) getActivity()).startMainActivity();
-                }
-            });
+            v.findViewById(R.id.continue_button).setOnClickListener(view -> ((LoginActivity) getActivity()).startMainActivity());
 
-            v.findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    VKSdk.logout();
-                    if (!VKSdk.isLoggedIn()) {
-                        ((LoginActivity) getActivity()).showLogin();
-                    }
+            v.findViewById(R.id.logout).setOnClickListener(view -> {
+                VKSdk.logout();
+                if (!VKSdk.isLoggedIn()) {
+                    ((LoginActivity) getActivity()).showLogin();
                 }
             });
             return v;
