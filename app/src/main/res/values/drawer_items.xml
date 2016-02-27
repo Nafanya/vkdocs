@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string-array
+        name="drawer_items">
+        <item>My Docs</item>
+        <item>Downloaded</item>
+        <item>Offline</item>
+    </string-array>
+
+
+</resources>

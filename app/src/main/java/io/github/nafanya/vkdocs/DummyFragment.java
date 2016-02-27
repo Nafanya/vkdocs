@@ -1,7 +1,6 @@
 package io.github.nafanya.vkdocs;
 
-/**
- * Created by pva701 on 27.02.16.
- */
-public class DummyFragment {
+import android.app.Fragment;
+
+public class DummyFragment extends Fragment {
 }
