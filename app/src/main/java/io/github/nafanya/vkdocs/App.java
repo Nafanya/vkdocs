@@ -33,7 +33,7 @@ public class App extends Application {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
             if (newToken == null) {
-                Toast.makeText(App.this, "AccessToken invalidated", Toast.LENGTH_LONG).show();
+                //Toast.makeText(App.this, "AccessToken invalidated", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(App.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
