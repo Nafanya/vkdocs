@@ -1,101 +1,77 @@
 package io.github.nafanya.vkdocs;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TabbedDocsFragment extends Fragment {
 
-    private Toolbar toolbar;
     private TabLayout tabLayout;
-    private ViewPager mViewPager;
-
-    public TabbedDocsFragment() {
-    }
+    private ViewPager viewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        /*toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        View rootView = inflater.inflate(R.layout.screen_one, container, false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
+
+        View rootView = inflater.inflate(R.layout.tabbed_docs_fragment, container, false);
+
+        viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new SamplePagerAdapter());
-
-        // Give the SlidingTabLayout the ViewPager, this must be
-        // done AFTER the ViewPager has had it's PagerAdapter set.
-        mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-        mSlidingTabLayout.setViewPager(mViewPager);
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter.addFragment(new OneFragment(), "ONE");
+        adapter.addFragment(new TwoFragment(), "TWO");
+        adapter.addFragment(new ThreeFragment(), "THREE");
+        viewPager.setAdapter(adapter);
     }
 
-    // Adapter
-    class SamplePagerAdapter extends PagerAdapter {
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        /**
-         * Return the number of pages to display
-         */
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
         @Override
         public int getCount() {
-            return 10;
+            return mFragmentList.size();
         }
 
-        /**
-         * Return true if the value returned from is the same object as the View
-         * added to the ViewPager.
-         */
-        @Override
-        public boolean isViewFromObject(View view, Object o) {
-            return o == view;
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
         }
 
-        /**
-         * Return the title of the item at position. This is important as what
-         * this method returns is what is displayed in the SlidingTabLayout.
-         */
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Item " + (position + 1);
-        }
-
-        /**
-         * Instantiate the View which should be displayed at position. Here we
-         * inflate a layout from the apps resources and then change the text
-         * view to signify the position.
-         */
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            // Inflate a new layout from our resources
-            View view = getActivity().getLayoutInflater().inflate(R.layout.pager_item,
-                    container, false);
-            // Add the newly created View to the ViewPager
-            container.addView(view);
-
-            // Retrieve a TextView from the inflated View, and update it's text
-            TextView title = (TextView) view.findViewById(R.id.item_title);
-            title.setText(String.valueOf(position + 1));
-
-            // Return the View
-            return view;
-        }
-
-        /**
-         * Destroy the item from the ViewPager. In our case this is simply
-         * removing the View.
-         */
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
+            return mFragmentTitleList.get(position);
         }
     }
 }

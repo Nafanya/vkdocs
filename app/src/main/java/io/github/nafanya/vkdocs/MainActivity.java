@@ -1,32 +1,35 @@
 package io.github.nafanya.vkdocs;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.res.Configuration;
+import android.app.Activity;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+//import android.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.support.v7.widget.Toolbar;
 
-import com.vk.sdk.util.VKUtil;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
-    @Bind(R.id.drawer_layout)
+    /*@Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
     @Bind(R.id.left_drawer)
-    ListView drawerList;
+    ListView drawerList;*/
 
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    private Drawer drawer;
     private String[] drawerItems;
     private CharSequence title;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -40,7 +43,38 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         drawerItems = getResources().getStringArray(R.array.drawer_items);
-        Timber.d("leng = " + drawerItems.length);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(drawerItems[0]),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName(drawerItems[1]),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName(drawerItems[2]))
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+
+                    Fragment fragment = new TabbedDocsFragment();
+                    //fragment.setArguments();
+
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+                    drawer.closeDrawer();
+                    return true;
+                    // do something with the clicked item :D
+                })
+                .build();
+        //drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+
+
+        /*drawerItems = getResources().getStringArray(R.array.drawer_items);
 
         drawerList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerItems));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
@@ -68,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
         if (savedInstanceState == null)
-            selectDrawerItem(0);
+            selectDrawerItem(0);*/
     }
 
-    private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+    /*private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectDrawerItem(position);
@@ -79,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectDrawerItem(int position) {
-        Fragment fragment = new DummyFragment();
+        Fragment fragment = new TabbedDocsFragment();
         //fragment.setArguments();
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -116,5 +150,5 @@ public class MainActivity extends AppCompatActivity {
     public void setTitle(CharSequence title) {
         this.title = title;
         getSupportActionBar().setTitle(title);
-    }
+    }*/
 }
