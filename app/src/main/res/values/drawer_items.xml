@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array
-        name="drawer_items">
-        <item>My Docs</item>
-        <item>Downloaded</item>
-        <item>Offline</item>
+    <string-array name="drawer_items">
+        <item>@string/drawer_my_documents</item>
+        <item>@string/drawer_offline</item>
+        <item>@string/drawer_uploads</item>
+        <item>@string/drawer_settings</item>
     </string-array>
 
 
