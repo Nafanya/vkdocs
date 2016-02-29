@@ -10,6 +10,7 @@
     <string-array name="tabs">
         <item>@string/tab_all</item>
         <item>@string/tab_text</item>
+        <item>@string/tab_books</item>
         <item>@string/tab_archives</item>
         <item>@string/tab_gifs</item>
         <item>@string/tab_images</item>

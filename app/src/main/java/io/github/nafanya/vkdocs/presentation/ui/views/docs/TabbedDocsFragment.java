@@ -18,7 +18,9 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.presentation.presenter.base.CommonDocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.TextListFragment;
 
 public class TabbedDocsFragment extends Fragment {
 
@@ -58,9 +60,9 @@ public class TabbedDocsFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->true, eventBus, repository)), "ALL");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("jpg") || x.title.endsWith("jpg"), eventBus, repository)), "IMGS");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("mp3") || x.title.endsWith("mp3"), eventBus, repository)), "AUDIO");
+        //adapter.addFragment(TextListFragment.newInstance(new DocumentsPresenter(DocFilters.ALL, eventBus, repository)), "ALL");
+        //adapter.addFragment(TextListFragment.newInstance(new DocumentsPresenter(DocFilters.IMAGES, eventBus, repository)), "IMAGES");
+        //adapter.addFragment(TextListFragment.newInstance(new DocumentsPresenter(DocFilters.MUSIC, eventBus, repository)), "MUSIC");
         viewPager.setAdapter(adapter);
     }
 

@@ -2,13 +2,11 @@ package io.github.nafanya.vkdocs;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,8 +15,23 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.AllListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.ArchivesListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.BooksListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.GifsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.ImagesListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.MusicListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.OtherListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.TextListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.VideoListFragment;
+
 
 public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -27,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Drawer drawer;
     private CharSequence title;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    private EventBus eventBus;
+    protected DocumentRepository repository;
 
     @SuppressLint("NewApi")
     @Override
@@ -36,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        eventBus = ((App) getApplication()).getEventBus();
+        repository = ((App) getApplication()).getRepository();
 
         initUI();
         initNavigationDrawer();
@@ -48,10 +66,28 @@ public class MainActivity extends AppCompatActivity {
         // Pager and tabs
         String[] tabs = getResources().getStringArray(R.array.tabs);
 
-        pager.setAdapter(new DocumentPagerAdapter(getSupportFragmentManager(), tabs));
+        DocumentPagerAdapter adapter = new DocumentPagerAdapter(getSupportFragmentManager());
+        Fragment[] tabFragments = new Fragment[]{
+                new AllListFragment(),
+                new TextListFragment(),
+                new BooksListFragment(),
+                new ArchivesListFragment(),
+                new GifsListFragment(),
+                new ImagesListFragment(),
+                new MusicListFragment(),
+                new VideoListFragment(),
+                new OtherListFragment()
+        };
+
+        for (int i = 0; i < tabs.length; ++i)
+            adapter.addFragment(tabs[i], tabFragments[i]);
+
+        pager.setAdapter(adapter);
 
         for (String title : tabs)
             tabLayout.addTab(tabLayout.newTab().setText(title));
+
+
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(pager);
@@ -84,28 +120,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static class DocumentPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> fragmentTitles = new ArrayList<>();
 
-        private final String[] titles;
+        //private final String[] titles;
 
-        public DocumentPagerAdapter(FragmentManager fm, @NonNull String[] titles) {
+
+        /*public DocumentPagerAdapter(FragmentManager fm, @NonNull String[] titles) {
             super(fm);
 
             this.titles = titles;
+        }*/
+
+        public DocumentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addFragment(String title, Fragment fragment) {
+            fragments.add(fragment);
+            fragmentTitles.add(title);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return OneFragment.createFragment(titles[position]);
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return titles.length;
+            return fragmentTitles.size();
         }
 
         @Override
         public String getPageTitle(int position) {
-            return titles[position];
+            return fragmentTitles.get(position);
         }
     }
 }

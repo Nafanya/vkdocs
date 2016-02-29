@@ -16,6 +16,7 @@
     <!-- Tabs -->
     <string name="tab_all">All</string>
     <string name="tab_text">Text</string>
+    <string name="tab_books">Books</string>
     <string name="tab_archives">Archives</string>
     <string name="tab_gifs">Gifs</string>
     <string name="tab_images">Images</string>

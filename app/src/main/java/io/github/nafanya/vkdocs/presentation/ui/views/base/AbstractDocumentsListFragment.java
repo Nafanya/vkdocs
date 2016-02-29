@@ -18,38 +18,55 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
-import io.github.nafanya.vkdocs.presentation.presenter.base.CommonDocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import timber.log.Timber;
 
-public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPresenter> extends Fragment
-        implements CommonDocumentsPresenter.Callback, DocumentsAdapter.ItemEventListener {
+public abstract class AbstractDocumentsListFragment<
+        PresenterType extends DocumentsPresenter,
+        AdapterType extends DocumentsAdapter> extends Fragment
+        implements DocumentsPresenter.Callback, DocumentsAdapter.ItemEventListener {
 
-    protected T presenter;
-
-    protected DocumentsAdapter adapter;
+    protected PresenterType presenter;
+    protected AdapterType adapter;
 
     private InterruptableDownloadManager downloadManager;
 
     protected static String PRESENTER_KEY = "presenter";
-    //private static String ADAPTER_KEY = "adapter";
 
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
 
-    public static <R extends AbstractDocumentsListFragment> R newInstance(R fragment, CommonDocumentsPresenter presenter) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(PRESENTER_KEY, presenter);
+    protected abstract PresenterType newPresenter();
+    protected abstract AdapterType newAdapter();
 
-        fragment.setArguments(bundle);
-        return fragment;
+    //temp helper
+    protected DocumentsPresenter defaultPresenter(DocumentsPresenter.DocFilter filter) {
+        App app = (App)getActivity().getApplication();
+        return new DocumentsPresenter(filter, app.getEventBus(), app.getRepository(), this);
+
+    }
+
+    //temp helper
+    protected DocumentsAdapter defaultAdapter() {
+        return new DocumentsAdapter(this);
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = (T)getArguments().get(PRESENTER_KEY);
+        presenter = newPresenter();
     }
+
+    //TODO add here adapter
+    /*public static <R extends AbstractDocumentsListFragment> R newInstance(R fragment, DocumentsPresenter presenter) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(PRESENTER_KEY, presenter);
+
+        fragment.setArguments(bundle);
+        return fragment;
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,11 +106,9 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
 
     @Override
     public void onGetDocuments(List<VKApiDocument> documents) {
-        //if (adapter == null) {
-            Timber.d("on get documents");
-            adapter = new DocumentsAdapter(this);
-
-        //}
+        Timber.d("ON GET DOCUMENTS");
+        //adapter = new DocumentsAdapter(this);
+        adapter = newAdapter();
         adapter.setData(documents);
         recyclerView.setAdapter(adapter);
     }

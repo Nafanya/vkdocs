@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class CommonDocumentsPresenter extends BasePresenter implements Serializable {
+public class DocumentsPresenter extends BasePresenter implements Serializable {
 
     public interface Callback {
         void onGetDocuments(List<VKApiDocument> documents);
@@ -30,10 +30,6 @@ public class CommonDocumentsPresenter extends BasePresenter implements Serializa
         void onDelete(Exception ex);
     }
 
-    public interface DocFilter {
-        boolean filter(VKApiDocument doc);
-    }
-
     private GetMyDocuments databaseInteractor;
     private LoadMyDocuments networkInteractor;
     private Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
@@ -42,14 +38,14 @@ public class CommonDocumentsPresenter extends BasePresenter implements Serializa
 
     private Callback callback;
 
-    public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, Callback callback) {
+    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, Callback callback) {
         this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.callback = callback;
     }
 
-    public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
+    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
         Timber.d("filter = " + filter);
         this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
@@ -124,5 +120,26 @@ public class CommonDocumentsPresenter extends BasePresenter implements Serializa
             if (filter.filter(x))
                 ret.add(x);
         return ret;
+    }
+
+    public interface DocFilter {
+        boolean filter(VKApiDocument doc);
+    }
+
+    public static class SimpleDocFilter implements DocFilter {
+        private String[] exts;
+        public SimpleDocFilter(String... exts) {
+            this.exts = exts;
+        }
+
+        @Override
+        public boolean filter(VKApiDocument doc) {
+            for (String ext : exts)
+                if (ext.equals("*") ||
+                        doc.ext != null && doc.ext.equals(ext) ||
+                        doc.title == null || doc.title.endsWith(ext))
+                    return true;
+            return false;
+        }
     }
 }
