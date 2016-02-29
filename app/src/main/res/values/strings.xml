@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">VKDocs</string>
+    <string name="continue_using_app">Continue using this app</string>
+    <string name="logout">Logout</string>
+    <integer name="com_vk_sdk_AppId">5252455</integer>
+    <string name="title_activity_documents">My documents</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Navigation drawer -->
+    <string name="drawer_my_documents">My documents</string>
+    <string name="drawer_offline">Offline</string>
+    <string name="drawer_uploads">Uploads</string>
+    <string name="drawer_settings">Settings</string>
+
+    <!-- Tabs -->
+    <string name="tab_all">All</string>
+    <string name="tab_text">Text</string>
+    <string name="tab_archives">Archives</string>
+    <string name="tab_gifs">Gifs</string>
+    <string name="tab_images">Images</string>
+    <string name="tab_music">Music</string>
+    <string name="tab_video">Video</string>
+    <string name="tab_other">Other</string>
+</resources>
