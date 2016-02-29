@@ -29,6 +29,9 @@ public class VKDocumentEntity extends BaseModel {
     @Column
     private int ownerId;
 
+    @Column
+    private long size;
+
     public VKDocumentEntity() {}
 
     public VKDocumentEntity(int id, String title) {
@@ -77,5 +80,13 @@ public class VKDocumentEntity extends BaseModel {
 
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

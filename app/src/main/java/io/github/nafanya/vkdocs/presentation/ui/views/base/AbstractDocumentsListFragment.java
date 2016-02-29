@@ -59,15 +59,6 @@ public abstract class AbstractDocumentsListFragment<
         presenter = newPresenter();
     }
 
-    //TODO add here adapter
-    /*public static <R extends AbstractDocumentsListFragment> R newInstance(R fragment, DocumentsPresenter presenter) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(PRESENTER_KEY, presenter);
-
-        fragment.setArguments(bundle);
-        return fragment;
-    }*/
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Timber.d("ON CREATE VIEW");
@@ -76,7 +67,6 @@ public abstract class AbstractDocumentsListFragment<
 
         ButterKnife.bind(this, rootView);
 
-        activity.setTitle(R.string.title_activity_documents);
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         downloadManager = ((App) activity.getApplication()).getDownloadManager();
 
@@ -107,7 +97,6 @@ public abstract class AbstractDocumentsListFragment<
     @Override
     public void onGetDocuments(List<VKApiDocument> documents) {
         Timber.d("ON GET DOCUMENTS");
-        //adapter = new DocumentsAdapter(this);
         adapter = newAdapter();
         adapter.setData(documents);
         recyclerView.setAdapter(adapter);

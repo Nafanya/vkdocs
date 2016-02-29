@@ -19,6 +19,7 @@ public class DocsMapper implements Mapper<VKDocumentEntity, VKApiDocument> {
         ret.id = vkDocumentEntity.getId();
         ret.title = vkDocumentEntity.getTitle();
         ret.owner_id = vkDocumentEntity.getOwnerId();
+        ret.size = vkDocumentEntity.getSize();
         return ret;
     }
 
@@ -35,6 +36,7 @@ public class DocsMapper implements Mapper<VKDocumentEntity, VKApiDocument> {
         vk.setId(vkApiDoc.getId());
         vk.setTitle(vkApiDoc.title);
         vk.setOwnerId(vkApiDoc.owner_id);
+        vk.setSize(vkApiDoc.size);
         return vk;
     }
 }
