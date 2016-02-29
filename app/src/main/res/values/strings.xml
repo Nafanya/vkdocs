@@ -4,4 +4,6 @@
     <string name="logout">Logout</string>
     <integer name="com_vk_sdk_AppId">5252455</integer>
     <string name="title_activity_documents">My documents</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>
