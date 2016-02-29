@@ -59,8 +59,8 @@ public class TabbedDocsFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->true, eventBus, repository)), "ALL");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("jpg"), eventBus, repository)), "IMGS");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("mp3"), eventBus, repository)), "AUDIO");
+        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("jpg") || x.title.endsWith("jpg"), eventBus, repository)), "IMGS");
+        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("mp3") || x.title.endsWith("mp3"), eventBus, repository)), "AUDIO");
         viewPager.setAdapter(adapter);
     }
 

@@ -53,6 +53,7 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Timber.d("ON CREATE VIEW");
         View rootView = inflater.inflate(R.layout.fragment_documents_list, container, false);
         Activity activity = getActivity();
 
@@ -75,12 +76,26 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
     }
 
     @Override
+    public void onDestroy() {
+        Timber.d("ON DESTROY");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        Timber.d("ON DESTROY VIEW");
+        super.onDestroyView();
+    }
+
+    @Override
     public void onGetDocuments(List<VKApiDocument> documents) {
-        if (adapter == null) {
+        //if (adapter == null) {
+            Timber.d("on get documents");
             adapter = new DocumentsAdapter(this);
-            recyclerView.setAdapter(adapter);
-        }
+
+        //}
         adapter.setData(documents);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

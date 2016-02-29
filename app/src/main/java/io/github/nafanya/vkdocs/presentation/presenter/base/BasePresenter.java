@@ -5,25 +5,25 @@ public abstract class BasePresenter {
      * Method that control the lifecycle of the view. It should be called in the view's
      * (Activity or Fragment) onResume() method.
      */
-    void onResume() {}
+    public void onResume() {}
 
     /**
      * Method that controls the lifecycle of the view. It should be called in the view's
      * (Activity or Fragment) onPause() method.
      */
-    void onPause() {}
+    public void onPause() {}
 
     /**
      * Method that controls the lifecycle of the view. It should be called in the view's
      * (Activity or Fragment) onStop() method.
      */
-    void onStop() {}
+    public void onStop() {}
 
     /**
      * Method that control the lifecycle of the view. It should be called in the view's
      * (Activity or Fragment) onDestroy() method.
      */
-    void onDestroy() {}
+    public void onDestroy() {}
 
-    void onStart() {}
+    public void onStart() {}
 }
