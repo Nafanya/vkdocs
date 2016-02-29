@@ -15,11 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.OneFragment;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.ThreeFragment;
-import io.github.nafanya.vkdocs.TwoFragment;
-import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.presentation.presenter.base.CommonDocumentsPresenter;
@@ -38,6 +34,7 @@ public class TabbedDocsFragment extends Fragment {
 
         Activity activity = getActivity();
         eventBus = ((App) activity.getApplication()).getEventBus();
+        repository = ((App) activity.getApplication()).getRepository();
     }
 
     @Override
@@ -62,8 +59,8 @@ public class TabbedDocsFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->true, eventBus, repository)), "ALL");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext.equals("jpg"), eventBus, repository)), "IMGS");
-        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext.equals("mp3"), eventBus, repository)), "AUDIO");
+        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("jpg"), eventBus, repository)), "IMGS");
+        adapter.addFragment(DefaultDocumentsListFragment.newInstance(new CommonDocumentsPresenter(x->x.ext != null && x.ext.equals("mp3"), eventBus, repository)), "AUDIO");
         viewPager.setAdapter(adapter);
     }
 

@@ -48,7 +48,7 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = (T)savedInstanceState.get(PRESENTER_KEY);
+        presenter = (T)getArguments().get(PRESENTER_KEY);
     }
 
     @Override
@@ -62,6 +62,7 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         downloadManager = ((App) activity.getApplication()).getDownloadManager();
 
+        presenter.setCallback(this);
         presenter.loadDatabaseDocuments();
 
         return rootView;
@@ -113,6 +114,7 @@ public abstract class AbstractDocumentsListFragment<T extends CommonDocumentsPre
 
     @Override
     public void onDatabaseError(Exception ex) {
+        ex.printStackTrace();
         Timber.d("db error");
     }
 }

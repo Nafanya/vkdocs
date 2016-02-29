@@ -16,6 +16,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 
 public class CommonDocumentsPresenter extends BasePresenter implements Serializable {
@@ -42,12 +43,14 @@ public class CommonDocumentsPresenter extends BasePresenter implements Serializa
     private Callback callback;
 
     public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, Callback callback) {
+        this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.callback = callback;
     }
 
     public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
+        Timber.d("filter = " + filter);
         this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);

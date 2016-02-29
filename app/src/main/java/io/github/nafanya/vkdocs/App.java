@@ -11,13 +11,21 @@ import com.vk.sdk.VKSdk;
 
 import java.util.concurrent.Executors;
 
+import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
+import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
 import io.github.nafanya.vkdocs.data.database.mapper.DownloadRequestMapper;
+import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
+import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
+import io.github.nafanya.vkdocs.data.net.NetworkRepository;
+import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
+import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -28,6 +36,7 @@ public class App extends Application {
 
     private EventBus eventBus;
     private InterruptableDownloadManager downloadManager;
+    private DocumentRepository repository;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -57,6 +66,10 @@ public class App extends Application {
         downloadManager = new InterruptableDownloadManager(
                 Schedulers.from(Executors.newFixedThreadPool(5)),
                 new DbRequestStorage(new DownloadRequestMapper()));
+
+        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
+        NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
+        repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
     }
 
     public EventBus getEventBus() {
@@ -65,5 +78,9 @@ public class App extends Application {
 
     public InterruptableDownloadManager getDownloadManager() {
         return downloadManager;
+    }
+
+    public DocumentRepository getRepository() {
+        return repository;
     }
 }
