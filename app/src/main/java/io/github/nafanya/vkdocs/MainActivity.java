@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     private Drawer drawer;
-    private String[] drawerItems;
     private CharSequence title;
     private ActionBarDrawerToggle actionBarDrawerToggle;
 
@@ -42,26 +41,30 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        drawerItems = getResources().getStringArray(R.array.drawer_items);
+        initToolbar();
+        initNavigationDrawer();
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    private void initToolbar() {
+        // Toolbar is already bound with butterknife.
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
+    private void initNavigationDrawer() {
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withActionBarDrawerToggle(true)
                 .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(drawerItems[0]),
+                        new PrimaryDrawerItem().withName(R.string.drawer_my_documents),
+                        new PrimaryDrawerItem().withName(R.string.drawer_offline),
+                        new PrimaryDrawerItem().withName(R.string.drawer_uploads),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(drawerItems[1]),
-                        new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(drawerItems[2]))
+                        new PrimaryDrawerItem().withName(R.string.drawer_settings))
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
 
                     Fragment fragment = new TabbedDocsFragment();
-                    //fragment.setArguments();
 
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
