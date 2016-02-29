@@ -1,11 +1,9 @@
 package io.github.nafanya.vkdocs;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 //import android.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +16,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.nafanya.vkdocs.presentation.ui.views.docs.TabbedDocsFragment;
 
 public class MainActivity extends AppCompatActivity {
     /*@Bind(R.id.drawer_layout)

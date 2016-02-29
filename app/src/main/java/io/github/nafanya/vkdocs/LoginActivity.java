@@ -17,8 +17,6 @@ import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
-import io.github.nafanya.vkdocs.presentation.ui.views.DocumentsActivity;
-
 
 /**
  * Activity which displays a login screen to the user, offering registration as

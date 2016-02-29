@@ -15,11 +15,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 
-public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.DocumentViewHolder> {
+public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.DocumentViewHolder> {
     private List<VKApiDocument> documents;
-    private DocumentViewHolder.DocumentClickListener listener;
+    private ItemEventListener listener;
 
-    public DocumentAdapter(DocumentViewHolder.DocumentClickListener listener) {
+    public DocumentsAdapter(ItemEventListener listener) {
         this.listener = listener;
     }
 
@@ -28,7 +28,7 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Docume
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document, parent, false);
+        View view = inflater.inflate(R.layout.item_document4, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 
@@ -61,31 +61,52 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Docume
         return documents.get(pos);
     }
 
-    public static class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public interface DocumentClickListener {
-            void onClickDelete(int position);
-        }
+    public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Bind(R.id.text_doctitle)
         TextView title;
 
-        private DocumentClickListener listener;
+        @Bind(R.id.size)
+        TextView size;
 
-        public DocumentViewHolder(View view, DocumentClickListener listener) {
+        private ItemEventListener listener;
+
+        public DocumentViewHolder(View view, ItemEventListener listener) {
             super(view);
             this.listener = listener;
 
             ButterKnife.bind(this, view);
+            view.setOnClickListener(this);
         }
 
         public void setup(VKApiDocument doc) {
             title.setText(doc.title);
+
+            if (doc.size < 1024)
+                size.setText(doc.size + "B");
+            else if (doc.size < 1024 * 1024)
+                size.setText(getFormatSize(doc.size, 1024, "KB"));
+            else if (doc.size < 1024 * 1024 * 1024)
+                size.setText(getFormatSize(doc.size, 1024 * 1024, "MB"));
+            else
+                size.setText(getFormatSize(doc.size, 1024 * 1024 * 1024, "G"));
         }
 
+        private String getFormatSize(long size, int div, String metr) {
+            long kb = size / div;
+            if (kb < 10)
+                return (int)(size * 1.0 / div * 10) / 10.0 + metr;
+            return size / div + metr;
+        }
 
         @Override
         public void onClick(View v) {
-            listener.onClickDelete(getAdapterPosition());
+            int pos = getAdapterPosition();
+            listener.onClick(pos, documents.get(pos));
         }
+    }
+
+    public interface ItemEventListener {
+        void onClick(int position, VKApiDocument document);
     }
 }

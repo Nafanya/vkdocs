@@ -36,9 +36,6 @@
         <activity android:name="io.github.nafanya.vkdocs.MainActivity" />
         <activity android:name="io.github.nafanya.vkdocs.FriendsListActivity" />
 
-        <activity
-            android:name="io.github.nafanya.vkdocs.presentation.ui.views.DocumentsActivity"
-            android:label="@string/title_activity_documents"/>
     </application>
 
 </manifest>

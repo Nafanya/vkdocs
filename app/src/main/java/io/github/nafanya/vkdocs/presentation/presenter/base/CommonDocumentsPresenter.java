@@ -2,6 +2,8 @@ package io.github.nafanya.vkdocs.presentation.presenter.base;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -16,25 +18,55 @@ import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 
 
-public class DocumentsPresenter extends BasePresenter {
+public class CommonDocumentsPresenter extends BasePresenter implements Serializable {
 
     public interface Callback {
         void onGetDocuments(List<VKApiDocument> documents);
         void onNetworkError(Exception ex);
         void onDatabaseError(Exception ex);
+        void onMakeOffline(Exception ex);
+        void onRename(Exception ex);
+        void onDelete(Exception ex);
+    }
+
+    public interface DocFilter {
+        boolean filter(VKApiDocument doc);
     }
 
     private GetMyDocuments databaseInteractor;
     private LoadMyDocuments networkInteractor;
     private Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
     private Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
+    private DocFilter filter;
 
     private Callback callback;
 
-    public DocumentsPresenter(EventBus eventBus, DocumentRepository repository, Callback callback) {
+    public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, Callback callback) {
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.callback = callback;
+    }
+
+    public CommonDocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
+        this.filter = filter;
+        this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+        this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    public void makeOffline(VKApiDocument document) {
+
+    }
+
+    public void rename(VKApiDocument document, String newName) {
+
+    }
+
+    public void delete(VKApiDocument document) {
+
     }
 
     public void loadNetworkDocuments() {
@@ -59,7 +91,7 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(List<VKApiDocument> vkApiDocuments) {
             if (callback != null)
-                callback.onGetDocuments(vkApiDocuments);
+                callback.onGetDocuments(filterList(vkApiDocuments));
         }
 
         @Override
@@ -73,7 +105,7 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(List<VKApiDocument> vkApiDocuments) {
             if (callback != null)
-                callback.onGetDocuments(vkApiDocuments);
+                callback.onGetDocuments(filterList(vkApiDocuments));
         }
 
         @Override
@@ -81,5 +113,13 @@ public class DocumentsPresenter extends BasePresenter {
             if (callback != null)
                 callback.onNetworkError((Exception) e);
         }
+    }
+
+    private List<VKApiDocument> filterList(List<VKApiDocument> list) {
+        List<VKApiDocument> ret = new ArrayList<>();
+        for (VKApiDocument x : list)
+            if (filter.filter(x))
+                ret.add(x);
+        return ret;
     }
 }
