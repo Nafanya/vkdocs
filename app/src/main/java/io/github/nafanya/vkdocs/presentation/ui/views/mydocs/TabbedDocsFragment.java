@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.docs;
+package io.github.nafanya.vkdocs.presentation.ui.views.mydocs;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,9 +18,6 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.TextListFragment;
 
 public class TabbedDocsFragment extends Fragment {
 

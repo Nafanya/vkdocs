@@ -15,11 +15,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 
-public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.DocumentViewHolder> {
+public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VKApiDocument> documents;
     private ItemEventListener listener;
 
-    public DocumentsAdapter(ItemEventListener listener) {
+    public MyDocsAdapter(ItemEventListener listener) {
         this.listener = listener;
     }
 

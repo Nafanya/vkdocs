@@ -1,13 +1,13 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs;
+package io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractDocumentsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractMyDocsListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
 
-public class VideoListFragment extends AbstractDocumentsListFragment<DocumentsPresenter, DocumentsAdapter> {
+public class VideoListFragment extends AbstractMyDocsListFragment<DocumentsPresenter, MyDocsAdapter> {
 
 
     @Override
@@ -16,8 +16,8 @@ public class VideoListFragment extends AbstractDocumentsListFragment<DocumentsPr
     }
 
     @Override
-    public DocumentsAdapter newAdapter() {
-        return new DocumentsAdapter(this);
+    public MyDocsAdapter newAdapter() {
+        return new MyDocsAdapter(this);
     }
 
     @Override

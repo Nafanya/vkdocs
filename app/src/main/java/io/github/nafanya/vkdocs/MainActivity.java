@@ -22,15 +22,15 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.AllListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.ArchivesListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.BooksListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.GifsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.ImagesListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.MusicListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.OtherListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.TextListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.docs.tabs.VideoListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.AllListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.ArchivesListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.BooksListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.GifsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.ImagesListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.MusicListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.OtherListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.TextListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.VideoListFragment;
 
 
 public class MainActivity extends AppCompatActivity {

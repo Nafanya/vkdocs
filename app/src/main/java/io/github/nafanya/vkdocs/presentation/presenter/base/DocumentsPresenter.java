@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
@@ -35,22 +37,24 @@ public class DocumentsPresenter extends BasePresenter implements Serializable {
     private Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
     private Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
     private DocFilter filter;
+    private DownloadManager<DownloadRequest> downloadManager;
 
     private Callback callback;
 
-    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, Callback callback) {
+    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+        this.downloadManager = downloadManager;
         this.callback = callback;
     }
 
-    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
+    /*public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
         Timber.d("filter = " + filter);
         this.filter = filter;
         this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
-    }
+    }*/
 
     public void setCallback(Callback callback) {
         this.callback = callback;
