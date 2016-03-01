@@ -14,6 +14,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VKApiDocument> documents;
@@ -81,24 +82,9 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
         public void setup(VKApiDocument doc) {
             title.setText(doc.title);
-
-            if (doc.size < 1024)
-                size.setText(doc.size + "B");
-            else if (doc.size < 1024 * 1024)
-                size.setText(getFormatSize(doc.size, 1024, "KB"));
-            else if (doc.size < 1024 * 1024 * 1024)
-                size.setText(getFormatSize(doc.size, 1024 * 1024, "MB"));
-            else
-                size.setText(getFormatSize(doc.size, 1024 * 1024 * 1024, "G"));
+            size.setText(FileSizeFormatter.format(doc.size));
         }
-
-        private String getFormatSize(long size, int div, String metr) {
-            long kb = size / div;
-            if (kb < 10)
-                return (int)(size * 1.0 / div * 10) / 10.0 + metr;
-            return size / div + metr;
-        }
-
+        
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
