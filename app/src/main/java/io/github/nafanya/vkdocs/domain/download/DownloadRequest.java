@@ -8,7 +8,7 @@ import rx.android.schedulers.AndroidSchedulers;
 public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
     private DownloadManager.RequestObserver observer;
-    private Scheduler scheduler = AndroidSchedulers.mainThread();
+    private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
 
     public DownloadRequest(String url, String destination) {
@@ -20,18 +20,18 @@ public class DownloadRequest extends BaseDownloadRequest {
         this.observer = observer;
     }
 
-    public DownloadRequest(String url, String dest, Scheduler scheduler, DownloadManager.RequestObserver observer) {
+    public DownloadRequest(String url, String dest, Scheduler observeScheduler, DownloadManager.RequestObserver observer) {
         super(url, dest);
-        this.scheduler = scheduler;
+        this.observeScheduler = observeScheduler;
         this.observer = observer;
     }
 
-    public void setObserver(DownloadManager.RequestObserver observer) {
-        this.observer = observer;
+    public synchronized void setObserver(DownloadManager.RequestObserver observer) {
+            this.observer = observer;
     }
 
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
+    public void setObserveScheduler(Scheduler observeScheduler) {
+        this.observeScheduler = observeScheduler;
     }
 
     public void cancel() {
@@ -43,12 +43,12 @@ public class DownloadRequest extends BaseDownloadRequest {
         return isCanceled;
     }
 
-    public DownloadManager.RequestObserver getObserver() {
+    public synchronized DownloadManager.RequestObserver getObserver() {
         return observer;
     }
 
-    public Scheduler getScheduler() {
-        return scheduler;
+    public Scheduler getObserveScheduler() {
+        return observeScheduler;
     }
 
     public boolean isActive() {

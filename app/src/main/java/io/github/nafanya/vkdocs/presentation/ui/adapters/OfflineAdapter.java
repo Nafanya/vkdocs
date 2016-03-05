@@ -95,23 +95,30 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             cancelButton.setOnClickListener(this);
         }
 
+        //TODO extract string resource. pass activity in the adapter for getting it? i don't know
+        //TODO maybe add downloaded bytes and full size in progress callbacks
+        //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
         public void setup(DownloadableDocument doc) {
             title.setText(doc.getDoc().title);
-            size.setText(FileSizeFormatter.format(doc.getDoc().size));
+            long sizeBytes = doc.getDoc().size;
+            String sz = FileSizeFormatter.format(sizeBytes);
+
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
+                    size.setText(FileSizeFormatter.format(sizeBytes * percentage / 100) + " from " + sz);
                     downloadProgress.setProgress(percentage);
                 }
 
                 @Override
                 public void onComplete() {
-                    //TODO write here
+                    doc.resetRequest();
+                    notifyDataSetChanged();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    //TODO write here
+                    //TODO write here. snackbar?
                 }
 
                 @Override

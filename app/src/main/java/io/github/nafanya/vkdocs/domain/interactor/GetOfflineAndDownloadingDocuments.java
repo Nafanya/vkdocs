@@ -14,14 +14,14 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 
-public class GetDownloadableDocuments extends UseCase<List<DownloadableDocument>> {
+public class GetOfflineAndDownloadingDocuments extends UseCase<List<DownloadableDocument>> {
     private DocumentRepository repository;
     private DownloadManager<DownloadRequest> downloadManager;
-    public GetDownloadableDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                          EventBus eventBus,
-                          boolean isCached,
-                          DocumentRepository repository,
-                          DownloadManager<DownloadRequest> downloadManager) {
+    public GetOfflineAndDownloadingDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
+                                             EventBus eventBus,
+                                             boolean isCached,
+                                             DocumentRepository repository,
+                                             DownloadManager<DownloadRequest> downloadManager) {
         super(observerScheduler, subscriberScheduler, eventBus, isCached);
         this.repository = repository;
         this.downloadManager = downloadManager;

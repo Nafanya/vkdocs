@@ -21,7 +21,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class DocumentsPresenter extends BasePresenter implements Serializable {
+public class DocumentsPresenter extends BasePresenter {
 
     public interface Callback {
         void onGetDocuments(List<VKApiDocument> documents);
@@ -59,6 +59,7 @@ public class DocumentsPresenter extends BasePresenter implements Serializable {
         this.callback = callback;
     }
 
+    //TODO add on progress callback for more informative?
     public void makeOffline(VKApiDocument document) {
 
     }

@@ -48,7 +48,7 @@ public abstract class AbstractOfflineListFragment<
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
-        presenter.getDownloadableDocuments();
+        presenter.getOfflineAndDownloadingDocuments();
 
         return rootView;
     }

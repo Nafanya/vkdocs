@@ -20,4 +20,8 @@ public class DownloadableDocument {
     public DownloadRequest getRequest() {
         return request;
     }
+
+    public void resetRequest() {
+        request = null;
+    }
 }

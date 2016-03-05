@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
@@ -188,7 +186,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         final RequestObserver callback = request.getObserver();
         Observable.create(task).cache().
                 subscribeOn(workerScheduler).
-                observeOn(request.getScheduler()).
+                observeOn(request.getObserveScheduler()).
                 subscribe(new Subscriber<Integer>() {
                     @Override
                     public void onCompleted() {
