@@ -32,14 +32,13 @@ public class DocumentsPresenter extends BasePresenter implements Serializable {
         void onDelete(Exception ex);
     }
 
-    private GetMyDocuments databaseInteractor;
-    private LoadMyDocuments networkInteractor;
-    private Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
-    private Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
-    private DocFilter filter;
-    private DownloadManager<DownloadRequest> downloadManager;
-
-    private Callback callback;
+    protected GetMyDocuments databaseInteractor;
+    protected LoadMyDocuments networkInteractor;
+    protected Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
+    protected Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
+    protected DocFilter filter;
+    protected DownloadManager<DownloadRequest> downloadManager;
+    protected Callback callback;
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         this.filter = filter;
@@ -118,7 +117,7 @@ public class DocumentsPresenter extends BasePresenter implements Serializable {
         }
     }
 
-    private List<VKApiDocument> filterList(List<VKApiDocument> list) {
+    protected List<VKApiDocument> filterList(List<VKApiDocument> list) {
         List<VKApiDocument> ret = new ArrayList<>();
         for (VKApiDocument x : list)
             if (filter.filter(x))
