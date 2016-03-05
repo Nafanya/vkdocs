@@ -1,7 +1,5 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
@@ -11,6 +9,7 @@ import io.github.nafanya.vkdocs.domain.interactor.GetDownloadableDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.DownloadableDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -21,33 +20,41 @@ public class OfflinePresenter extends DocumentsPresenter {
     }
 
     private GetDownloadableDocuments downloadableDocumentsInteractor;
-    private Callback downCallback;
+    protected Subscriber<List<DownloadableDocument>> downloadableSubscriber;
+    private Callback downloadableCallback;
 
     public OfflinePresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         super(filter, eventBus, repository, downloadManager, callback);
         this.downloadableDocumentsInteractor = new GetDownloadableDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository, downloadManager);
-        downCallback = callback;
+        downloadableCallback = callback;
     }
 
 
     public void getDownloadableDocuments() {
+        downloadableSubscriber = new DownloadableSubscriber();
+        downloadableDocumentsInteractor.execute(downloadableSubscriber);
     }
 
 
-    public class NetworkSubscriber extends DefaultSubscriber<List<DownloadableDocument>> {
+    public class DownloadableSubscriber extends DefaultSubscriber<List<DownloadableDocument>> {
         //TODO fix it
         @Override
         public void onNext(List<DownloadableDocument> downDocs) {
-            if (downCallback != null)
-                downCallback.onGetDownloadableDocuments(downDocs);
+            if (downloadableCallback != null)
+                downloadableCallback.onGetDownloadableDocuments(downDocs);
                 //callback.onGetDocuments(filterList(vkApiDocuments));
         }
 
         @Override
         public void onError(Throwable e) {
-            if (downCallback != null)
-                downCallback.onNetworkError((Exception) e);
+            if (downloadableCallback != null)
+                downloadableCallback.onNetworkError((Exception) e);
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        downloadableSubscriber.unsubscribe();
+    }
 }
