@@ -135,8 +135,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                             storage.update(request);
                             publishProgress(subscriber, total);
                         }
-                        Timber.d("count = " + count);
-                        Timber.d("total = " + total);
                         storage.delete(request);
                         subscriber.onCompleted();
                     } finally {

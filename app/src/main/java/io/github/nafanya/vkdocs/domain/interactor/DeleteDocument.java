@@ -27,15 +27,12 @@ public class DeleteDocument extends UseCase<Integer> {
     @SuppressWarnings("unchecked")
     @Override
     public Observable<Integer> buildUseCase() {
-        return Observable.create(new Observable.OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> subscriber) {
-                try {
-                    repository.delete(doc);
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
+        return Observable.create(subscriber ->  {
+            try {
+                repository.delete(doc);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
         });
     }

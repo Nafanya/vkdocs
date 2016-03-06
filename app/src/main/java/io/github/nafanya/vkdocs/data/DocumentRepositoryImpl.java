@@ -16,12 +16,7 @@ import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 
 public class DocumentRepositoryImpl implements DocumentRepository {
-    private static final Comparator<VKDocumentEntity> COMPARATOR = new Comparator<VKDocumentEntity>() {
-        @Override
-        public int compare(VKDocumentEntity lhs, VKDocumentEntity rhs) {
-            return lhs.getId() - rhs.getId();
-        }
-    };
+    private static final Comparator<VKDocumentEntity> COMPARATOR = (lhs, rhs) -> lhs.getId() - rhs.getId();
 
     private DatabaseRepository databaseRepository;
     private NetworkRepository networkRepository;

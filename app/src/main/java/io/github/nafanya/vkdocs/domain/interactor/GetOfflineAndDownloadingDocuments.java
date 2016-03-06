@@ -12,7 +12,6 @@ import io.github.nafanya.vkdocs.domain.model.DownloadableDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
 
 public class GetOfflineAndDownloadingDocuments extends UseCase<List<DownloadableDocument>> {
     private DocumentRepository repository;
@@ -29,17 +28,14 @@ public class GetOfflineAndDownloadingDocuments extends UseCase<List<Downloadable
 
     @Override
     public Observable<List<DownloadableDocument>> buildUseCase() {
-        return Observable.create(new Observable.OnSubscribe<List<DownloadableDocument>>() {
-            @Override
-            public void call(Subscriber<? super List<DownloadableDocument>> subscriber) {
-                try {
-                    List<DownloadRequest> requests = downloadManager.getQueue();
-                    List<VKApiDocument> documents = repository.getMyDocuments();
-                    //TODO find docs matching
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
+        return Observable.create(subscriber -> {
+            try {
+                List<DownloadRequest> requests = downloadManager.getQueue();
+                List<VKApiDocument> documents = repository.getMyDocuments();
+                //TODO find docs matching
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
         });
     }

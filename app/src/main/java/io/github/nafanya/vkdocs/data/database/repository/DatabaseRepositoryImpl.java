@@ -48,12 +48,9 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
     //Batch insert
     @Override
     public void addAll(final Iterable<VKDocumentEntity> list) {
-        TransactionManager.transact(DocumentsDatabase.NAME, new Runnable() {
-            @Override
-            public void run() {
-                for (VKDocumentEntity doc : list)
-                    doc.save();
-            }
+        TransactionManager.transact(DocumentsDatabase.NAME, () -> {
+            for (VKDocumentEntity doc : list)
+                doc.save();
         });
     }
 

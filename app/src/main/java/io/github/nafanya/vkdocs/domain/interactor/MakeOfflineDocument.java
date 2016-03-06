@@ -31,18 +31,15 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
 
     @Override
     public Observable<DownloadRequest> buildUseCase() {
-        return Observable.create(new Observable.OnSubscribe<DownloadRequest>() {
-            @Override
-            public void call(Subscriber<? super DownloadRequest> subscriber) {
-                try {
-                    DownloadRequest request = new DownloadRequest(document.url, toPath);
-                    downloadManager.enqueue(request);
-                    //TODO if was offline flag, set it
-                    subscriber.onNext(request);
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
+        return Observable.create(subscriber -> {
+            try {
+                DownloadRequest request = new DownloadRequest(document.url, toPath);
+                downloadManager.enqueue(request);
+                //TODO if was offline flag, set it
+                subscriber.onNext(request);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
         });
     }

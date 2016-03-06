@@ -24,16 +24,13 @@ public class LoadMyDocuments extends UseCase<List<VKApiDocument>> {
 
     @Override
     public Observable<List<VKApiDocument>> buildUseCase() {
-        return Observable.create(new Observable.OnSubscribe<List<VKApiDocument>>() {
-            @Override
-            public void call(Subscriber<? super List<VKApiDocument>> subscriber) {
-                try {
-                    repository.synchronize();
-                    subscriber.onNext(repository.getMyDocuments());
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
+        return Observable.create(subscriber -> {
+            try {
+                repository.synchronize();
+                subscriber.onNext(repository.getMyDocuments());
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
         });
     }
