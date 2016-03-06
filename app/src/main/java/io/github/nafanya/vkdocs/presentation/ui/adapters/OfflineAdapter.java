@@ -84,6 +84,8 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Bind(R.id.down_button)
         ImageView cancelButton;
 
+        private DownloadableDocument prevDoc;
+
         private ItemEventListener listener;
 
         public DownloadingDocViewHolder(View view, ItemEventListener listener) {
@@ -102,7 +104,9 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             title.setText(doc.getDoc().title);
             long sizeBytes = doc.getDoc().size;
             String sz = FileSizeFormatter.format(sizeBytes);
-
+            if (prevDoc != null && prevDoc.getRequest() != null)
+                prevDoc.getRequest().setObserver(null);
+            prevDoc = doc;
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
