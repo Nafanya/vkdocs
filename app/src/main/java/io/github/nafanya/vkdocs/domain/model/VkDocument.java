@@ -31,6 +31,9 @@ public class VkDocument extends VKApiDocument {
     public DownloadRequest getRequest() {
         return downloadRequest;
     }
+    public void setRequest(DownloadRequest downloadRequest) {
+        this.downloadRequest = downloadRequest;
+    }
 
     public boolean isOffline() {
         return offlineType == OFFLINE;

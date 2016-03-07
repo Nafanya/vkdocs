@@ -54,7 +54,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
-
+            Timber.d("download task " + request.getUrl() + " " + request.getDocId() + " " + request.getDest());
             if (isRetry) {
                 if (request.getId() == 0) {
                     subscriber.onError(new RuntimeException("This request isn't executed yet!"));

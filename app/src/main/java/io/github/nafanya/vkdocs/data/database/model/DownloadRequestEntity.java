@@ -25,6 +25,9 @@ public class DownloadRequestEntity extends BaseModel {
     @Column
     private long totalBytes;
 
+    @Column
+    private int docId;
+
     public DownloadRequestEntity() {
     }
 
@@ -66,5 +69,13 @@ public class DownloadRequestEntity extends BaseModel {
 
     public void setTotalBytes(long totalBytes) {
         this.totalBytes = totalBytes;
+    }
+
+    public int getDocId() {
+        return docId;
+    }
+
+    public void setDocId(int docId) {
+        this.docId = docId;
     }
 }

@@ -10,6 +10,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
+import timber.log.Timber;
 
 public class MakeOfflineDocument extends UseCase<DownloadRequest> {
     private VKApiDocument document;
@@ -33,6 +34,7 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
     public Observable<DownloadRequest> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
+                Timber.d("url path: " + document.url + " " + toPath + ", doc id = " + document.id);
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 downloadManager.enqueue(request);
                 //TODO if was offline flag, set it

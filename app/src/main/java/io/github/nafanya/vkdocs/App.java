@@ -62,7 +62,7 @@ public class App extends Application {
                 Schedulers.from(Executors.newFixedThreadPool(5)),
                 new DbRequestStorage(new DownloadRequestMapper()));
 
-        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper());
+        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
     }

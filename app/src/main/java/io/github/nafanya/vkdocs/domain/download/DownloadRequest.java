@@ -12,6 +12,10 @@ public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isActive;
     private volatile boolean isCompleted;
 
+    public DownloadRequest() {
+        super(null, null);
+    }
+
     public DownloadRequest(String url, String destination) {
         super(url, destination);
     }

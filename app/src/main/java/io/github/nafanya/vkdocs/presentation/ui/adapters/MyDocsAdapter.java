@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
+import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
@@ -103,8 +104,10 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 listener.onClick(pos, documents.get(pos));
             else if (v == contextMenuButton) {
                 //TODO add context menu
-            } else if (v == makeOfflineButton)
+            } else if (v == makeOfflineButton) {
                 listener.onClickMakeOffline(pos, documents.get(pos));
+                Timber.d("ON CLICK MAKE OFFLINE");
+            }
         }
     }
 

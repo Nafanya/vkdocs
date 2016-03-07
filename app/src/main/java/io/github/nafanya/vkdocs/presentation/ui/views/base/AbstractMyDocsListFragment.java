@@ -13,6 +13,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
@@ -78,7 +79,7 @@ public abstract class AbstractMyDocsListFragment<
 
     @Override
     public void onNetworkError(Exception ex) {
-        Timber.d("network error");
+        Timber.d("network error" + ((VKException)ex).getVkError().toString());
     }
 
     @Override

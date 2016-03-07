@@ -1,13 +1,16 @@
 package io.github.nafanya.vkdocs.data.database.mapper;
 
-
 import io.github.nafanya.vkdocs.data.Mapper;
+import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
+import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
-    public DbMapper() {
+    private Mapper<DownloadRequestEntity, DownloadRequest> mapper;
 
+    public DbMapper(Mapper<DownloadRequestEntity, DownloadRequest> mapper) {
+        this.mapper = mapper;
     }
 
     public VkDocument transform(VKDocumentEntity vkDocumentEntity) {
@@ -16,16 +19,21 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         ret.title = vkDocumentEntity.getTitle();
         ret.owner_id = vkDocumentEntity.getOwnerId();
         ret.size = vkDocumentEntity.getSize();
+        ret.url = vkDocumentEntity.getUrl();
+
+        if (vkDocumentEntity.getDownloadRequest() != null)
+            ret.setRequest(mapper.transform(vkDocumentEntity.getDownloadRequest()));
         return ret;
     }
 
     @Override
-    public VKDocumentEntity transformInv(VkDocument vkApiDoc) {
+    public VKDocumentEntity transformInv(VkDocument vkDoc) {
         VKDocumentEntity vk = new VKDocumentEntity();
-        vk.setId(vkApiDoc.getId());
-        vk.setTitle(vkApiDoc.title);
-        vk.setOwnerId(vkApiDoc.owner_id);
-        vk.setSize(vkApiDoc.size);
+        vk.setId(vkDoc.getId());
+        vk.setTitle(vkDoc.title);
+        vk.setOwnerId(vkDoc.owner_id);
+        vk.setSize(vkDoc.size);
+        vk.setUrl(vkDoc.url);
         return vk;
     }
 }

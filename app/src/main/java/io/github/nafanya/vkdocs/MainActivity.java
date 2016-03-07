@@ -29,6 +29,7 @@ import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.MusicListFragm
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.OtherListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.TextListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.VideoListFragment;
+import timber.log.Timber;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +39,33 @@ public class MainActivity extends AppCompatActivity {
 
     private Drawer drawer;
     private CharSequence title;
+
+    private String[] tabs;
+
+    private Fragment[] tabFragments = new Fragment[]{
+            new AllListFragment(),
+            new TextListFragment(),
+            new BooksListFragment(),
+            new ArchivesListFragment(),
+            new GifsListFragment(),
+            new ImagesListFragment(),
+            new MusicListFragment(),
+            new VideoListFragment(),
+            new OtherListFragment()
+    };
+
+    private Fragment[] offlineFragments = new Fragment[]{
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.AllListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.TextListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.BooksListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.ArchivesListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.GifsListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.ImagesListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.MusicListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.VideoListFragment(),
+            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.OtherListFragment()
+    };
+
 
     @SuppressLint("NewApi")
     @Override
@@ -55,21 +83,8 @@ public class MainActivity extends AppCompatActivity {
         // Toolbar
         setSupportActionBar(toolbar);
 
-        // Pager and tabs
-        String[] tabs = getResources().getStringArray(R.array.tabs);
-
+        tabs = getResources().getStringArray(R.array.tabs);
         DocumentPagerAdapter adapter = new DocumentPagerAdapter(getSupportFragmentManager());
-        Fragment[] tabFragments = new Fragment[]{
-                new AllListFragment(),
-                new TextListFragment(),
-                new BooksListFragment(),
-                new ArchivesListFragment(),
-                new GifsListFragment(),
-                new ImagesListFragment(),
-                new MusicListFragment(),
-                new VideoListFragment(),
-                new OtherListFragment()
-        };
 
         for (int i = 0; i < tabs.length; ++i)
             adapter.addFragment(tabs[i], tabFragments[i]);
@@ -83,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(pager);
-
     }
 
     private void initNavigationDrawer() {
@@ -98,11 +112,17 @@ public class MainActivity extends AppCompatActivity {
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings))
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    Timber.d("nav drawer pos " + position);
+                    DocumentPagerAdapter adapter = new DocumentPagerAdapter(getSupportFragmentManager());
+                    Fragment[] tabsF;
+                    if (position == 1)
+                        tabsF = tabFragments;
+                    else
+                        tabsF = offlineFragments;
 
-//                    Fragment fragment = new TabbedDocsFragment();
-
-//                    FragmentManager fragmentManager = getSupportFragmentManager();
-//                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    for (int i = 0; i < tabs.length; ++i)
+                        adapter.addFragment(tabs[i], tabsF[i]);
+                    pager.setAdapter(adapter);
 
                     drawer.closeDrawer();
                     return true;
@@ -113,15 +133,6 @@ public class MainActivity extends AppCompatActivity {
     private static class DocumentPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> fragments = new ArrayList<>();
         private final List<String> fragmentTitles = new ArrayList<>();
-
-        //private final String[] titles;
-
-
-        /*public DocumentPagerAdapter(FragmentManager fm, @NonNull String[] titles) {
-            super(fm);
-
-            this.titles = titles;
-        }*/
 
         public DocumentPagerAdapter(FragmentManager fm) {
             super(fm);

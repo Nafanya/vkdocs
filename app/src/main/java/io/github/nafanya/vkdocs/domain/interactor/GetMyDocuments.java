@@ -1,7 +1,5 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;

@@ -8,6 +8,7 @@ public class BaseDownloadRequest {
     private String dest;
     private long bytes;
     private long totalBytes;
+    private int docId;
 
     public BaseDownloadRequest(String url, String dest) {
         this.url = url;
@@ -28,6 +29,14 @@ public class BaseDownloadRequest {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setDest(String dest) {
+        this.dest = dest;
     }
 
     public String getUrl() {
@@ -57,5 +66,13 @@ public class BaseDownloadRequest {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public int getDocId() {
+        return docId;
+    }
+
+    public void setDocId(int docId) {
+        this.docId = docId;
     }
 }

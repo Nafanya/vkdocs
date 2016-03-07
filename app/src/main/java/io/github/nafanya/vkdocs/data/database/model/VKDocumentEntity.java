@@ -32,6 +32,11 @@ public class VKDocumentEntity extends BaseModel {
     @Column
     private long size;
 
+    @Column
+    private String url;
+
+    private DownloadRequestEntity downloadRequest;
+
     public VKDocumentEntity() {}
 
     public VKDocumentEntity(int id, String title) {
@@ -88,5 +93,21 @@ public class VKDocumentEntity extends BaseModel {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public void setDownloadRequest(DownloadRequestEntity downloadRequest) {
+        this.downloadRequest = downloadRequest;
+    }
+
+    public DownloadRequestEntity getDownloadRequest() {
+        return downloadRequest;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
