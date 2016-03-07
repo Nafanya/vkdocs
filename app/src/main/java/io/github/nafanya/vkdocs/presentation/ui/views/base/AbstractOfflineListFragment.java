@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.List;
 
 import butterknife.Bind;
@@ -16,6 +14,7 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.DownloadableDocument;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.OfflinePresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
@@ -54,7 +53,7 @@ public abstract class AbstractOfflineListFragment<
     }
 
     @Override
-    public void onGetDocuments(List<VKApiDocument> documents) {
+    public void onGetDocuments(List<VkDocument> documents) {
     }
 
     @Override

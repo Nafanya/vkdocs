@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.Utils.Reference;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
-import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DbMapper;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.InMemoryDatabaseRepository;
@@ -25,6 +25,7 @@ import io.github.nafanya.vkdocs.domain.DummyEventBus;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.RandomInternetService;
@@ -42,7 +43,7 @@ public class SynchronizationUnitTests {
     private DocumentRepository documentRepository;
 
     public enum EventType {ADD_SERVER, DELETE_SERVER, DELETE_DOCUMENT, SYNCHRONIZE};
-    private DocsMapper mapper = new DocsMapper();
+    private DbMapper mapper = new DbMapper();
     private InternetService randomIS = new RandomInternetService();
 
     @Test
@@ -93,13 +94,13 @@ public class SynchronizationUnitTests {
                 new LoadMyDocuments(Schedulers.immediate(),
                         Schedulers.immediate(),
                         dummyEventBus, true, documentRepository).
-                        execute(new DefaultSubscriber<List<VKApiDocument>>() {
+                        execute(new DefaultSubscriber<List<VkDocument>>() {
                             @Override
-                            public void onNext(List<VKApiDocument> documents) {
+                            public void onNext(List<VkDocument> documents) {
                                 Assert.assertTrue(correct.size() == documents.size() && correct.containsAll(documents));
                                 //List<VKApiDocument> netDocs = networkRepository.getMyDocuments();
                                 //Assert.assertTrue(correct.size() == netDocs.size() && correct.containsAll(netDocs));
-                                List<VKApiDocument> dbDocs = mapper.transform(databaseRepository.getMyDocuments());
+                                List<VkDocument> dbDocs = mapper.transform(databaseRepository.getMyDocuments());
                                 Assert.assertTrue(correct.size() == dbDocs.size() && correct.containsAll(dbDocs));
                             }
 

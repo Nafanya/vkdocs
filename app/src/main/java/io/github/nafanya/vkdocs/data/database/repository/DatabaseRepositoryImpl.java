@@ -2,7 +2,6 @@ package io.github.nafanya.vkdocs.data.database.repository;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
-import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.List;
 
@@ -10,11 +9,12 @@ import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity_Table;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class DatabaseRepositoryImpl implements DatabaseRepository {
-    private Mapper<VKDocumentEntity, VKApiDocument> mapper;
+    private Mapper<VKDocumentEntity, VkDocument> mapper;
 
-    public DatabaseRepositoryImpl(Mapper<VKDocumentEntity, VKApiDocument> mapper) {
+    public DatabaseRepositoryImpl(Mapper<VKDocumentEntity, VkDocument> mapper) {
         this.mapper = mapper;
     }
 
@@ -30,7 +30,7 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
     }
 
     @Override
-    public Mapper<VKDocumentEntity, VKApiDocument> getMapper() {
+    public Mapper<VKDocumentEntity, VkDocument> getMapper() {
         return mapper;
     }
 
@@ -57,12 +57,9 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
     //Batch delete
     @Override
     public void deleteAll(final Iterable<VKDocumentEntity> list) {
-        TransactionManager.transact(DocumentsDatabase.NAME, new Runnable() {
-            @Override
-            public void run() {
-                for (VKDocumentEntity doc : list)
-                    doc.delete();
-            }
+        TransactionManager.transact(DocumentsDatabase.NAME, () -> {
+            for (VKDocumentEntity doc : list)
+                doc.delete();
         });
     }
 }

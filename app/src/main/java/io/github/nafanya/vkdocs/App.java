@@ -2,7 +2,6 @@ package io.github.nafanya.vkdocs;
 
 import android.app.Application;
 import android.content.Intent;
-import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
@@ -13,14 +12,13 @@ import java.util.concurrent.Executors;
 
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
-import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DbMapper;
 import io.github.nafanya.vkdocs.data.database.mapper.DownloadRequestMapper;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.data.net.mapper.NetMapper;
 import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
@@ -29,9 +27,6 @@ import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-/**
- * Created by nafanya on 1/31/16.
- */
 public class App extends Application {
 
     private EventBus eventBus;
@@ -67,8 +62,8 @@ public class App extends Application {
                 Schedulers.from(Executors.newFixedThreadPool(5)),
                 new DbRequestStorage(new DownloadRequestMapper()));
 
-        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DocsMapper());
-        NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl());
+        DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper());
+        NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
     }
 

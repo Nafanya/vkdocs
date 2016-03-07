@@ -6,19 +6,16 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 /*
 Получает доки из локальной базы данных.
 */
 
-public class GetMyDocuments extends UseCase<List<VKApiDocument>> {
+public class GetMyDocuments extends UseCase<List<VkDocument>> {
     private DocumentRepository repository;
 
     public GetMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
@@ -30,7 +27,7 @@ public class GetMyDocuments extends UseCase<List<VKApiDocument>> {
     }
 
     @Override
-    public Observable<List<VKApiDocument>> buildUseCase() {
+    public Observable<List<VkDocument>> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
                 subscriber.onNext(repository.getMyDocuments());

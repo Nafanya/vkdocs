@@ -10,8 +10,9 @@ import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.Utils;
 import io.github.nafanya.vkdocs.data.Mapper;
-import io.github.nafanya.vkdocs.data.database.mapper.DocsMapper;
+import io.github.nafanya.vkdocs.data.database.mapper.DbMapper;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class InMemoryDatabaseRepository implements DatabaseRepository {
     private Set<VKDocumentEntity> database = new TreeSet<>(new Comparator<VKDocumentEntity>() {
@@ -22,9 +23,9 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     });
 
     public final int OPERATION_TIME;
-    private DocsMapper mapper;
+    private DbMapper mapper;
 
-    public InMemoryDatabaseRepository(DocsMapper mapper, int operationTime) {
+    public InMemoryDatabaseRepository(DbMapper mapper, int operationTime) {
         OPERATION_TIME = operationTime;
         this.mapper = mapper;
     }
@@ -55,7 +56,7 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
     }
 
     @Override
-    public Mapper<VKDocumentEntity, VKApiDocument> getMapper() {
+    public Mapper<VKDocumentEntity, VkDocument> getMapper() {
         return mapper;
     }
 

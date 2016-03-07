@@ -15,6 +15,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import timber.log.Timber;
@@ -51,7 +52,7 @@ public abstract class AbstractMyDocsListFragment<
     }
 
     @Override
-    public void onGetDocuments(List<VKApiDocument> documents) {
+    public void onGetDocuments(List<VkDocument> documents) {
         adapter = newAdapter();
         adapter.setData(documents);
         recyclerView.setAdapter(adapter);

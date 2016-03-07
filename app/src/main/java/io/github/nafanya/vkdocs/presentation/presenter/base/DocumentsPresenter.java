@@ -2,29 +2,27 @@ package io.github.nafanya.vkdocs.presentation.presenter.base;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
-import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 
 public class DocumentsPresenter extends BasePresenter {
 
     public interface Callback {
-        void onGetDocuments(List<VKApiDocument> documents);
+        void onGetDocuments(List<VkDocument> documents);
         void onNetworkError(Exception ex);
         void onDatabaseError(Exception ex);
         void onMakeOffline(Exception ex);
@@ -34,8 +32,8 @@ public class DocumentsPresenter extends BasePresenter {
 
     protected GetMyDocuments databaseInteractor;
     protected LoadMyDocuments networkInteractor;
-    protected Subscriber<List<VKApiDocument>> databaseSubscriber = Subscribers.empty();
-    protected Subscriber<List<VKApiDocument>> networkSubscriber = Subscribers.empty();
+    protected Subscriber<List<VkDocument>> databaseSubscriber = Subscribers.empty();
+    protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected DocFilter filter;
     protected DownloadManager<DownloadRequest> downloadManager;
     protected Callback callback;
@@ -90,9 +88,9 @@ public class DocumentsPresenter extends BasePresenter {
             networkSubscriber.unsubscribe();
     }
 
-    public class DatabaseSubscriber extends DefaultSubscriber<List<VKApiDocument>> {
+    public class DatabaseSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
-        public void onNext(List<VKApiDocument> vkApiDocuments) {
+        public void onNext(List<VkDocument> vkApiDocuments) {
             if (callback != null)
                 callback.onGetDocuments(filterList(vkApiDocuments));
         }
@@ -104,9 +102,9 @@ public class DocumentsPresenter extends BasePresenter {
         }
     }
 
-    public class NetworkSubscriber extends DefaultSubscriber<List<VKApiDocument>> {
+    public class NetworkSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
-        public void onNext(List<VKApiDocument> vkApiDocuments) {
+        public void onNext(List<VkDocument> vkApiDocuments) {
             if (callback != null)
                 callback.onGetDocuments(filterList(vkApiDocuments));
         }
@@ -118,16 +116,16 @@ public class DocumentsPresenter extends BasePresenter {
         }
     }
 
-    protected List<VKApiDocument> filterList(List<VKApiDocument> list) {
-        List<VKApiDocument> ret = new ArrayList<>();
-        for (VKApiDocument x : list)
+    protected List<VkDocument> filterList(List<VkDocument> list) {
+        List<VkDocument> ret = new ArrayList<>();
+        for (VkDocument x : list)
             if (filter.filter(x))
                 ret.add(x);
         return ret;
     }
 
     public interface DocFilter {
-        boolean filter(VKApiDocument doc);
+        boolean filter(VkDocument doc);
     }
 
     public static class SimpleDocFilter implements DocFilter {
@@ -137,7 +135,7 @@ public class DocumentsPresenter extends BasePresenter {
         }
 
         @Override
-        public boolean filter(VKApiDocument doc) {
+        public boolean filter(VkDocument doc) {
             for (String ext : exts)
                 if (ext.equals("*") ||
                         doc.ext != null && doc.ext.equals(ext) ||

@@ -14,10 +14,11 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
-    private List<VKApiDocument> documents;
+    private List<VkDocument> documents;
     private ItemEventListener listener;
 
     public MyDocsAdapter(ItemEventListener listener) {
@@ -48,7 +49,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         return documents.size();
     }
 
-    public void setData(List<VKApiDocument> documents) {
+    public void setData(List<VkDocument> documents) {
         this.documents = documents;
         notifyDataSetChanged();
     }

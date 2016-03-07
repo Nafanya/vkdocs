@@ -31,7 +31,7 @@ public class GetOfflineAndDownloadingDocuments extends UseCase<List<Downloadable
         return Observable.create(subscriber -> {
             try {
                 List<DownloadRequest> requests = downloadManager.getQueue();
-                List<VKApiDocument> documents = repository.getMyDocuments();
+                //List<VKApiDocument> documents = repository.getMyDocuments();
                 //TODO find docs matching
                 subscriber.onCompleted();
             } catch (Exception e) {
