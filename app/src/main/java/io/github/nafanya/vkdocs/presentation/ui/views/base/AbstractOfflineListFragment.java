@@ -7,24 +7,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vk.sdk.api.model.VKApiDocument;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.model.DownloadableDocument;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.OfflinePresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import timber.log.Timber;
 
 public abstract class AbstractOfflineListFragment<
-        PresenterType extends OfflinePresenter,
+        PresenterType extends DocumentsPresenter,
         AdapterType extends OfflineAdapter>
         extends AbstractListFragment<PresenterType, AdapterType>
-        implements OfflinePresenter.Callback, OfflineAdapter.ItemEventListener  {
+        implements DocumentsPresenter.Callback, OfflineAdapter.ItemEventListener  {
 
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
@@ -47,18 +48,19 @@ public abstract class AbstractOfflineListFragment<
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
-        presenter.getOfflineAndDownloadingDocuments();
+        presenter.loadDatabaseDocuments();
 
         return rootView;
     }
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
-    }
-
-    @Override
-    public void onGetDownloadableDocuments(List<DownloadableDocument> downDocs) {
         adapter = newAdapter();
+        List<VkDocument> downDocs = new ArrayList<>();
+        for (VkDocument d: documents)
+            if (d.isOffline() || d.isOfflineInProgress())
+                downDocs.add(d);
+
         adapter.setData(downDocs);
         recyclerView.setAdapter(adapter);
     }
@@ -76,6 +78,16 @@ public abstract class AbstractOfflineListFragment<
     @Override
     public void onDelete(Exception ex) {
         //TODO write here
+    }
+
+    @Override
+    public void onClick(int position, VKApiDocument document) {
+
+    }
+
+    @Override
+    public void onCancelDownloading(int position, VkDocument document) {
+        document.getRequest().cancel();
     }
 
     @Override

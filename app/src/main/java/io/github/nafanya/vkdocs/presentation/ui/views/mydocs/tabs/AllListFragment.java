@@ -16,7 +16,7 @@ public class AllListFragment extends AbstractMyDocsListFragment<DocumentsPresent
 
     @Override
     public MyDocsAdapter newAdapter() {
-        return new MyDocsAdapter(this);
+        return defaultAdapter();
     }
 
     @Override

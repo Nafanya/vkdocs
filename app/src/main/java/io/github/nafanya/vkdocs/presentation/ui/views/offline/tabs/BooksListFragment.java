@@ -1,19 +1,22 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs;
+package io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs;
 
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractOfflineListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.BlockedOpeningListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
 
-public class TextListFragment extends BlockedOpeningListFragment<DocumentsPresenter, MyDocsAdapter> {
+
+public class BooksListFragment extends AbstractOfflineListFragment<DocumentsPresenter, OfflineAdapter> {
 
     @Override
     public DocumentsPresenter newPresenter() {
-        return defaultPresenter(DocFilters.TEXT);
+        return defaultPresenter(DocFilters.BOOKS);
     }
 
     @Override
-    public MyDocsAdapter newAdapter() {
+    public OfflineAdapter newAdapter() {
         return defaultAdapter();
     }
 }

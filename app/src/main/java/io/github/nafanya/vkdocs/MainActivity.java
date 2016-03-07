@@ -20,8 +20,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.github.nafanya.vkdocs.domain.events.EventBus;
-import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.AllListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.ArchivesListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.BooksListFragment;
@@ -41,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private Drawer drawer;
     private CharSequence title;
 
-    private EventBus eventBus;
-    protected DocumentRepository repository;
-
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
-        eventBus = ((App) getApplication()).getEventBus();
-        repository = ((App) getApplication()).getRepository();
 
         initUI();
         initNavigationDrawer();
@@ -114,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
                     drawer.closeDrawer();
                     return true;
-                    // do something with the clicked item :D
                 })
                 .build();
     }

@@ -1,5 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
+import android.os.Environment;
+
 import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
@@ -37,6 +40,8 @@ public class DocumentsPresenter extends BasePresenter {
     protected DocFilter filter;
     protected DownloadManager<DownloadRequest> downloadManager;
     protected Callback callback;
+    protected EventBus eventBus;
+    protected DocumentRepository repository;
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         this.filter = filter;
@@ -44,22 +49,26 @@ public class DocumentsPresenter extends BasePresenter {
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.downloadManager = downloadManager;
         this.callback = callback;
-    }
+        this.eventBus = eventBus;
+        this.repository = repository;
 
-    /*public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository) {
-        Timber.d("filter = " + filter);
-        this.filter = filter;
-        this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
-        this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
-    }*/
+    }
 
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
 
     //TODO add on progress callback for more informative?
-    public void makeOffline(VKApiDocument document) {
-
+    public void makeOffline(VkDocument document) {
+        new MakeOfflineDocument(
+                AndroidSchedulers.mainThread(),
+                Schedulers.io(),
+                eventBus,
+                false,
+                document,
+                Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/" + document.title,
+                repository,
+                downloadManager).execute();
     }
 
     public void rename(VKApiDocument document, String newName) {

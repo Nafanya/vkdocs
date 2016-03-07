@@ -16,7 +16,7 @@ public class GifsListFragment extends AbstractMyDocsListFragment<DocumentsPresen
 
     @Override
     public MyDocsAdapter newAdapter() {
-        return new MyDocsAdapter(this);
+        return defaultAdapter();
     }
 
     @Override

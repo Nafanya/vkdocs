@@ -1,13 +1,15 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs;
+package io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractMyDocsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractOfflineListFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
 
-public class ImagesListFragment extends AbstractMyDocsListFragment<DocumentsPresenter, MyDocsAdapter> {
+public class ImagesListFragment extends AbstractOfflineListFragment<DocumentsPresenter, OfflineAdapter> {
 
 
     @Override
@@ -16,7 +18,7 @@ public class ImagesListFragment extends AbstractMyDocsListFragment<DocumentsPres
     }
 
     @Override
-    public MyDocsAdapter newAdapter() {
+    public OfflineAdapter newAdapter() {
         return defaultAdapter();
     }
 

@@ -36,7 +36,15 @@ public class VkDocument extends VKApiDocument {
         return offlineType == OFFLINE;
     }
 
+    public boolean isOfflineInProgress() {
+        return offlineType == OFFLINE_IN_PROGRESS;
+    }
+
     public boolean isDownloading() {
         return downloadRequest != null;
+    }
+
+    public void resetRequest() {
+        downloadRequest = null;
     }
 }

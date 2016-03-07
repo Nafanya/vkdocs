@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.List;
 
 import butterknife.Bind;
@@ -71,6 +69,11 @@ public abstract class AbstractMyDocsListFragment<
     @Override
     public void onDelete(Exception ex) {
         //TODO write here
+    }
+
+    @Override
+    public void onClickMakeOffline(int position, VkDocument document) {
+        presenter.makeOffline(document);
     }
 
     @Override

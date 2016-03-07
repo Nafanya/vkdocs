@@ -10,6 +10,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     private DownloadManager.RequestObserver observer;
     private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
+    private volatile boolean isCompleted;
 
     public DownloadRequest(String url, String destination) {
         super(url, destination);
@@ -27,7 +28,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     }
 
     public synchronized void setObserver(DownloadManager.RequestObserver observer) {
-            this.observer = observer;
+        this.observer = observer;
     }
 
     public void setObserveScheduler(Scheduler observeScheduler) {
@@ -57,5 +58,13 @@ public class DownloadRequest extends BaseDownloadRequest {
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    public void complete() {
+        isCompleted = true;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
     }
 }

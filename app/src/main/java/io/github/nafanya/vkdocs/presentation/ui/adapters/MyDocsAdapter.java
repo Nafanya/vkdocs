@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vk.sdk.api.model.VKApiDocument;
@@ -30,7 +31,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document4, parent, false);
+        View view = inflater.inflate(R.layout.item_document4_with_make_offline_button, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 
@@ -71,6 +72,12 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         @Bind(R.id.size)
         TextView size;
 
+        @Bind(R.id.context_menu)
+        ImageView contextMenuButton;
+
+        @Bind(R.id.make_offline)
+        ImageView makeOfflineButton;
+
         private ItemEventListener listener;
 
         public DocumentViewHolder(View view, ItemEventListener listener) {
@@ -79,6 +86,9 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
             ButterKnife.bind(this, view);
             view.setOnClickListener(this);
+
+            contextMenuButton.setOnClickListener(this);
+            makeOfflineButton.setOnClickListener(this);
         }
 
         public void setup(VKApiDocument doc) {
@@ -89,11 +99,18 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            listener.onClick(pos, documents.get(pos));
+            if (v == itemView)
+                listener.onClick(pos, documents.get(pos));
+            else if (v == contextMenuButton) {
+                //TODO add context menu
+            } else if (v == makeOfflineButton)
+                listener.onClickMakeOffline(pos, documents.get(pos));
         }
     }
 
     public interface ItemEventListener {
         void onClick(int position, VKApiDocument document);
+        //onClickContextMenu()
+        void onClickMakeOffline(int position, VkDocument document);
     }
 }

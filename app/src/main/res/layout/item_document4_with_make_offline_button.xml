@@ -21,7 +21,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/icon_offline"
+        android:id="@+id/icon_offline_label"
         android:src="@drawable/ic_offline_green"
         android:layout_marginLeft="31dp"
         android:layout_marginTop="37dp"
@@ -60,6 +60,8 @@
 
     </LinearLayout>
 
+
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,5 +70,14 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/make_offline"
+        android:src="@drawable/ic_offline"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/context_menu" />
 
 </RelativeLayout>

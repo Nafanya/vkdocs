@@ -60,8 +60,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     subscriber.onError(new RuntimeException("This request isn't executed yet!"));
                     return;
                 }
-                /*if (!queue.contains(request))
-                    throw new RuntimeException("Request doesn't contain in DownloadManager queue!");*/
 
                 fileLength = request.getTotalBytes();
             } else
@@ -72,7 +70,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
             try {
                 URL url = new URL(request.getUrl());
                 connection = (HttpURLConnection) url.openConnection();
-
 
                 //connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36");
                 connection.setRequestProperty("Range", "bytes=" + request.getBytes() + "-" );
@@ -109,7 +106,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     fileLength = connection.getContentLength();
                     request.setTotalBytes(fileLength);
                 }
-
 
                 // download the file
                 InputStream input = connection.getInputStream();
@@ -182,6 +178,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
     private void runTask(DownloadTask task) {
         final DownloadRequest request = task.getRequest();
         final RequestObserver callback = request.getObserver();
+
         Observable.create(task).cache().
                 subscribeOn(workerScheduler).
                 observeOn(request.getObserveScheduler()).
@@ -190,6 +187,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     public void onCompleted() {
                         if (callback != null)
                             callback.onComplete();
+                        request.complete();
                     }
 
                     @Override

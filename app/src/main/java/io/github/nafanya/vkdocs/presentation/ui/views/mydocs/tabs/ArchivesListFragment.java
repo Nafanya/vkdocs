@@ -14,6 +14,6 @@ public class ArchivesListFragment extends BlockedOpeningListFragment<DocumentsPr
 
     @Override
     public MyDocsAdapter newAdapter() {
-        return new MyDocsAdapter(this);
+        return defaultAdapter();
     }
 }

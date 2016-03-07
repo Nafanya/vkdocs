@@ -17,14 +17,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
-import io.github.nafanya.vkdocs.domain.model.DownloadableDocument;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
 
 public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
 
-    private List<DownloadableDocument> documents;
+    private List<VkDocument> documents;
     private ItemEventListener listener;
 
     public OfflineAdapter(ItemEventListener listener) {
@@ -66,7 +66,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return documents.size();
     }
 
-    public void setData(List<DownloadableDocument> documents) {
+    public void setData(List<VkDocument> documents) {
         this.documents = documents;
         notifyDataSetChanged();
     }
@@ -84,7 +84,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Bind(R.id.down_button)
         ImageView cancelButton;
 
-        private DownloadableDocument prevDoc;
+        private VkDocument prevDoc;
 
         private ItemEventListener listener;
 
@@ -100,13 +100,14 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //TODO extract string resource. pass activity in the adapter for getting it? i don't know
         //TODO maybe add downloaded bytes and full size in progress callbacks
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
-        public void setup(DownloadableDocument doc) {
-            title.setText(doc.getDoc().title);
-            long sizeBytes = doc.getDoc().size;
+        public void setup(VkDocument doc) {
+            title.setText(doc.title);
+            long sizeBytes = doc.size;
             String sz = FileSizeFormatter.format(sizeBytes);
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
             prevDoc = doc;
+
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
@@ -136,9 +137,9 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void onClick(View v) {
             int pos = getAdapterPosition();
             if (v == cancelButton)
-                listener.onCancelDownloading(pos, documents.get(pos).getDoc());
+                listener.onCancelDownloading(pos, documents.get(pos));
             else
-                listener.onClick(pos, documents.get(pos).getDoc());
+                listener.onClick(pos, documents.get(pos));
         }
     }
 
@@ -159,20 +160,20 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             view.setOnClickListener(this);
         }
 
-        public void setup(DownloadableDocument doc) {
-            title.setText(doc.getDoc().title);
-            size.setText(FileSizeFormatter.format(doc.getDoc().size));
+        public void setup(VkDocument doc) {
+            title.setText(doc.title);
+            size.setText(FileSizeFormatter.format(doc.size));
         }
 
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            listener.onClick(pos, documents.get(pos).getDoc());
+            listener.onClick(pos, documents.get(pos));
         }
     }
 
     public interface ItemEventListener {
         void onClick(int position, VKApiDocument document);
-        void onCancelDownloading(int position, VKApiDocument document);
+        void onCancelDownloading(int position, VkDocument document);
     }
 }
