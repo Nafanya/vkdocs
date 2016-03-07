@@ -50,4 +50,12 @@ public class VkDocument extends VKApiDocument {
     public void resetRequest() {
         downloadRequest = null;
     }
+
+    public void setOfflineType(int type) {
+        offlineType = type;
+    }
+
+    public int getOfflineType() {
+        return offlineType;
+    }
 }

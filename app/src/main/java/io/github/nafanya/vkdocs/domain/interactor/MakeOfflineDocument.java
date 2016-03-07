@@ -6,6 +6,7 @@ import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
@@ -13,13 +14,13 @@ import rx.Subscriber;
 import timber.log.Timber;
 
 public class MakeOfflineDocument extends UseCase<DownloadRequest> {
-    private VKApiDocument document;
+    private VkDocument document;
     private String toPath;
     private DocumentRepository repository;
     private DownloadManager<DownloadRequest> downloadManager;
 
     public MakeOfflineDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus, boolean isCached,
-                               VKApiDocument document,
+                               VkDocument document,
                                String toPath,
                                DocumentRepository repository,
                                DownloadManager<DownloadRequest> downloadManager) {
@@ -37,7 +38,8 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
                 Timber.d("url path: " + document.url + " " + toPath + ", doc id = " + document.id);
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 downloadManager.enqueue(request);
-                //TODO if was offline flag, set it
+                document.setOfflineType(VkDocument.OFFLINE_IN_PROGRESS);
+                repository.update(document);
                 subscriber.onNext(request);
                 subscriber.onCompleted();
             } catch (Exception e) {

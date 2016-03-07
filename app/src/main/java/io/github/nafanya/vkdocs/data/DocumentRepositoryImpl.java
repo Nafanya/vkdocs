@@ -55,6 +55,11 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
+    public void update(VkDocument document) {
+        databaseRepository.update(dbMapper.transformInv(document));
+    }
+
+    @Override
     public void synchronize() throws Exception {
         List<VkDocument> netDocs = netMapper.transform(networkRepository.getMyDocuments());
         Map<Integer, Integer> syncState = new TreeMap<>();

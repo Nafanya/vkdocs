@@ -45,6 +45,7 @@ public abstract class AbstractOfflineListFragment<
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_documents_list, container, false);
 
+        Timber.d("ON CREATE OFFLINE VIEW");
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
@@ -55,12 +56,14 @@ public abstract class AbstractOfflineListFragment<
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("ON GET OFFLINE DOCS");
+
         adapter = newAdapter();
         List<VkDocument> downDocs = new ArrayList<>();
         for (VkDocument d: documents)
             if (d.isOffline() || d.isOfflineInProgress())
                 downDocs.add(d);
-
+        Timber.d("donw docs size = " + downDocs.size());
         adapter.setData(downDocs);
         recyclerView.setAdapter(adapter);
     }

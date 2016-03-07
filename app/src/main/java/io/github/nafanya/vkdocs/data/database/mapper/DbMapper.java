@@ -20,6 +20,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         ret.owner_id = vkDocumentEntity.getOwnerId();
         ret.size = vkDocumentEntity.getSize();
         ret.url = vkDocumentEntity.getUrl();
+        ret.setOfflineType(vkDocumentEntity.getOfflineType());
 
         if (vkDocumentEntity.getDownloadRequest() != null)
             ret.setRequest(mapper.transform(vkDocumentEntity.getDownloadRequest()));
@@ -34,6 +35,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         vk.setOwnerId(vkDoc.owner_id);
         vk.setSize(vkDoc.size);
         vk.setUrl(vkDoc.url);
+        vk.setOfflineType(vkDoc.getOfflineType());
         return vk;
     }
 }

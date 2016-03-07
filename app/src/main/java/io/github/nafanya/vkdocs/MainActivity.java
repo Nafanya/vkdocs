@@ -6,9 +6,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ViewGroup;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence title;
 
     private String[] tabs;
+    private DocumentPagerAdapter adapter;
 
     private Fragment[] tabFragments = new Fragment[]{
             new AllListFragment(),
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         tabs = getResources().getStringArray(R.array.tabs);
-        DocumentPagerAdapter adapter = new DocumentPagerAdapter(getSupportFragmentManager());
+        adapter = new DocumentPagerAdapter(getSupportFragmentManager());
 
         for (int i = 0; i < tabs.length; ++i)
             adapter.addFragment(tabs[i], tabFragments[i]);
@@ -113,16 +116,18 @@ public class MainActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings))
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     Timber.d("nav drawer pos " + position);
-                    DocumentPagerAdapter adapter = new DocumentPagerAdapter(getSupportFragmentManager());
+
                     Fragment[] tabsF;
                     if (position == 1)
                         tabsF = tabFragments;
-                    else
+                    else {
                         tabsF = offlineFragments;
-
+                        Timber.d("offline fragments");
+                    }
+                    adapter.clear();
                     for (int i = 0; i < tabs.length; ++i)
                         adapter.addFragment(tabs[i], tabsF[i]);
-                    pager.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
 
                     drawer.closeDrawer();
                     return true;
@@ -130,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
-    private static class DocumentPagerAdapter extends FragmentPagerAdapter {
+    private static class DocumentPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> fragments = new ArrayList<>();
         private final List<String> fragmentTitles = new ArrayList<>();
 
@@ -145,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
+            Timber.d("get item pos = " + position);
             return fragments.get(position);
         }
 
@@ -156,6 +162,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public String getPageTitle(int position) {
             return fragmentTitles.get(position);
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Timber.d("instantiate view");
+            return super.instantiateItem(container, position);
+        }
+
+        public void clear() {
+            fragments.clear();
+            fragmentTitles.clear();
         }
     }
 }

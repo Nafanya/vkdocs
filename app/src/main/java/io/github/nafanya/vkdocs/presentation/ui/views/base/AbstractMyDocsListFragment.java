@@ -45,7 +45,7 @@ public abstract class AbstractMyDocsListFragment<
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
-        presenter.loadDatabaseDocuments();
+        presenter.loadNetworkDocuments();
 
         return rootView;
     }

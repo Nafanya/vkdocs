@@ -11,5 +11,6 @@ public interface DocumentRepository {
     List<VkDocument> getMyDocuments() throws Exception;
     void delete(VkDocument document) throws Exception;
     void add(VKApiDocument document) throws Exception;
+    void update(VkDocument document);
     void synchronize() throws Exception;
 }
