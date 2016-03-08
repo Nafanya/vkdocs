@@ -7,12 +7,9 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 
 public class FileFormatUtils {
-    private Application app;
     private String from;
 
     public FileFormatUtils(Application app) {
-        this.app = app;
-
         from = app.getString(R.string.from);
     }
 

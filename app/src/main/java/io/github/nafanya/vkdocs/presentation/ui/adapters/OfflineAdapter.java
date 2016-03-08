@@ -75,6 +75,11 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
+    public void removeIndex(int position) {
+        documents.remove(position);
+        notifyDataSetChanged();
+    }
+
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Nullable
@@ -122,7 +127,6 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             downloadProgress.setProgress((int) (doc.getRequest().getBytes() * 1.0 / doc.size * 100));
             size.setText(formatUtils.formatFrom(doc.getRequest()));
 
-            Timber.d("req in adapter = " + doc.getRequest());
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {

@@ -95,7 +95,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                         connection.getResponseMessage());
 
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_PARTIAL && connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    request.setActive(false);
                     subscriber.onError(new RuntimeException("Server returned HTTP " +
                             connection.getResponseCode() + " " +
                             connection.getResponseMessage()));
@@ -124,7 +123,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                             // allow canceling with back button
                             if (request.isCanceled()) {
                                 deleteRequest(request);
-
+                                //TODO write here remove file
                                 input.close();
                                 return;
                             }
@@ -143,9 +142,9 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     input.close();
                 }
             } catch (Exception e) {
-                request.setActive(false);
                 subscriber.onError(e);
             } finally {
+                request.setActive(false);
                 if (connection != null)
                     connection.disconnect();
             }
@@ -163,6 +162,12 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                 prevPercentage = -1;
             }
         }
+    }
+
+    public void cancelRequest(DownloadRequest request) {
+        request.cancel();
+        if (!request.isActive())
+            deleteRequest(request);
     }
 
     private void updateRequest(DownloadRequest request) {
@@ -206,7 +211,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                         RequestObserver callback = request.getObserver();
                         if (callback != null)
                             callback.onComplete();
-                        request.complete();
                     }
 
                     @Override

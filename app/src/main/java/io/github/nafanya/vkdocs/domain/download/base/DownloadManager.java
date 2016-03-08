@@ -11,5 +11,6 @@ public interface DownloadManager<T extends BaseDownloadRequest> {
     }
 
     void enqueue(T request);
+    void cancelRequest(T request);
     List<T> getQueue();
 }

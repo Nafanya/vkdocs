@@ -10,6 +10,7 @@ import java.util.List;
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.interactor.CancelMakeOffline;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
@@ -21,7 +22,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -69,6 +69,16 @@ public class DocumentsPresenter extends BasePresenter {
                 Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/" + document.title,
                 repository,
                 downloadManager).execute();
+    }
+
+    public void cancelMakeOffline(VkDocument document) {
+        new CancelMakeOffline(
+                AndroidSchedulers.mainThread(),
+                Schedulers.io(),
+                eventBus,
+                repository,
+                downloadManager,
+                document).execute();
     }
 
     public void rename(VKApiDocument document, String newName) {

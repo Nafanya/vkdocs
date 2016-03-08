@@ -50,7 +50,7 @@ public abstract class AbstractOfflineListFragment<
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
         presenter.getDocuments();
-        Timber.d("in get documents in offline fragment");
+
         return rootView;
     }
 
@@ -89,7 +89,8 @@ public abstract class AbstractOfflineListFragment<
 
     @Override
     public void onCancelDownloading(int position, VkDocument document) {
-        document.getRequest().cancel();
+        presenter.cancelMakeOffline(document);
+        adapter.removeIndex(position);
     }
 
     @Override
