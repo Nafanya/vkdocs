@@ -80,7 +80,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/icon_download"
+        android:id="@+id/context_menu"
         android:src="@drawable/info_icon"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"

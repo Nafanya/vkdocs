@@ -2,12 +2,14 @@ package io.github.nafanya.vkdocs;
 
 import android.app.Application;
 import android.content.Intent;
+import android.os.Environment;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
+import java.io.File;
 import java.util.concurrent.Executors;
 
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
@@ -65,6 +67,10 @@ public class App extends Application {
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
+
+        File offlineDir = new File(Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/");
+        if (!offlineDir.exists())
+            offlineDir.mkdirs();
     }
 
     public EventBus getEventBus() {

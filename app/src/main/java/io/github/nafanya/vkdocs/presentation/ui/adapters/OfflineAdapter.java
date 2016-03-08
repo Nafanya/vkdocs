@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
+import timber.log.Timber;
 
 public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int DOCUMENT_STATE_NORMAL = 0;
@@ -72,17 +74,26 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        @Nullable
         @Bind(R.id.text_doctitle)
         TextView title;
 
+        @Nullable
         @Bind(R.id.size)
         TextView size;
 
+        @Nullable
         @Bind(R.id.down_progress)
         ProgressBar downloadProgress;
 
+        @Nullable
         @Bind(R.id.down_button)
         ImageView cancelButton;
+
+        @Nullable
+        @Bind(R.id.context_menu)
+        ImageView contextMenuButton;
 
         private VkDocument prevDoc;
 
@@ -107,10 +118,13 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
             prevDoc = doc;
+            downloadProgress.setProgress((int)(doc.getRequest().getBytes() / doc.size * 100));
 
+            Timber.d("setup downloading docs " + doc.title);
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
+                    Timber.d("on progress = " + doc.title + " " + percentage);
                     size.setText(FileSizeFormatter.format(sizeBytes * percentage / 100) + " from " + sz);
                     downloadProgress.setProgress(percentage);
                 }

@@ -37,7 +37,9 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
             try {
                 Timber.d("url path: " + document.url + " " + toPath + ", doc id = " + document.id);
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
+                request.setDocId(document.getId());
                 downloadManager.enqueue(request);
+
                 document.setOfflineType(VkDocument.OFFLINE_IN_PROGRESS);
                 repository.update(document);
                 subscriber.onNext(request);

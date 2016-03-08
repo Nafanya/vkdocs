@@ -192,6 +192,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
                     @Override
                     public void onError(Throwable e) {
+                        Timber.d("exc = " + e.getMessage());
                         if (callback != null)
                             callback.onError((Exception) e);
                     }
