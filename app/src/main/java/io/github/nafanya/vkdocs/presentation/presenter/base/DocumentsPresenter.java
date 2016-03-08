@@ -45,8 +45,8 @@ public class DocumentsPresenter extends BasePresenter {
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         this.filter = filter;
-        this.getDocumentsInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
-        this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+        this.getDocumentsInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository);
+        this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository);
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
@@ -64,7 +64,6 @@ public class DocumentsPresenter extends BasePresenter {
                 AndroidSchedulers.mainThread(),
                 Schedulers.io(),
                 eventBus,
-                false,
                 document,
                 Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/" + document.title,
                 repository,

@@ -22,4 +22,9 @@ public class LruEventBus implements EventBus {
     public Observable<?> getEvent(Class<?> clazz) {
         return cache.get(clazz);
     }
+
+    @Override
+    public void removeEvent(Class<?> clazz) {
+        cache.remove(clazz);
+    }
 }

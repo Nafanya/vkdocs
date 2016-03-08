@@ -8,11 +8,11 @@ public class DownloadRequestMapper extends Mapper<DownloadRequestEntity, Downloa
     @Override
     public DownloadRequest transform(DownloadRequestEntity x) {
         DownloadRequest ret = new DownloadRequest();
+        ret.setId(x.getId());
         ret.setUrl(x.getUrl());
         ret.setDest(x.getDest());
-        ret.setId(x.getId());
-        ret.setTotalBytes(x.getTotalBytes());
         ret.setBytes(x.getBytes());
+        ret.setTotalBytes(x.getTotalBytes());
         ret.setDocId(x.getDocId());
         return ret;
     }
@@ -23,9 +23,9 @@ public class DownloadRequestMapper extends Mapper<DownloadRequestEntity, Downloa
         DownloadRequestEntity ret = new DownloadRequestEntity();
         ret.setId(x.getId());
         ret.setUrl(x.getUrl());
+        ret.setDest(x.getDest());
         ret.setBytes(x.getBytes());
         ret.setTotalBytes(x.getTotalBytes());
-        ret.setDest(x.getDest());
         ret.setDocId(x.getDocId());
         return ret;
     }

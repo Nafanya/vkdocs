@@ -10,7 +10,7 @@ import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
 @Table(database = DocumentsDatabase.class)
 public class DownloadRequestEntity extends BaseModel {
 
-    @PrimaryKey
+    @PrimaryKey(autoincrement = true)
     private int id;
 
     @Column

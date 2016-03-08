@@ -15,7 +15,6 @@ import timber.log.Timber;
 
 public class InterruptableDownloadManager implements DownloadManager<DownloadRequest> {
     private Scheduler workerScheduler;
-    private int numDownloads;
     private RequestStorage<DownloadRequest> storage;
 
     public InterruptableDownloadManager(Scheduler workScheduler, RequestStorage<DownloadRequest> storage) {
@@ -25,8 +24,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         List<DownloadRequest> queue = storage.getAll();
         Timber.d("queue size %d", queue.size());
         for (DownloadRequest req: queue) {
-            if (req.getId() > numDownloads)
-                numDownloads = req.getId();
             Timber.d("down record " + req.getUrl() + " bytes: " + req.getBytes() + " from " + req.getTotalBytes() + ", perc = " + (req.getBytes() * 1.0 / req.getTotalBytes()));
         }
     }
@@ -55,25 +52,22 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
             Timber.d("download task " + request.getUrl() + " " + request.getDocId() + " " + request.getDest());
-            if (isRetry) {
-                if (request.getId() == 0) {
-                    subscriber.onError(new RuntimeException("This request isn't executed yet!"));
-                    return;
-                }
 
+            if (request.getTotalBytes() > 0)
                 fileLength = request.getTotalBytes();
-            } else {
-                Timber.d("insert request!!!");
-                storage.insert(request);
+
+            if (isRetry && request.getId() == 0) {
+                subscriber.onError(new RuntimeException("This request isn't executed yet!"));
+                return;
             }
 
             request.setActive(true);
+            Timber.d("in call idm = " + request.getId());
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(request.getUrl());
                 connection = (HttpURLConnection) url.openConnection();
 
-                //connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36");
                 connection.setRequestProperty("Range", "bytes=" + request.getBytes() + "-" );
                 connection.setRequestProperty("Connection", "Keep-Alive");
                 connection.setRequestMethod("GET");
@@ -104,7 +98,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
                 // this will be useful to display download percentage
                 // might be -1: server did not report the length
-                if (!isRetry) {
+                if (fileLength == 0) {
                     fileLength = connection.getContentLength();
                     request.setTotalBytes(fileLength);
                 }
@@ -168,12 +162,14 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         runTask(new DownloadTask(request, true));
     }
 
+
+    //TODO request id autoincrement
     @Override
     public void enqueue(final DownloadRequest request) {
         if (request.getId() != 0)
             throw new RuntimeException("This request already executing!");
 
-        request.setId(++numDownloads);
+        storage.insert(request);
         runTask(new DownloadTask(request));
     }
 

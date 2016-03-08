@@ -8,6 +8,7 @@ import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
+import timber.log.Timber;
 
 public class DbRequestStorage implements RequestStorage<DownloadRequest> {
     private Mapper<DownloadRequestEntity, DownloadRequest> mapper;
@@ -28,7 +29,9 @@ public class DbRequestStorage implements RequestStorage<DownloadRequest> {
 
     @Override
     public void insert(DownloadRequest request) {
-        mapper.transformInv(request).insert();
+        DownloadRequestEntity downloadRequestEntity = mapper.transformInv(request);
+        downloadRequestEntity.insert();
+        request.setId(downloadRequestEntity.getId());
     }
 
     @Override

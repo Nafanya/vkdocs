@@ -15,8 +15,8 @@ import rx.Scheduler;
 public class LoadMyDocuments extends UseCase<List<VkDocument>> {
     private DocumentRepository repository;
     public LoadMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                           EventBus eventBus, boolean isCached, DocumentRepository repository) {
-        super(observerScheduler, subscriberScheduler, eventBus, isCached);
+                           EventBus eventBus, DocumentRepository repository) {
+        super(observerScheduler, subscriberScheduler, eventBus, true);
         this.repository = repository;
     }
 

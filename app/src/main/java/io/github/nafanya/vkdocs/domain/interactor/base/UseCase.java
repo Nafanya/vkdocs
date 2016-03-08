@@ -11,18 +11,11 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public abstract class UseCase<T> {
-    private Subscription subscription = Subscriptions.empty();
-    private final Scheduler subscriberScheduler;
-    private final Scheduler observerScheduler;
-    private boolean isCached;
-    private EventBus eventBus;
-
-    /*public UseCase(EventBus eventBus, boolean isCached) {
-        this.subscriberScheduler = Schedulers.io();
-        this.observerScheduler = AndroidSchedulers.mainThread();
-        this.isCached = isCached;
-        this.eventBus = eventBus;
-    }*/
+    protected Subscription subscription = Subscriptions.empty();
+    protected final Scheduler subscriberScheduler;
+    protected final Scheduler observerScheduler;
+    protected boolean isCached;
+    protected EventBus eventBus;
 
 
     public UseCase(Scheduler observerScheduler, Scheduler subscriberScheduler,

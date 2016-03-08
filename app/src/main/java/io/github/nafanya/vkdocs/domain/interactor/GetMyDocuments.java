@@ -18,9 +18,8 @@ public class GetMyDocuments extends UseCase<List<VkDocument>> {
 
     public GetMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
                           EventBus eventBus,
-                          boolean isCached,
                           DocumentRepository repository) {
-        super(observerScheduler, subscriberScheduler, eventBus, isCached);
+        super(observerScheduler, subscriberScheduler, eventBus, true);
         this.repository = repository;
     }
 

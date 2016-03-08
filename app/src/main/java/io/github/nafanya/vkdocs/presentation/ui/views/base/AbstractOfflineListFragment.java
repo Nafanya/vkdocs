@@ -49,7 +49,7 @@ public abstract class AbstractOfflineListFragment<
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
         presenter.getDocuments();
-
+        Timber.d("in get documents in offline fragment");
         return rootView;
     }
 

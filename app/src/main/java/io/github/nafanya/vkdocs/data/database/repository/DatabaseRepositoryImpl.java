@@ -11,6 +11,7 @@ import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity_Table;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import timber.log.Timber;
 
 public class DatabaseRepositoryImpl implements DatabaseRepository {
     private Mapper<VKDocumentEntity, VkDocument> mapper;
@@ -29,9 +30,11 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
 
         List<DownloadRequestEntity> requests =
                 SQLite.select().from(DownloadRequestEntity.class).queryList();
+        Timber.d("in get documents ");
         for (VKDocumentEntity x: all)
             for (DownloadRequestEntity req: requests)
                 if (x.getId() == req.getDocId()) {
+                    Timber.d("found down request for doc_id = " + x.getId());
                     x.setDownloadRequest(req);
                     break;
                 }
