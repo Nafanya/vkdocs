@@ -45,14 +45,15 @@ public abstract class AbstractMyDocsListFragment<
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         presenter.setCallback(this);
-        presenter.loadNetworkDocuments();
+        presenter.getDocuments();
 
         return rootView;
     }
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
-        adapter = newAdapter();
+        if (adapter == null)
+            adapter = newAdapter();
         adapter.setData(documents);
         recyclerView.setAdapter(adapter);
     }

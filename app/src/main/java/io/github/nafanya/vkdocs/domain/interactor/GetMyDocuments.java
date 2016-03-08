@@ -29,6 +29,11 @@ public class GetMyDocuments extends UseCase<List<VkDocument>> {
         return Observable.create(subscriber -> {
             try {
                 subscriber.onNext(repository.getMyDocuments());
+                try {
+                    repository.synchronize();//Get data from network and synchronize it
+                    subscriber.onNext(repository.getMyDocuments());
+                } catch (Exception ignore) {}
+
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

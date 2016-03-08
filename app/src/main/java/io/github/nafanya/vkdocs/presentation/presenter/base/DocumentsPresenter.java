@@ -33,9 +33,9 @@ public class DocumentsPresenter extends BasePresenter {
         void onDelete(Exception ex);
     }
 
-    protected GetMyDocuments databaseInteractor;
+    protected GetMyDocuments getDocumentsInteractor;
     protected LoadMyDocuments networkInteractor;
-    protected Subscriber<List<VkDocument>> databaseSubscriber = Subscribers.empty();
+    protected Subscriber<List<VkDocument>> getDocumentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected DocFilter filter;
     protected DownloadManager<DownloadRequest> downloadManager;
@@ -45,7 +45,7 @@ public class DocumentsPresenter extends BasePresenter {
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
         this.filter = filter;
-        this.databaseInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
+        this.getDocumentsInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, true, repository);
         this.downloadManager = downloadManager;
         this.callback = callback;
@@ -79,20 +79,20 @@ public class DocumentsPresenter extends BasePresenter {
 
     }
 
-    public void loadNetworkDocuments() {
+    public void forceNetworkLoad() {
         networkSubscriber = new NetworkSubscriber();
         networkInteractor.execute(networkSubscriber);
     }
 
-    public void loadDatabaseDocuments() {
-        databaseSubscriber = new DatabaseSubscriber();
-        databaseInteractor.execute(databaseSubscriber);
+    public void getDocuments() {
+        getDocumentsSubscriber = new DatabaseSubscriber();
+        getDocumentsInteractor.execute(getDocumentsSubscriber);
     }
 
     @Override
     public void onStop() {
-        if (!databaseSubscriber.isUnsubscribed())
-            databaseSubscriber.unsubscribe();
+        if (!getDocumentsSubscriber.isUnsubscribed())
+            getDocumentsSubscriber.unsubscribe();
         if (!networkSubscriber.isUnsubscribed())
             networkSubscriber.unsubscribe();
     }

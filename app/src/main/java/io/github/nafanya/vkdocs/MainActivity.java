@@ -120,10 +120,8 @@ public class MainActivity extends AppCompatActivity {
                     Fragment[] tabsF;
                     if (position == 1)
                         tabsF = tabFragments;
-                    else {
+                    else
                         tabsF = offlineFragments;
-                        Timber.d("offline fragments");
-                    }
                     adapter.clear();
                     for (int i = 0; i < tabs.length; ++i)
                         adapter.addFragment(tabs[i], tabsF[i]);
@@ -150,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Timber.d("get item pos = " + position);
             return fragments.get(position);
         }
 
@@ -170,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            Timber.d("instantiate view");
             return super.instantiateItem(container, position);
         }
 
