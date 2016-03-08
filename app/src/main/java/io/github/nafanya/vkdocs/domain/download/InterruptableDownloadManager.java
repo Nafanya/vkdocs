@@ -75,9 +75,9 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
                 //connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
                 //connection.setRequestProperty("Accept-Language", "ru,en-US;q=0.8,en;q=0.6");
-                //connection.setReadTimeout(20000);
-                //connection.setConnectTimeout(20000 + 5000);
-                //connection.setRequestMethod("GET");
+                connection.setReadTimeout(20000);
+                connection.setConnectTimeout(20000 + 5000);
+
                 //connection.setUseCaches(false);
                 //connection.setDoInput(true);
                 //connection.setDoOutput(true);
@@ -197,6 +197,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
                     @Override
                     public void onNext(Integer progress) {
+                        Timber.d("on DM progress " + progress);
                         if (callback != null) {
                             if (progress == -1)
                                 callback.onInfiniteProgress();

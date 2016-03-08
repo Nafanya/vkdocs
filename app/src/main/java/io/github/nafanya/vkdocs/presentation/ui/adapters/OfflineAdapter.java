@@ -118,12 +118,13 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
             prevDoc = doc;
-            downloadProgress.setProgress((int)(doc.getRequest().getBytes() * 1.0 / doc.size * 100));
+            downloadProgress.setProgress((int) (doc.getRequest().getBytes() * 1.0 / doc.size * 100));
             size.setText(FileSizeFormatter.format(doc.getRequest().getBytes()) + " from " + sz);
 
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
+                    Timber.d("adapter on update: " + percentage);
                     size.setText(FileSizeFormatter.format(sizeBytes * percentage / 100) + " from " + sz);
                     downloadProgress.setProgress(percentage);
                 }

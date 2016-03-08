@@ -20,6 +20,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 
 public class DocumentsPresenter extends BasePresenter {
@@ -98,9 +99,19 @@ public class DocumentsPresenter extends BasePresenter {
 
     public class DatabaseSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
-        public void onNext(List<VkDocument> vkApiDocuments) {
-            if (callback != null)
-                callback.onGetDocuments(filterList(vkApiDocuments));
+        public void onNext(List<VkDocument> vkDocuments) {
+            if (callback != null) {//get actual download requests with correct request observer
+                List<DownloadRequest> requests = downloadManager.getQueue();//TODO fix it or no, sync query to db from main
+                List<VkDocument> documents = filterList(vkDocuments);
+                for (VkDocument d: documents)
+                    for (DownloadRequest req: requests)
+                        if (req.getDocId() == d.getId()) {
+                            d.setRequest(req);
+                            Timber.d("got request in DM for doc_id " + d.getId());
+                            break;
+                        }
+                callback.onGetDocuments(documents);
+            }
         }
 
         @Override

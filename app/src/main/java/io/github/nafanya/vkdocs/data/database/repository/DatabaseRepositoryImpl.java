@@ -28,16 +28,14 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
                 orderBy(VKDocumentEntity_Table.id, false).
                 queryList();
 
-        List<DownloadRequestEntity> requests =
+        /*List<DownloadRequestEntity> requests =
                 SQLite.select().from(DownloadRequestEntity.class).queryList();
-        Timber.d("in get documents ");
         for (VKDocumentEntity x: all)
             for (DownloadRequestEntity req: requests)
                 if (x.getId() == req.getDocId()) {
-                    Timber.d("found down request for doc_id = " + x.getId());
                     x.setDownloadRequest(req);
                     break;
-                }
+                }*/
         return all;
     }
 
