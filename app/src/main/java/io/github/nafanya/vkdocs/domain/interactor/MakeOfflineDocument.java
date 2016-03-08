@@ -31,6 +31,7 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
         this.downloadManager = downloadManager;
     }
 
+    //TODO see download manager enqueue
     @Override
     public Observable<DownloadRequest> buildUseCase() {
         return Observable.create(subscriber -> {

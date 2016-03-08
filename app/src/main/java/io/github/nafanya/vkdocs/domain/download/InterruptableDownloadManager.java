@@ -62,8 +62,10 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                 }
 
                 fileLength = request.getTotalBytes();
-            } else
+            } else {
+                Timber.d("insert request!!!");
                 storage.insert(request);
+            }
 
             request.setActive(true);
             HttpURLConnection connection = null;
