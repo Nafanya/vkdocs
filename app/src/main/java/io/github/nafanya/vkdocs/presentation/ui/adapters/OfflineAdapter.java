@@ -115,7 +115,6 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             cancelButton.setOnClickListener(this);
         }
 
-        //TODO extract string resource. pass activity in the adapter for getting it? i don't know
         //TODO maybe add downloaded bytes and full size in progress callbacks
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
         public void setup(VkDocument doc) {

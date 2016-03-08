@@ -69,6 +69,9 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @Bind(R.id.icon_offline_label)
+        ImageView iconOffline;
+
         @Bind(R.id.text_doctitle)
         TextView title;
 
@@ -94,9 +97,19 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
             makeOfflineButton.setOnClickListener(this);
         }
 
-        public void setup(VKApiDocument doc) {
+        public void setup(VkDocument doc) {
             title.setText(doc.title);
             size.setText(fileFormatter.formatSize(doc.size));
+
+            if (doc.isOffline() || doc.isOfflineInProgress())
+                makeOfflineButton.setVisibility(View.GONE);
+            else
+                makeOfflineButton.setVisibility(View.VISIBLE);
+
+            if (doc.isNotOffline())
+                iconOffline.setVisibility(View.GONE);
+            else
+                iconOffline.setVisibility(View.VISIBLE);
         }
         
         @Override
