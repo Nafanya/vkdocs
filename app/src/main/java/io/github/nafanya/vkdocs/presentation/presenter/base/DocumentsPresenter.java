@@ -117,7 +117,6 @@ public class DocumentsPresenter extends BasePresenter {
                     for (DownloadRequest req: requests)
                         if (req.getDocId() == d.getId()) {
                             d.setRequest(req);
-                            Timber.d("got request in DM for doc_id " + d.getId());
                             break;
                         }
                 callback.onGetDocuments(documents);

@@ -1,5 +1,8 @@
 package io.github.nafanya.vkdocs.domain.download;
 
+import android.os.Environment;
+
+import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -177,6 +180,9 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
     private void deleteRequest(DownloadRequest request) {
         storage.delete(request);
         memoryStorage.remove(request);
+        File file = new File(request.getDest());
+        if (file.exists())
+            file.delete();
     }
 
     private void insertRequest(DownloadRequest request) {

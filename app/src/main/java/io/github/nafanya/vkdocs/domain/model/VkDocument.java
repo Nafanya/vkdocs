@@ -7,9 +7,7 @@ import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 public class VkDocument extends VKApiDocument {
     public static int NONE = 0;
     public static int OFFLINE = 1;
-    public static int CACHED = 2;
-    public static int OFFLINE_IN_PROGRESS = 3;
-    public static int CACHE_IN_PROGRESS = 4;
+    public static int CACHE = 2;
 
     private DownloadRequest downloadRequest;
     private int offlineType;
@@ -37,11 +35,11 @@ public class VkDocument extends VKApiDocument {
     }
 
     public boolean isOffline() {
-        return offlineType == OFFLINE;
+        return offlineType == OFFLINE && downloadRequest == null;
     }
 
     public boolean isOfflineInProgress() {
-        return offlineType == OFFLINE_IN_PROGRESS;
+        return offlineType == OFFLINE && downloadRequest != null;
     }
 
     public boolean isDownloading() {

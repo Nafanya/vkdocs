@@ -37,7 +37,7 @@ public class MakeOfflineDocument extends UseCase<DownloadRequest> {
                 request.setTotalBytes(document.size);
                 downloadManager.enqueue(request);
 
-                document.setOfflineType(VkDocument.OFFLINE_IN_PROGRESS);
+                document.setOfflineType(VkDocument.OFFLINE);
                 repository.update(document);
                 subscriber.onNext(request);
                 subscriber.onCompleted();

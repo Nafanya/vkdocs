@@ -37,9 +37,9 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if (documents.get(position).getRequest() == null)
-            return DOCUMENT_STATE_NORMAL;
-        return DOCUMENT_STATE_DOWNLOADING;
+        if (documents.get(position).isOfflineInProgress())
+            return DOCUMENT_STATE_DOWNLOADING;
+        return DOCUMENT_STATE_NORMAL;
     }
 
     @Override
