@@ -154,7 +154,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         private void publishProgress(Subscriber<? super Integer> subscriber, long total) {
             if (fileLength > 0) {
                 int perc = (int) (total * 100 / fileLength);
-                Timber.d("publish progress perc = " + perc);
                 if (perc != prevPercentage)
                     subscriber.onNext(perc);
                 prevPercentage = perc;
@@ -198,7 +197,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
     private void runTask(DownloadTask task) {
         final DownloadRequest request = task.getRequest();
 
-        Observable.create(task).cache().
+        Observable.create(task).//TODO add here .cache() or no?
                 subscribeOn(workerScheduler).
                 observeOn(request.getObserveScheduler()).
                 subscribe(new Subscriber<Integer>   () {
@@ -221,7 +220,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     @Override
                     public void onNext(Integer progress) {
                         RequestObserver callback = request.getObserver();
-                        Timber.d("IN DM " + progress);
                         if (callback != null) {
                             if (progress == -1)
                                 callback.onInfiniteProgress();

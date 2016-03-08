@@ -35,7 +35,8 @@ public abstract class AbstractMyDocsListFragment<
 
     //temp helper
     protected MyDocsAdapter defaultAdapter() {
-        return new MyDocsAdapter(this);
+        App app = (App)getActivity().getApplication();
+        return new MyDocsAdapter(app.getFileFormatter(), this);
     }
 
     @Override

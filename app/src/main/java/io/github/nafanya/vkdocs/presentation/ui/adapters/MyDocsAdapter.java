@@ -16,14 +16,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
+import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
     private ItemEventListener listener;
+    private FileFormatUtils fileFormatter;
 
-    public MyDocsAdapter(ItemEventListener listener) {
+    public MyDocsAdapter(FileFormatUtils fileFormatter, ItemEventListener listener) {
+        this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
 
@@ -94,7 +96,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
         public void setup(VKApiDocument doc) {
             title.setText(doc.title);
-            size.setText(FileSizeFormatter.format(doc.size));
+            size.setText(fileFormatter.formatSize(doc.size));
         }
         
         @Override

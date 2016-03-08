@@ -26,6 +26,7 @@ import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
+import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -34,6 +35,7 @@ public class App extends Application {
     private EventBus eventBus;
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
+    private FileFormatUtils fileFormatter;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -67,6 +69,7 @@ public class App extends Application {
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
+        fileFormatter = new FileFormatUtils(this);
 
         File offlineDir = new File(Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/");
         if (!offlineDir.exists())
@@ -83,5 +86,9 @@ public class App extends Application {
 
     public DocumentRepository getRepository() {
         return repository;
+    }
+
+    public FileFormatUtils getFileFormatter() {
+        return fileFormatter;
     }
 }

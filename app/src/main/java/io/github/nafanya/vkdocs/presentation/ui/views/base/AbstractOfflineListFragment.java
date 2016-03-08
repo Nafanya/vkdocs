@@ -38,7 +38,8 @@ public abstract class AbstractOfflineListFragment<
 
     //temp helper
     protected OfflineAdapter defaultAdapter() {
-        return new OfflineAdapter(this);
+        App app = (App)getActivity().getApplication();
+        return new OfflineAdapter(app.getFileFormatter(), this);
     }
 
     @Override

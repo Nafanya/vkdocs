@@ -23,4 +23,6 @@
     <string name="tab_music">Music</string>
     <string name="tab_video">Video</string>
     <string name="tab_other">Other</string>
+
+    <string name="from">from</string>
 </resources>

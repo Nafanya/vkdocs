@@ -19,17 +19,19 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.utils.FileSizeFormatter;
+import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import timber.log.Timber;
 
 public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
+    private FileFormatUtils formatUtils;
 
     private List<VkDocument> documents;
     private ItemEventListener listener;
 
-    public OfflineAdapter(ItemEventListener listener) {
+    public OfflineAdapter(FileFormatUtils formatUtils, ItemEventListener listener) {
+        this.formatUtils = formatUtils;
         this.listener = listener;
     }
 
@@ -114,19 +116,19 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void setup(VkDocument doc) {
             title.setText(doc.title);
             long sizeBytes = doc.size;
-            String sz = FileSizeFormatter.format(sizeBytes);
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
             prevDoc = doc;
             downloadProgress.setProgress((int) (doc.getRequest().getBytes() * 1.0 / doc.size * 100));
-            size.setText(FileSizeFormatter.format(doc.getRequest().getBytes()) + " from " + sz);
+            size.setText(formatUtils.formatFrom(doc.getRequest()));
 
             Timber.d("req in adapter = " + doc.getRequest());
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
                     Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
-                    size.setText(FileSizeFormatter.format(sizeBytes * percentage / 100) + " from " + sz);
+                    //.getString(R.string.from)
+                    size.setText(formatUtils.formatFrom(doc.getRequest()));
                     downloadProgress.setProgress(percentage);
                 }
 
@@ -177,7 +179,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setup(VkDocument doc) {
             title.setText(doc.title);
-            size.setText(FileSizeFormatter.format(doc.size));
+            size.setText(formatUtils.formatSize(doc.size));
         }
 
         @Override
