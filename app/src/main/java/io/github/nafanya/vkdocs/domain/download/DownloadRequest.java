@@ -4,10 +4,11 @@ import io.github.nafanya.vkdocs.domain.download.base.BaseDownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
-    private DownloadManager.RequestObserver observer;
+    private volatile DownloadManager.RequestObserver observer;
     private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
     private volatile boolean isCompleted;
@@ -31,7 +32,7 @@ public class DownloadRequest extends BaseDownloadRequest {
         this.observer = observer;
     }
 
-    public synchronized void setObserver(DownloadManager.RequestObserver observer) {
+    public void setObserver(DownloadManager.RequestObserver observer) {
         this.observer = observer;
     }
 
@@ -48,7 +49,7 @@ public class DownloadRequest extends BaseDownloadRequest {
         return isCanceled;
     }
 
-    public synchronized DownloadManager.RequestObserver getObserver() {
+    public DownloadManager.RequestObserver getObserver() {
         return observer;
     }
 

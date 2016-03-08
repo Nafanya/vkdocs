@@ -4,7 +4,11 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
@@ -16,6 +20,7 @@ import timber.log.Timber;
 public class InterruptableDownloadManager implements DownloadManager<DownloadRequest> {
     private Scheduler workerScheduler;
     private RequestStorage<DownloadRequest> storage;
+    private Set<DownloadRequest> memoryStorage = new TreeSet<>((lhs, rhs) -> lhs.getId() - rhs.getId());
 
     public InterruptableDownloadManager(Scheduler workScheduler, RequestStorage<DownloadRequest> storage) {
         this.workerScheduler = workScheduler;
@@ -24,6 +29,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         List<DownloadRequest> queue = storage.getAll();
         Timber.d("queue size %d", queue.size());
         for (DownloadRequest req: queue) {
+            memoryStorage.add(req);
             Timber.d("down record " + req.getUrl() + " bytes: " + req.getBytes() + " from " + req.getTotalBytes() + ", perc = " + (req.getBytes() * 1.0 / req.getTotalBytes()));
         }
     }
@@ -117,17 +123,18 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                         while ((count = input.read(data)) != -1) {
                             // allow canceling with back button
                             if (request.isCanceled()) {
-                                storage.delete(request);
+                                deleteRequest(request);
+
                                 input.close();
                                 return;
                             }
                             total += count;
                             output.write(data, 0, count);
                             request.setBytes(total);
-                            storage.update(request);
+                            updateRequest(request);
                             publishProgress(subscriber, total);
                         }
-                        storage.delete(request);
+                        deleteRequest(request);
                         subscriber.onCompleted();
                     } finally {
                         output.close();
@@ -147,6 +154,7 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         private void publishProgress(Subscriber<? super Integer> subscriber, long total) {
             if (fileLength > 0) {
                 int perc = (int) (total * 100 / fileLength);
+                Timber.d("publish progress perc = " + perc);
                 if (perc != prevPercentage)
                     subscriber.onNext(perc);
                 prevPercentage = perc;
@@ -158,31 +166,45 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         }
     }
 
+    private void updateRequest(DownloadRequest request) {
+        storage.update(request);
+    }
+
+    private void deleteRequest(DownloadRequest request) {
+        storage.delete(request);
+        memoryStorage.remove(request);
+    }
+
+    private void insertRequest(DownloadRequest request) {
+        storage.insert(request);
+        memoryStorage.add(request);
+    }
+
     public void retry(DownloadRequest request) {
         runTask(new DownloadTask(request, true));
     }
 
 
-    //TODO request id autoincrement
     @Override
     public void enqueue(final DownloadRequest request) {
         if (request.getId() != 0)
             throw new RuntimeException("This request already executing!");
 
-        storage.insert(request);
+        insertRequest(request);
         runTask(new DownloadTask(request));
     }
 
+
     private void runTask(DownloadTask task) {
         final DownloadRequest request = task.getRequest();
-        final RequestObserver callback = request.getObserver();
 
         Observable.create(task).cache().
                 subscribeOn(workerScheduler).
                 observeOn(request.getObserveScheduler()).
-                subscribe(new Subscriber<Integer>() {
+                subscribe(new Subscriber<Integer>   () {
                     @Override
                     public void onCompleted() {
+                        RequestObserver callback = request.getObserver();
                         if (callback != null)
                             callback.onComplete();
                         request.complete();
@@ -191,13 +213,15 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
                     @Override
                     public void onError(Throwable e) {
                         Timber.d("exc = " + e.getMessage());
+                        RequestObserver callback = request.getObserver();
                         if (callback != null)
                             callback.onError((Exception) e);
                     }
 
                     @Override
                     public void onNext(Integer progress) {
-                        Timber.d("on DM progress " + progress);
+                        RequestObserver callback = request.getObserver();
+                        Timber.d("IN DM " + progress);
                         if (callback != null) {
                             if (progress == -1)
                                 callback.onInfiniteProgress();
@@ -210,6 +234,6 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
 
     @Override
     public List<DownloadRequest> getQueue() {
-        return storage.getAll();
+        return new ArrayList<>(memoryStorage);
     }
 }
