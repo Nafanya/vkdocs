@@ -83,7 +83,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Nullable
-        @Bind(R.id.text_doctitle)
+        @Bind(R.id.text_document_title)
         TextView title;
 
         @Nullable
@@ -165,7 +165,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.text_doctitle)
+        @Bind(R.id.text_document_title)
         TextView title;
 
         @Bind(R.id.size)

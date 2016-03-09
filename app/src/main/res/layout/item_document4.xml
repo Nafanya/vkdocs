@@ -11,7 +11,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/icon"
+        android:id="@+id/ic_document_type"
         android:src="@drawable/file_document"
         android:layout_centerHorizontal="true"
         android:layout_alignParentLeft="true"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/icon_download"
-        android:layout_toRightOf="@+id/icon"
+        android:layout_toRightOf="@+id/ic_document_type"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -43,7 +43,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text_doctitle"
+            android:id="@+id/text_document_title"
             style="@style/TextAppearance.AppCompat.Small"
             android:text="Document.txt"
             android:textSize="20dp"
