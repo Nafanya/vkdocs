@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.Utils;
+import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.ServerSideNetworkRepository;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.net.InternetService;
 
 /**
@@ -59,6 +61,11 @@ public class SyncNetworkRepository implements NetworkRepository, ServerSideNetwo
             server.remove(document);
         else
             throw new Exception("No internet connection!");
+    }
+
+    @Override
+    public Mapper<VKApiDocument, VkDocument> getMapper() {
+        return null;
     }
 
     @Override

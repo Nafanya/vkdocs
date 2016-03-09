@@ -1,35 +1,7 @@
 package io.github.nafanya.vkdocs;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import io.github.nafanya.vkdocs.Utils.Reference;
-import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
-import io.github.nafanya.vkdocs.data.database.mapper.DbMapper;
-import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
-import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
-import io.github.nafanya.vkdocs.data.database.repository.InMemoryDatabaseRepository;
-import io.github.nafanya.vkdocs.data.net.SyncNetworkRepository;
-import io.github.nafanya.vkdocs.domain.DummyEventBus;
-import io.github.nafanya.vkdocs.domain.events.EventBus;
-import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
-import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
-import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.net.InternetService;
-import io.github.nafanya.vkdocs.net.RandomInternetService;
-import rx.schedulers.Schedulers;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -37,7 +9,7 @@ import rx.schedulers.Schedulers;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SynchronizationUnitTests {
-
+/*
     private EventBus dummyEventBus = new DummyEventBus();
 
     private DocumentRepository documentRepository;
@@ -113,5 +85,5 @@ public class SynchronizationUnitTests {
                     throw exception.value;
             }
         }
-    }
+    }*/
 }

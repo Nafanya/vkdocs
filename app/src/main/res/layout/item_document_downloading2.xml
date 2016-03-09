@@ -11,7 +11,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/icon"
+        android:id="@+id/ic_document_type"
         android:src="@drawable/file_document"
         android:layout_marginRight="16dp" />
 
@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_doctitle"
+                android:id="@+id/text_document_title"
                 style="@style/TextAppearance.AppCompat.Small"
                 android:text="Document.txt"
                 android:textSize="20dp"

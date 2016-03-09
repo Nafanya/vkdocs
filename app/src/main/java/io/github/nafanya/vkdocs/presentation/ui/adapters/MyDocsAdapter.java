@@ -1,10 +1,13 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,14 +20,15 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
-import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
     private ItemEventListener listener;
     private FileFormatUtils fileFormatter;
+    private Context context;
 
-    public MyDocsAdapter(FileFormatUtils fileFormatter, ItemEventListener listener) {
+    public MyDocsAdapter(Context context, FileFormatUtils fileFormatter, ItemEventListener listener) {
+        this.context = context;
         this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
@@ -34,7 +38,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document4_with_make_offline_button, parent, false);
+        View view = inflater.inflate(R.layout.item_document3, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 
@@ -60,7 +64,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
     public void removeIndex(int pos) {
         documents.remove(pos);
-        notifyDataSetChanged();
+        notifyItemChanged(pos);
     }
 
     public VKApiDocument getItem(int pos) {
@@ -69,20 +73,12 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @Bind(R.id.icon_offline_label)
-        ImageView iconOffline;
-
-        @Bind(R.id.text_doctitle)
-        TextView title;
-
-        @Bind(R.id.size)
-        TextView size;
-
-        @Bind(R.id.context_menu)
-        ImageView contextMenuButton;
-
-        @Bind(R.id.make_offline)
-        ImageView makeOfflineButton;
+        @Bind(R.id.ic_document_type) ImageView documentTypeIcon;
+        @Bind(R.id.ic_document_offline) ImageView documentOfflineIcon;
+        @Bind(R.id.extraMenu) ImageButton contextMenu;
+        @Bind(R.id.text_document_title) TextView title;
+        @Bind(R.id.sortLabel) TextView sortLabel; // Only size yet
+        @Bind(R.id.statusLabels) TextView statusLables; // Only size yet
 
         private ItemEventListener listener;
 
@@ -92,24 +88,41 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
             ButterKnife.bind(this, view);
             view.setOnClickListener(this);
-
-            contextMenuButton.setOnClickListener(this);
-            makeOfflineButton.setOnClickListener(this);
         }
 
-        public void setup(VkDocument doc) {
+        public void setup(VKApiDocument doc) {
             title.setText(doc.title);
-            size.setText(fileFormatter.formatSize(doc.size));
+            /*
+                TODO:
+                1) Add type info to VKApiDocuent model since file type is more accurate when got through api.
+                2) Add offline availability flag to model
 
-            if (doc.isOffline() || doc.isOfflineInProgress())
-                makeOfflineButton.setVisibility(View.GONE);
-            else
-                makeOfflineButton.setVisibility(View.VISIBLE);
+                UPD: VKApiDocument ext field is always null, so we definitely need our own model.
+             */
 
-            if (doc.isNotOffline())
-                iconOffline.setVisibility(View.GONE);
-            else
-                iconOffline.setVisibility(View.VISIBLE);
+            switch (doc.getId() % 5) {
+                case 0:
+                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.music_box));
+                    break;
+                case 1:
+                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.movie));
+                    break;
+                case 2:
+                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_pdf_box));
+                    break;
+                case 3:
+                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image));
+                    break;
+                default:
+                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file));
+            }
+            if (doc.getId() % 5 == 1) {
+                //documentOfflineIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_offline_green, null));
+                documentOfflineIcon.setVisibility(View.GONE);
+            } else {
+                documentOfflineIcon.setVisibility(View.VISIBLE);
+            }
+            statusLables.setText(fileFormatter.formatSize(doc.size));
         }
         
         @Override
@@ -117,12 +130,13 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
             int pos = getAdapterPosition();
             if (v == itemView)
                 listener.onClick(pos, documents.get(pos));
-            else if (v == contextMenuButton) {
-                //TODO add context menu
-            } else if (v == makeOfflineButton) {
-                listener.onClickMakeOffline(pos, documents.get(pos));
-                Timber.d("ON CLICK MAKE OFFLINE");
+            else if (v == contextMenu) {
+                Snackbar.make(v, "Context menu for item #" + pos, Snackbar.LENGTH_SHORT).show();
             }
+//            } else if (v == makeOfflineButton) {
+//                listener.onClickMakeOffline(pos, documents.get(pos));
+//                Timber.d("ON CLICK MAKE OFFLINE");
+//            }
         }
     }
 

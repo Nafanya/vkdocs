@@ -17,6 +17,7 @@ import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import timber.log.Timber;
 
 public abstract class AbstractMyDocsListFragment<
@@ -36,7 +37,7 @@ public abstract class AbstractMyDocsListFragment<
     //temp helper
     protected MyDocsAdapter defaultAdapter() {
         App app = (App)getActivity().getApplication();
-        return new MyDocsAdapter(app.getFileFormatter(), this);
+        return new MyDocsAdapter(getActivity(), app.getFileFormatter(), this);
     }
 
     @Override
@@ -45,6 +46,7 @@ public abstract class AbstractMyDocsListFragment<
 
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
         presenter.setCallback(this);
         presenter.getDocuments();
 
