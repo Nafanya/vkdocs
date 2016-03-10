@@ -91,4 +91,12 @@
     <style name="ListEntryTitle.DocList.Relative" parent="@style/ListEntryTitle.DocList">
         <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
     </style>
+
+    <style name="DialogOpenName">
+        <item name="android:layout_marginTop">@dimen/m_grid_2x</item>
+        <item name="android:textSize">@dimen/m_entry_text_size_primary</item>
+        <item name="android:textColor">@color/m_entry_text_primary</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+    </style>
 </resources>

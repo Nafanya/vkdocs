@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/ic_document_type"
+        android:focusable="false"
+        android:scaleType="fitXY"
+        style="@style/FixedSizeIcon"
+        android:src="@drawable/file_document"/>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/text_document_title"
+            style="@style/DialogOpenName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Archive.zip"/>
+
+        <ProgressBar
+            android:paddingRight="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:progress="50"
+            android:max="100"
+            android:indeterminate="false"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:maxHeight="10dp"
+            android:id="@+id/open_progress" />
+
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EntryLabel"
+            android:text="3.5MB from 7MB (50%)"/>
+
+    </LinearLayout>
+
+</LinearLayout>

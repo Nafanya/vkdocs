@@ -70,6 +70,10 @@ public class VkDocument extends VKApiDocument {
         return ExtType.values()[extType - 1];
     }
 
+    public String getExt() {
+        return ext;
+    }
+
     /*
 1 - текстовые документы
 2 - архивы

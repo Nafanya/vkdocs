@@ -100,22 +100,17 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 UPD: VKApiDocument ext field is always null, so we definitely need our own model.
              */
 
-            switch (doc.getExtType()) {
-                case AUDIO:
-                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.music_box));
-                    break;
-                case VIDEO:
-                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.movie));
-                    break;
-                /*case 2:
-                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_pdf_box));
-                    break;*/
-                case IMAGE:
-                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image));
-                    break;
-                default:
-                    documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file));
-            }
+            if (doc.getExtType() == VkDocument.ExtType.AUDIO)
+                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.music_box));
+            else if (doc.getExtType() == VkDocument.ExtType.VIDEO)
+                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.movie));
+            else if (doc.getExt().equals("pdf"))
+                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_pdf_box));
+            else if (doc.getExtType() == VkDocument.ExtType.IMAGE)
+                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image));
+            else
+                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file));
+
             if (doc.getId() % 5 == 1) {
                 documentOfflineIcon.setVisibility(View.GONE);
             } else {
