@@ -90,7 +90,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
             view.setOnClickListener(this);
         }
 
-        public void setup(VKApiDocument doc) {
+        public void setup(VkDocument doc) {
             title.setText(doc.title);
             /*
                 TODO:
@@ -100,24 +100,23 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 UPD: VKApiDocument ext field is always null, so we definitely need our own model.
              */
 
-            switch (doc.getId() % 5) {
-                case 0:
+            switch (doc.getExtType()) {
+                case AUDIO:
                     documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.music_box));
                     break;
-                case 1:
+                case VIDEO:
                     documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.movie));
                     break;
-                case 2:
+                /*case 2:
                     documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_pdf_box));
-                    break;
-                case 3:
+                    break;*/
+                case IMAGE:
                     documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image));
                     break;
                 default:
                     documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file));
             }
             if (doc.getId() % 5 == 1) {
-                //documentOfflineIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_offline_green, null));
                 documentOfflineIcon.setVisibility(View.GONE);
             } else {
                 documentOfflineIcon.setVisibility(View.VISIBLE);

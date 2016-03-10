@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.base;
 
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 
 import static io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter.*;
@@ -8,30 +9,29 @@ import static io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPres
 public class DocFilters {
 
     public static DocFilter ALL =
-            new DocumentsPresenter.SimpleDocFilter("*");
+            new DocumentsPresenter.SimpleDocFilter(
+                    VkDocument.ExtType.TEXT,
+                    VkDocument.ExtType.BOOK,
+                    VkDocument.ExtType.ARCHIVE,
+                    VkDocument.ExtType.GIF,
+                    VkDocument.ExtType.IMAGE,
+                    VkDocument.ExtType.AUDIO,
+                    VkDocument.ExtType.VIDEO,
+                    VkDocument.ExtType.UNKNOWN);
 
-    public static DocFilter TEXT = new SimpleDocFilter("doc", "docx", "xls", "xlsx", "ppt", "pptx", "rtx", "pdf", "txt", "djvu", "ps");
+    public static DocFilter TEXT = new SimpleDocFilter(VkDocument.ExtType.TEXT);
 
-    public static DocFilter BOOKS = new SimpleDocFilter("fb2");
+    public static DocFilter BOOKS = new SimpleDocFilter(VkDocument.ExtType.BOOK);
 
-    public static DocFilter ARCHIVES = new SimpleDocFilter("rar", "zip", "bz2");
+    public static DocFilter ARCHIVES = new SimpleDocFilter(VkDocument.ExtType.ARCHIVE);
 
-    public static DocFilter GIFS = new SimpleDocFilter("gif");
+    public static DocFilter GIFS = new SimpleDocFilter(VkDocument.ExtType.GIF);
 
-    public static DocFilter IMAGES = new SimpleDocFilter("png", "jpg");
+    public static DocFilter IMAGES = new SimpleDocFilter(VkDocument.ExtType.IMAGE);
 
-    public static DocFilter MUSIC = new SimpleDocFilter("mp3", "wav", "flac", "wave");
+    public static DocFilter MUSIC = new SimpleDocFilter(VkDocument.ExtType.AUDIO);
 
-    public static DocFilter VIDEO = new SimpleDocFilter("mp4", "3gp", "avi");
+    public static DocFilter VIDEO = new SimpleDocFilter(VkDocument.ExtType.VIDEO);
 
-    public static DocFilter OTHER = negate(TEXT, BOOKS, ARCHIVES, GIFS, IMAGES, MUSIC, VIDEO);
-
-    public static DocFilter negate(final DocFilter... filters) {
-        return doc -> {
-            for (DocFilter f : filters)
-                if (f.filter(doc))
-                    return false;
-            return true;
-        };
-    }
+    public static DocFilter OTHER = new SimpleDocFilter(VkDocument.ExtType.UNKNOWN);
 }

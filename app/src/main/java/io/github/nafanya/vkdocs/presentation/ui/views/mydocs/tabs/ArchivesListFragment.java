@@ -9,7 +9,7 @@ import io.github.nafanya.vkdocs.presentation.ui.views.base.DocFilters;
 public class ArchivesListFragment extends BlockedOpeningListFragment<DocumentsPresenter, MyDocsAdapter> {
     @Override
     public DocumentsPresenter newPresenter() {
-        return defaultPresenter(DocFilters.TEXT);
+        return defaultPresenter(DocFilters.ARCHIVES);
     }
 
     @Override

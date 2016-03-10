@@ -157,17 +157,15 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public static class SimpleDocFilter implements DocFilter {
-        private String[] exts;
-        public SimpleDocFilter(String... exts) {
-            this.exts = exts;
+        private VkDocument.ExtType[] types;
+        public SimpleDocFilter(VkDocument.ExtType... types) {
+            this.types = types;
         }
 
         @Override
         public boolean filter(VkDocument doc) {
-            for (String ext : exts)
-                if (ext.equals("*") ||
-                        doc.ext != null && doc.ext.equals(ext) ||
-                        doc.title == null || doc.title.endsWith(ext))
+            for (VkDocument.ExtType type: types)
+                if (type == doc.getExtType())
                     return true;
             return false;
         }

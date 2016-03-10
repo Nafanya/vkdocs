@@ -36,6 +36,9 @@ public class VKDocumentEntity extends BaseModel {
     private String url;
 
     @Column
+    private int extType;
+
+    @Column
     private int offlineType;
 
     private DownloadRequestEntity downloadRequest;
@@ -120,5 +123,13 @@ public class VKDocumentEntity extends BaseModel {
 
     public void setOfflineType(int offlineType) {
         this.offlineType = offlineType;
+    }
+
+    public int getExtType() {
+        return extType;
+    }
+
+    public void setExtType(int extType) {
+        this.extType = extType;
     }
 }
