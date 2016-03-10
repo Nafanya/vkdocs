@@ -16,4 +16,9 @@ public class DummyEventBus implements EventBus {
     public Observable<?> getEvent(Class<?> clazz) {
         return null;
     }
+
+    @Override
+    public void removeEvent(Class<?> clazz) {
+
+    }
 }
