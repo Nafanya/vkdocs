@@ -1,3 +1,0 @@
-[submodule "vksdk"]
-	path = vksdk
-  url = git@github.com:Nafanya/vk-android-sdk.git
