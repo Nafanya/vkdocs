@@ -26,6 +26,7 @@ import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
+import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;

@@ -48,7 +48,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == DOCUMENT_STATE_NORMAL) {
-            View view = inflater.inflate(R.layout.item_document4, parent, false);
+            View view = inflater.inflate(R.layout.item_document, parent, false);
             return new DocumentViewHolder(view, listener);
         } else {
             View view = inflater.inflate(R.layout.item_document_downloading, parent, false);

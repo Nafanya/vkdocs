@@ -38,7 +38,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document3, parent, false);
+        View view = inflater.inflate(R.layout.item_document, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 

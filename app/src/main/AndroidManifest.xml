@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="io.github.nafanya.vkdocs.LoginActivity"
+            android:name=".presentation.ui.views.LoginActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <data android:scheme="vk5252455" />
@@ -34,7 +34,6 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity android:name="io.github.nafanya.vkdocs.MainActivity" />
-        <activity android:name="io.github.nafanya.vkdocs.FriendsListActivity" />
 
     </application>
 
