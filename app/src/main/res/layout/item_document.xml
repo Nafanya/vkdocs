@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/doc_entry_root"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
             android:focusable="false"
             android:scaleType="fitXY"
             style="@style/FixedSizeIcon"
-            android:src="@drawable/file_document"/>
+            app:srcCompat="@drawable/file_document"/>
 
         <ImageView
             android:id="@+id/ic_document_offline"
@@ -43,7 +44,7 @@
             android:focusable="false"
             android:scaleType="center"
             android:visible="false"
-            android:src="@drawable/ic_offline_green"/>
+            app:srcCompat="@drawable/ic_offline_green"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -62,7 +63,7 @@
             android:layout_gravity="center"
             android:background="#0000"
             android:layout_marginRight="16dp"
-            android:src="@drawable/dots_vertical"/>
+            app:srcCompat="@drawable/dots_vertical"/>
 
         <FrameLayout
             android:id="@+id/more_actions_button_container"
