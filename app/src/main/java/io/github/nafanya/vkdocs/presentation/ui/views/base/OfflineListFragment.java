@@ -7,9 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -18,29 +15,25 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import timber.log.Timber;
 
-public abstract class AbstractOfflineListFragment<
-        PresenterType extends DocumentsPresenter,
-        AdapterType extends OfflineAdapter>
-        extends AbstractListFragment<PresenterType, AdapterType>
+public class OfflineListFragment
+        extends AbstractListFragment<OfflineAdapter>
         implements DocumentsPresenter.Callback, OfflineAdapter.ItemEventListener  {
+
+    public static OfflineListFragment newInstance(VkDocument.ExtType type) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(EXT_TYPE_KEY, new OfflineDocFilter(type));
+        OfflineListFragment fragment = new OfflineListFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
 
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
-
-    //temp helper
-    protected DocumentsPresenter defaultPresenter(DocumentsPresenter.DocFilter filter) {
-        App app = (App)getActivity().getApplication();
-        return new DocumentsPresenter(filter, app.getEventBus(), app.getRepository(), app.getDownloadManager(), this);
-    }
-
-    //temp helper
-    protected OfflineAdapter defaultAdapter() {
-        App app = (App)getActivity().getApplication();
-        return new OfflineAdapter(app.getFileFormatter(), this);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,12 +51,7 @@ public abstract class AbstractOfflineListFragment<
     public void onGetDocuments(List<VkDocument> documents) {
         if (adapter == null)
             adapter = newAdapter();
-
-        List<VkDocument> downDocs = new ArrayList<>();
-        for (VkDocument d: documents)
-            if (d.isOffline() || d.isOfflineInProgress())
-                downDocs.add(d);
-        adapter.setData(downDocs);
+        adapter.setData(documents);
         recyclerView.setAdapter(adapter);
     }
 
@@ -83,11 +71,6 @@ public abstract class AbstractOfflineListFragment<
     }
 
     @Override
-    public void onClick(int position, VKApiDocument document) {
-
-    }
-
-    @Override
     public void onCancelDownloading(int position, VkDocument document) {
         presenter.cancelMakeOffline(document);
         adapter.removeIndex(position);
@@ -101,5 +84,10 @@ public abstract class AbstractOfflineListFragment<
     @Override
     public void onDatabaseError(Exception ex) {
         Timber.d("db error");
+    }
+
+    public OfflineAdapter newAdapter() {
+        App app = (App)getActivity().getApplication();
+        return new OfflineAdapter(app.getFileFormatter(), this);
     }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,17 +21,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.AllListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.ArchivesListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.BooksListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.GifsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.ImagesListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.MusicListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.OtherListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.TextListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.mydocs.tabs.VideoListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.MyDocsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.OfflineListFragment;
 import timber.log.Timber;
 
+import static io.github.nafanya.vkdocs.domain.model.VkDocument.ExtType;
 
 public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -46,27 +39,27 @@ public class MainActivity extends AppCompatActivity {
     private DocumentPagerAdapter adapter;
 
     private Fragment[] tabFragments = new Fragment[]{
-            new AllListFragment(),
-            new TextListFragment(),
-            new BooksListFragment(),
-            new ArchivesListFragment(),
-            new GifsListFragment(),
-            new ImagesListFragment(),
-            new MusicListFragment(),
-            new VideoListFragment(),
-            new OtherListFragment()
+            MyDocsListFragment.newInstance(null),
+            MyDocsListFragment.newInstance(ExtType.TEXT),
+            MyDocsListFragment.newInstance(ExtType.BOOK),
+            MyDocsListFragment.newInstance(ExtType.ARCHIVE),
+            MyDocsListFragment.newInstance(ExtType.GIF),
+            MyDocsListFragment.newInstance(ExtType.IMAGE),
+            MyDocsListFragment.newInstance(ExtType.AUDIO),
+            MyDocsListFragment.newInstance(ExtType.VIDEO),
+            MyDocsListFragment.newInstance(ExtType.UNKNOWN),
     };
 
     private Fragment[] offlineFragments = new Fragment[]{
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.AllListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.TextListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.BooksListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.ArchivesListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.GifsListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.ImagesListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.MusicListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.VideoListFragment(),
-            new io.github.nafanya.vkdocs.presentation.ui.views.offline.tabs.OtherListFragment()
+            OfflineListFragment.newInstance(null),
+            OfflineListFragment.newInstance(ExtType.TEXT),
+            OfflineListFragment.newInstance(ExtType.BOOK),
+            OfflineListFragment.newInstance(ExtType.ARCHIVE),
+            OfflineListFragment.newInstance(ExtType.GIF),
+            OfflineListFragment.newInstance(ExtType.IMAGE),
+            OfflineListFragment.newInstance(ExtType.AUDIO),
+            OfflineListFragment.newInstance(ExtType.VIDEO),
+            OfflineListFragment.newInstance(ExtType.UNKNOWN),
     };
 
 
@@ -122,11 +115,13 @@ public class MainActivity extends AppCompatActivity {
                         tabsF = tabFragments;
                     else
                         tabsF = offlineFragments;
+
+                    //long l = System.currentTimeMillis();
                     adapter.clear();
                     for (int i = 0; i < tabs.length; ++i)
                         adapter.addFragment(tabs[i], tabsF[i]);
                     adapter.notifyDataSetChanged();
-
+                    //Timber.d("time = " + );
                     drawer.closeDrawer();
                     return true;
                 })

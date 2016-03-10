@@ -19,6 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
@@ -134,7 +135,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         }
     }
 
-    public interface ItemEventListener {
+    public interface ItemEventListener extends CommonItemEventListener {
         void onClick(int position, VKApiDocument document);
         //onClickContextMenu()
         void onClickMakeOffline(int position, VkDocument document);

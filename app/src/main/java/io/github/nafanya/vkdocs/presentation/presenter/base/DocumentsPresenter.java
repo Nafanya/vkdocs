@@ -17,11 +17,11 @@ import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -119,7 +119,7 @@ public class DocumentsPresenter extends BasePresenter {
                             d.setRequest(req);
                             break;
                         }
-                callback.onGetDocuments(documents);
+                callback.onGetDocuments(filterList(documents));
             }
         }
 
@@ -150,24 +150,5 @@ public class DocumentsPresenter extends BasePresenter {
             if (filter.filter(x))
                 ret.add(x);
         return ret;
-    }
-
-    public interface DocFilter {
-        boolean filter(VkDocument doc);
-    }
-
-    public static class SimpleDocFilter implements DocFilter {
-        private VkDocument.ExtType[] types;
-        public SimpleDocFilter(VkDocument.ExtType... types) {
-            this.types = types;
-        }
-
-        @Override
-        public boolean filter(VkDocument doc) {
-            for (VkDocument.ExtType type: types)
-                if (type == doc.getExtType())
-                    return true;
-            return false;
-        }
     }
 }

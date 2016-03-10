@@ -16,26 +16,28 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import timber.log.Timber;
 
-public abstract class AbstractMyDocsListFragment<
-        PresenterType extends DocumentsPresenter,
-        AdapterType extends MyDocsAdapter> extends AbstractListFragment<PresenterType, AdapterType>
-        implements DocumentsPresenter.Callback, MyDocsAdapter.ItemEventListener {
+public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> implements DocumentsPresenter.Callback, MyDocsAdapter.ItemEventListener {
 
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
 
-    //temp helper
-    protected DocumentsPresenter defaultPresenter(DocumentsPresenter.DocFilter filter) {
-        App app = (App)getActivity().getApplication();
-        return new DocumentsPresenter(filter, app.getEventBus(), app.getRepository(), app.getDownloadManager(), this);
+    public static MyDocsListFragment newInstance(VkDocument.ExtType type) {
+        Bundle bundle = new Bundle();
+        if (type == null)
+            bundle.putSerializable(EXT_TYPE_KEY, ALL);
+        else
+            bundle.putSerializable(EXT_TYPE_KEY, new ExtDocFilter(type));
+        MyDocsListFragment fragment = new MyDocsListFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
-    //temp helper
-    protected MyDocsAdapter defaultAdapter() {
+    public MyDocsAdapter newAdapter() {
         App app = (App)getActivity().getApplication();
         return new MyDocsAdapter(getActivity(), app.getFileFormatter(), this);
     }
@@ -43,7 +45,7 @@ public abstract class AbstractMyDocsListFragment<
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_documents_list, container, false);
-
+        Timber.d("ON CREATE VIEW");
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));

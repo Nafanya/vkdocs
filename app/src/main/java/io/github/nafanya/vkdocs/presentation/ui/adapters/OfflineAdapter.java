@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import timber.log.Timber;
 
@@ -192,7 +193,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public interface ItemEventListener {
+    public interface ItemEventListener extends CommonItemEventListener {
         void onClick(int position, VKApiDocument document);
         void onCancelDownloading(int position, VkDocument document);
     }
