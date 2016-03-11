@@ -1,8 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +20,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocIcons;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
+import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
@@ -90,9 +89,13 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
             ButterKnife.bind(this, view);
             view.setOnClickListener(this);
+
+            contextMenu.setOnClickListener(this);
         }
 
         public void setup(VkDocument doc) {
+            contextMenu.setOnClickListener(this);
+
             title.setText(doc.title);
             /*
                 TODO:
@@ -104,32 +107,32 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
             documentTypeIcon.setImageDrawable(docIcons.getIcon(doc));
 
-            if (doc.getId() % 5 == 1) {
-                documentOfflineIcon.setVisibility(View.GONE);
-            } else {
+            if (doc.getOfflineType() == VkDocument.OFFLINE) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
+            } else {
+                documentOfflineIcon.setVisibility(View.GONE);
             }
             statusLables.setText(fileFormatter.formatSize(doc.size));
         }
         
         @Override
         public void onClick(View v) {
+            RecyclerView.ViewHolder holder = (RecyclerView.ViewHolder) v.getTag();
             int pos = getAdapterPosition();
-            if (v == itemView)
+
+            if (v.getId() == contextMenu.getId()) {
+                listener.onClickContextMenu(pos, documents.get(pos));
+                Timber.d("Clicked context for #%d" , pos);
+            } else if (v.getId() == itemView.getId()) {
                 listener.onClick(pos, documents.get(pos));
-            else if (v == contextMenu) {
-                Snackbar.make(v, "Context menu for item #" + pos, Snackbar.LENGTH_SHORT).show();
+                Timber.d("Clicked item #%d" , pos);
             }
-//            } else if (v == makeOfflineButton) {
-//                listener.onClickMakeOffline(pos, documents.get(pos));
-//                Timber.d("ON CLICK MAKE OFFLINE");
-//            }
         }
     }
 
     public interface ItemEventListener extends CommonItemEventListener {
         void onClick(int position, VkDocument document);
-        //onClickContextMenu()
+        void onClickContextMenu(int position, VkDocument document);
         void onClickMakeOffline(int position, VkDocument document);
     }
 }

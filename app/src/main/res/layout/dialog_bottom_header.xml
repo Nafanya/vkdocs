@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/header"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:minHeight="@dimen/bottom_dialog_header_height">
+
+    <View
+        android:id="@+id/header_body"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/bottom_dialog_header_height"
+        android:layout_alignParentTop="true"
+        android:duplicateParentState="true"
+        android:focusable="false" />
+
+        <RelativeLayout
+            android:id="@+id/doc_icon_wrapper"
+            android:layout_width="@dimen/m_entry_icon_size"
+            android:layout_height="@dimen/m_entry_icon_size"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/m_grid_2x"
+            android:layout_marginRight="@dimen/m_grid_3x"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:padding="@dimen/m_entry_icon_padding"
+            android:scaleType="center">
+
+            <ImageView
+                android:id="@+id/ic_document_type"
+                style="@style/FixedSizeIcon"
+                android:focusable="false"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/file_document"
+                android:src="@drawable/file_document"/>
+
+        </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/header_body"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/doc_icon_wrapper"
+        android:layout_toEndOf="@+id/doc_icon_wrapper"
+        android:layout_alignRight="@id/header_body">
+
+        <TextView
+            android:id="@+id/text_document_title"
+            android:gravity="center_horizontal|left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:text="Archive.zip" />
+    </LinearLayout>
+</RelativeLayout>

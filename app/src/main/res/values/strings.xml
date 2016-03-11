@@ -25,4 +25,10 @@
     <string name="tab_other">Other</string>
 
     <string name="from">from</string>
+    <string name="download">Download</string>
+    <string name="available_offline">Available offline</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="share_external">Share</string>
+    <string name="send">Send</string>
 </resources>

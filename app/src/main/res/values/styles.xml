@@ -71,6 +71,19 @@
         <item name="android:textColor">@color/m_entry_text_secondary</item>
     </style>
 
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/m_divider</item>
+    </style>
+
+    <!-- Divider with left icon margin -->
+    <style name="Divider.SubSection" parent="Divider">
+        <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
+        <item name="android:layout_marginBottom">@dimen/m_grid_1x</item>
+        <item name="android:layout_marginTop">@dimen/m_grid_1x</item>
+    </style>
+
     <style name="ListEntryTitle">
         <item name="android:enabled">false</item>
         <item name="android:textSize">@dimen/m_entry_text_size_secondary</item>
@@ -91,6 +104,17 @@
     <style name="ListEntryTitle.DocList.Relative" parent="@style/ListEntryTitle.DocList">
         <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
     </style>
+    <style name="ListEntryTitle.BottomList" parent="@style/ListEntryTitle">
+        <item name="android:textSize">@dimen/m_entry_text_size_primary</item>
+        <item name="android:textColor">@color/m_entry_text_primary</item>
+        <item name="android:layout_marginLeft">@dimen/m_grid_2x</item>
+        <item name="android:layout_marginTop">@dimen/m_grid_2x</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+    <style name="ListEntryTitle.BottomList.Relative" parent="@style/ListEntryTitle.BottomList">
+        <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
+    </style>
+
 
     <style name="DialogOpenName">
         <item name="android:layout_marginTop">@dimen/m_grid_2x</item>

@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.views;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -77,6 +78,13 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
     @Override
     public void onDelete(Exception ex) {
         //TODO write here
+    }
+
+    @Override
+    public void onClickContextMenu(int position, VkDocument document) {
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
+        dialog.setContentView(R.layout.dialog_bottom);
+        dialog.show();
     }
 
     @Override

@@ -14,6 +14,10 @@
     <color name="m_entry_text_primary">@color/m_app_primary_text</color>
     <color name="m_entry_text_secondary">@color/m_app_secondary_text</color>
 
+    <color name="m_divider">@color/md_grey_400</color>
+
+    <color name="m_icon_grey">@color/md_grey_600</color>
+
     <!-- Colors for icons in document list -->
     <color name="m_icon_video">@color/md_red_A700</color>
     <color name="m_icon_music">@color/md_green_A700</color>
