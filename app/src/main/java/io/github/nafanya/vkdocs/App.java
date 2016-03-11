@@ -28,6 +28,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
+import io.github.nafanya.vkdocs.utils.DocIcons;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -51,6 +52,7 @@ public class App extends Application {
             }
         }
     };
+
 
     public void onCreate() {
         super.onCreate();

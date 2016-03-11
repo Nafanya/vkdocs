@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.base;
+package io.github.nafanya.vkdocs.presentation.ui.views;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,34 +13,28 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
 import timber.log.Timber;
 
-public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> implements DocumentsPresenter.Callback, MyDocsAdapter.ItemEventListener {
+public class OfflineListFragment
+        extends AbstractListFragment<OfflineAdapter>
+        implements DocumentsPresenter.Callback, OfflineAdapter.ItemEventListener  {
 
-    @Bind(R.id.list_documents)
-    RecyclerView recyclerView;
-
-    public static MyDocsListFragment newInstance(VkDocument.ExtType type) {
+    public static OfflineListFragment newInstance(VkDocument.ExtType type) {
         Bundle bundle = new Bundle();
-        if (type == null)
-            bundle.putSerializable(EXT_TYPE_KEY, ALL);
-        else
-            bundle.putSerializable(EXT_TYPE_KEY, new ExtDocFilter(type));
-        MyDocsListFragment fragment = new MyDocsListFragment();
+        bundle.putSerializable(EXT_TYPE_KEY, new OfflineDocFilter(type));
+        OfflineListFragment fragment = new OfflineListFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public MyDocsAdapter newAdapter() {
-        App app = (App)getActivity().getApplication();
-        return new MyDocsAdapter(getActivity(), app.getFileFormatter(), this);
-    }
+
+    @Bind(R.id.list_documents)
+    RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,7 +42,6 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
 
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
         presenter.setCallback(this);
         presenter.getDocuments();
 
@@ -79,17 +72,23 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
     }
 
     @Override
-    public void onClickMakeOffline(int position, VkDocument document) {
-        presenter.makeOffline(document);
+    public void onCancelDownloading(int position, VkDocument document) {
+        presenter.cancelMakeOffline(document);
+        adapter.removeIndex(position);
     }
 
     @Override
     public void onNetworkError(Exception ex) {
-        Timber.d("network error" + ((VKException)ex).getVkError().toString());
+        Timber.d("network error");
     }
 
     @Override
     public void onDatabaseError(Exception ex) {
         Timber.d("db error");
+    }
+
+    public OfflineAdapter newAdapter() {
+        App app = (App)getActivity().getApplication();
+        return new OfflineAdapter(app.getFileFormatter(), this);
     }
 }

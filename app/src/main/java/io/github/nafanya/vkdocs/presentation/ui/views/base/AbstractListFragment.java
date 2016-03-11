@@ -10,9 +10,7 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 
 import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;

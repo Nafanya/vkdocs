@@ -33,7 +33,7 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
-        <activity android:name="io.github.nafanya.vkdocs.MainActivity" />
+        <activity android:name=".presentation.ui.views.MainActivity" />
 
     </application>
 

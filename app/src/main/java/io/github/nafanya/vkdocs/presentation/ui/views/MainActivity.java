@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs;
+package io.github.nafanya.vkdocs.presentation.ui.views;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -21,8 +21,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.github.nafanya.vkdocs.presentation.ui.views.base.MyDocsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.base.OfflineListFragment;
+import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.presentation.ui.views.MyDocsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.OfflineListFragment;
+import io.github.nafanya.vkdocs.utils.DocIcons;
 import timber.log.Timber;
 
 import static io.github.nafanya.vkdocs.domain.model.VkDocument.ExtType;
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    public DocIcons docIcons;
+
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        docIcons = new DocIcons(this);
 
         initUI();
         initNavigationDrawer();

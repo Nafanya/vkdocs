@@ -20,16 +20,17 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
+import io.github.nafanya.vkdocs.utils.DocIcons;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
     private ItemEventListener listener;
     private FileFormatUtils fileFormatter;
-    private Context context;
+    private DocIcons docIcons;
 
-    public MyDocsAdapter(Context context, FileFormatUtils fileFormatter, ItemEventListener listener) {
-        this.context = context;
+    public MyDocsAdapter(FileFormatUtils fileFormatter, DocIcons docIcons, ItemEventListener listener) {
+        this.docIcons = docIcons;
         this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
@@ -101,16 +102,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 UPD: VKApiDocument ext field is always null, so we definitely need our own model.
              */
 
-            if (doc.getExtType() == VkDocument.ExtType.AUDIO)
-                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.music_box));
-            else if (doc.getExtType() == VkDocument.ExtType.VIDEO)
-                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.movie));
-            else if (doc.getExt().equals("pdf"))
-                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_pdf_box));
-            else if (doc.getExtType() == VkDocument.ExtType.IMAGE)
-                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image));
-            else
-                documentTypeIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file));
+            documentTypeIcon.setImageDrawable(docIcons.getIcon(doc));
 
             if (doc.getId() % 5 == 1) {
                 documentOfflineIcon.setVisibility(View.GONE);
