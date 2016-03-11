@@ -45,7 +45,7 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_documents_list, container, false);
-        Timber.d("ON CREATE VIEW");
+
         ButterKnife.bind(this, rootView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));

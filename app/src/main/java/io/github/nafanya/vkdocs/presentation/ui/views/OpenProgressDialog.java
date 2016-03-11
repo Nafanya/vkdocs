@@ -10,6 +10,7 @@ import io.github.nafanya.vkdocs.R;
 
 
 public class OpenProgressDialog extends AppCompatDialogFragment {
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

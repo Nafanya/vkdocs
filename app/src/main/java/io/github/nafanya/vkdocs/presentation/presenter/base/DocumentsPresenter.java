@@ -10,6 +10,7 @@ import java.util.List;
 import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelMakeOffline;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.LoadMyDocuments;
@@ -17,6 +18,7 @@ import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -32,7 +34,14 @@ public class DocumentsPresenter extends BasePresenter {
         void onMakeOffline(Exception ex);
         void onRename(Exception ex);
         void onDelete(Exception ex);
+
+        void onOpenFile(VkDocument document);
+        void onDownloadingFile(VkDocument document);
+        void onNoInternetWhenOpen();
     }
+
+    private String OFFLINE_PATH = Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/";
+    private String CACHE_PATH = Environment.getExternalStorageDirectory().getPath() + "/VKDocs/cache/";
 
     protected GetMyDocuments getDocumentsInteractor;
     protected LoadMyDocuments networkInteractor;
@@ -43,8 +52,13 @@ public class DocumentsPresenter extends BasePresenter {
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
+    protected InternetService internetService;
 
-    public DocumentsPresenter(DocFilter filter, EventBus eventBus, DocumentRepository repository, DownloadManager<DownloadRequest> downloadManager, Callback callback) {
+    public DocumentsPresenter(DocFilter filter, EventBus eventBus,
+                              DocumentRepository repository,
+                              DownloadManager<DownloadRequest> downloadManager,
+                              InternetService internetService,
+                              Callback callback) {
         this.filter = filter;
         this.getDocumentsInteractor = new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository);
         this.networkInteractor = new LoadMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository);
@@ -52,11 +66,39 @@ public class DocumentsPresenter extends BasePresenter {
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
-
+        this.internetService = internetService;
     }
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    //TODO when finish caching, remove get documents from EventBus?
+    public void openDocument(VkDocument document) {
+        if (document.isOffline() || document.isCached())
+            callback.onOpenFile(document);
+        else {
+            if (!internetService.hasInternetConnection()) {
+                callback.onNoInternetWhenOpen();
+                return;
+            }
+
+            if (!document.isDownloading())
+                new CacheDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
+                        eventBus,
+                        document,
+                        CACHE_PATH + document.title,
+                        repository,
+                        downloadManager).execute(new DefaultSubscriber<DownloadRequest>() {
+                            @Override
+                            public void onNext(DownloadRequest request) {
+                                document.setRequest(request);
+                                callback.onDownloadingFile(document);
+                            }
+                        });
+            else
+                callback.onDownloadingFile(document);
+        }
     }
 
     //TODO add on progress callback for more informative?
@@ -66,7 +108,7 @@ public class DocumentsPresenter extends BasePresenter {
                 Schedulers.io(),
                 eventBus,
                 document,
-                Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/" + document.title,
+                OFFLINE_PATH + document.title,
                 repository,
                 downloadManager).execute();
     }

@@ -25,6 +25,7 @@ import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
 import io.github.nafanya.vkdocs.utils.FileFormatUtils;
@@ -37,6 +38,7 @@ public class App extends Application {
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
     private FileFormatUtils fileFormatter;
+    private InternetService internetService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -71,6 +73,7 @@ public class App extends Application {
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
         fileFormatter = new FileFormatUtils(this);
+        internetService = new InternetServiceImpl();
 
         File offlineDir = new File(Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/");
         if (!offlineDir.exists())
@@ -91,5 +94,9 @@ public class App extends Application {
 
     public FileFormatUtils getFileFormatter() {
         return fileFormatter;
+    }
+
+    public InternetService getInternetService() {
+        return internetService;
     }
 }

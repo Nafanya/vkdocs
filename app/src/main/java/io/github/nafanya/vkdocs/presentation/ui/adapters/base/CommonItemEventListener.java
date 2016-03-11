@@ -1,7 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters.base;
 
-import com.vk.sdk.api.model.VKApiDocument;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public interface CommonItemEventListener {
-    void onClick(int position, VKApiDocument document);
+    void onClick(int position, VkDocument document);
 }

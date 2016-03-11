@@ -116,12 +116,11 @@ public class MainActivity extends AppCompatActivity {
                     else
                         tabsF = offlineFragments;
 
-                    //long l = System.currentTimeMillis();
                     adapter.clear();
                     for (int i = 0; i < tabs.length; ++i)
                         adapter.addFragment(tabs[i], tabsF[i]);
                     adapter.notifyDataSetChanged();
-                    //Timber.d("time = " + );
+
                     drawer.closeDrawer();
                     return true;
                 })

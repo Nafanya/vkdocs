@@ -136,7 +136,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     }
 
     public interface ItemEventListener extends CommonItemEventListener {
-        void onClick(int position, VKApiDocument document);
+        void onClick(int position, VkDocument document);
         //onClickContextMenu()
         void onClickMakeOffline(int position, VkDocument document);
     }

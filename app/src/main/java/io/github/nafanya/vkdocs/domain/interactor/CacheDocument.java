@@ -9,18 +9,18 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
 
-public class MakeOfflineDocument extends UseCase<Void> {
+public class CacheDocument extends UseCase<DownloadRequest> {
     private VkDocument document;
     private String toPath;
     private DocumentRepository repository;
     private DownloadManager<DownloadRequest> downloadManager;
 
-    public MakeOfflineDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
+    public CacheDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
                                VkDocument document,
                                String toPath,
                                DocumentRepository repository,
                                DownloadManager<DownloadRequest> downloadManager) {
-        super(observerScheduler, subscriberScheduler, eventBus, false);
+        super(observerScheduler, subscriberScheduler, eventBus, true);
         this.document = document;
         this.toPath = toPath;
         this.repository = repository;
@@ -28,8 +28,7 @@ public class MakeOfflineDocument extends UseCase<Void> {
     }
 
     @Override
-    public Observable<Void> buildUseCase() {
-        eventBus.removeEvent(GetMyDocuments.class);
+    public Observable<DownloadRequest> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
@@ -37,8 +36,9 @@ public class MakeOfflineDocument extends UseCase<Void> {
                 request.setTotalBytes(document.size);
                 downloadManager.enqueue(request);
 
-                document.setOfflineType(VkDocument.OFFLINE);
+                document.setOfflineType(VkDocument.CACHE);
                 repository.update(document);
+                subscriber.onNext(request);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

@@ -194,7 +194,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public interface ItemEventListener extends CommonItemEventListener {
-        void onClick(int position, VKApiDocument document);
+        void onClick(int position, VkDocument document);
         void onCancelDownloading(int position, VkDocument document);
     }
 }
