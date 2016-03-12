@@ -15,6 +15,8 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
@@ -24,9 +26,14 @@ public class OfflineListFragment
         extends AbstractListFragment<OfflineAdapter>
         implements DocumentsPresenter.Callback, OfflineAdapter.ItemEventListener  {
 
+    public static DocFilter ALL_OFFLINE = (DocFilter) doc -> doc.isOffline() || doc.isOfflineInProgress();
+
     public static OfflineListFragment newInstance(VkDocument.ExtType type) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(EXT_TYPE_KEY, new OfflineDocFilter(type));
+        if (type == null)
+            bundle.putSerializable(EXT_TYPE_KEY, ALL_OFFLINE);
+        else
+            bundle.putSerializable(EXT_TYPE_KEY, new OfflineDocFilter(type));
         OfflineListFragment fragment = new OfflineListFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -50,6 +57,7 @@ public class OfflineListFragment
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("offline adapter = " + documents.size());
         if (adapter == null)
             adapter = newAdapter();
         adapter.setData(documents);

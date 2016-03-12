@@ -23,16 +23,6 @@ public abstract class AbstractListFragment<AdapterType>
         extends Fragment implements DocumentsPresenter.Callback, CommonItemEventListener, OpenProgressDialog.Callback {
     public static String EXT_TYPE_KEY = "ext_types_key";
 
-    public static DocFilter ALL = new ExtDocFilter(
-                    VkDocument.ExtType.TEXT,
-                    VkDocument.ExtType.BOOK,
-                    VkDocument.ExtType.ARCHIVE,
-                    VkDocument.ExtType.GIF,
-                    VkDocument.ExtType.IMAGE,
-                    VkDocument.ExtType.AUDIO,
-                    VkDocument.ExtType.VIDEO,
-                    VkDocument.ExtType.UNKNOWN);
-
 
 
     protected DocumentsPresenter presenter;

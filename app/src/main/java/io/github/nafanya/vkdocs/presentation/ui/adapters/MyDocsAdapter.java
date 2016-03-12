@@ -104,7 +104,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
 
-            if (doc.getOfflineType() == VkDocument.OFFLINE) {
+            if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
             } else {
                 documentOfflineIcon.setVisibility(View.GONE);
@@ -129,6 +129,5 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     public interface ItemEventListener extends CommonItemEventListener {
         void onClick(int position, VkDocument document);
         void onClickContextMenu(int position, VkDocument document);
-        void onClickMakeOffline(int position, VkDocument document);
     }
 }

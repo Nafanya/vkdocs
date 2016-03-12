@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        //docIcons = new DocIcons(this);
-
         initUI();
         initNavigationDrawer();
         fileFormatter = new FileFormatter(this);

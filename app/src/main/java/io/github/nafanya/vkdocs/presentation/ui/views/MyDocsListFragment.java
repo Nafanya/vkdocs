@@ -17,13 +17,27 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
 import timber.log.Timber;
 
-public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> implements DocumentsPresenter.Callback, MyDocsAdapter.ItemEventListener {
+public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>
+        implements DocumentsPresenter.Callback,
+        MyDocsAdapter.ItemEventListener, BottomMenu.MenuEventListener {
+
+    public static DocFilter ALL = new ExtDocFilter(
+            VkDocument.ExtType.TEXT,
+            VkDocument.ExtType.BOOK,
+            VkDocument.ExtType.ARCHIVE,
+            VkDocument.ExtType.GIF,
+            VkDocument.ExtType.IMAGE,
+            VkDocument.ExtType.AUDIO,
+            VkDocument.ExtType.VIDEO,
+            VkDocument.ExtType.UNKNOWN);
+
 
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
@@ -57,6 +71,7 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
         return rootView;
     }
 
+    /***Presenter events***/
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
         if (adapter == null)
@@ -81,18 +96,6 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
     }
 
     @Override
-    public void onClickContextMenu(int position, VkDocument document) {
-        BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
-        dialog.setContentView(R.layout.dialog_bottom);
-        dialog.show();
-    }
-
-    @Override
-    public void onClickMakeOffline(int position, VkDocument document) {
-        presenter.makeOffline(document);
-    }
-
-    @Override
     public void onNetworkError(Exception ex) {
         Timber.d("network error" + ((VKException)ex).getVkError().toString());
     }
@@ -100,5 +103,23 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
     @Override
     public void onDatabaseError(Exception ex) {
         Timber.d("db error");
+    }
+
+
+    /***Adapter events***/
+    @Override
+    public void onClickContextMenu(int position, VkDocument document) {
+        MainActivity activity = (MainActivity)getActivity();
+        BottomSheetDialog dialog = new BottomMenu(activity, document, activity.getFileFormatter(), this);
+        dialog.show();
+    }
+
+
+    /***Menu events***/
+    @Override
+    public void onClickMakeOffline(VkDocument document, boolean isMakeOffline) {
+        Timber.d("on make offline " + document.title + " is make off = " + isMakeOffline);
+        if (isMakeOffline)
+            presenter.makeOffline(document);
     }
 }
