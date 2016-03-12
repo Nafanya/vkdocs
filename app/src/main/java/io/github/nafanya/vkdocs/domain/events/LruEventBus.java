@@ -2,29 +2,28 @@ package io.github.nafanya.vkdocs.domain.events;
 
 import android.util.LruCache;
 
-import rx.Observable;
+import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
 
 public class LruEventBus implements EventBus {
-    private LruCache<Class<?>, Observable<?>> cache;
+    private LruCache<Integer, UseCase<?>> cache;
 
     public LruEventBus(int size) {
         cache = new LruCache<>(size);
     }
 
     @Override
-    public Observable<?> putEvent(Class<?> clazz, Observable<?> observable) {
-        observable = observable.cache();
-        cache.put(clazz, observable);
-        return observable;
+    public void putEvent(UseCase<?> useCase) {
+        cache.put(useCase.hashCode(), useCase);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> UseCase<T> getEvent(int hash) {
+        return (UseCase<T>)cache.get(hash);
     }
 
     @Override
-    public Observable<?> getEvent(Class<?> clazz) {
-        return cache.get(clazz);
-    }
-
-    @Override
-    public void removeEvent(Class<?> clazz) {
-        cache.remove(clazz);
+    public void removeEvent(int hash) {
+        cache.remove(hash);
     }
 }

@@ -28,7 +28,6 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
-import io.github.nafanya.vkdocs.utils.FileFormatter;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 

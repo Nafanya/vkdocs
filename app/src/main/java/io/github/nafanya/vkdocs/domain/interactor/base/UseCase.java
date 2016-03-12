@@ -11,6 +11,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public abstract class UseCase<T> {
+    private Observable<T> observable;
     protected Subscription subscription = Subscriptions.empty();
     protected final Scheduler subscriberScheduler;
     protected final Scheduler observerScheduler;
@@ -35,26 +36,35 @@ public abstract class UseCase<T> {
 
     public abstract Observable<T> buildUseCase();
 
+    public int hashCode() {
+        return this.getClass().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return hashCode() == o.hashCode();
+    }
+
     @SuppressWarnings("unchecked")
     public void execute() {
-        subscription = getObservable().subscribe(Subscribers.empty());
+        subscription = getUseCase().observable.subscribe(Subscribers.empty());
     }
 
 
     public void execute(Subscriber<T> subscriber) {
-        subscription = getObservable().subscribe(subscriber);
+        subscription = getUseCase().observable.subscribe(subscriber);
     }
 
     @SuppressWarnings("unchecked")
-    private Observable<T> getObservable() {
-        Observable<T> observable;
-        if (isCached) {
-            observable = (Observable<T>)eventBus.getEvent(getClass());
-            if (observable == null)
-                observable = (Observable<T>)eventBus.putEvent(getClass(), applySchedulers(buildUseCase()));
-        } else
-            observable = applySchedulers(buildUseCase());
-        return observable;
+    private UseCase<T> getUseCase() {
+        UseCase<T> useCase = eventBus.getEvent(this.hashCode());
+        if (useCase == null) {
+            if (isCached)
+                eventBus.putEvent(this);
+            useCase = this;
+            observable = applySchedulers(buildUseCase().cache());
+        }
+        return useCase;
     }
 
     public void unsubscribe() {

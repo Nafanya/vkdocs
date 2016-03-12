@@ -10,7 +10,7 @@ import rx.Observable;
 import rx.Scheduler;
 import timber.log.Timber;
 
-public class CacheDocument extends UseCase<DownloadRequest> {
+public class CacheDocument extends UseCase<VkDocument> {
     private VkDocument document;
     private String toPath;
     private DocumentRepository repository;
@@ -29,7 +29,7 @@ public class CacheDocument extends UseCase<DownloadRequest> {
     }
 
     @Override
-    public Observable<DownloadRequest> buildUseCase() {
+    public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
                 Timber.d("IN CACHE DOC");
@@ -40,7 +40,8 @@ public class CacheDocument extends UseCase<DownloadRequest> {
 
                 document.setOfflineType(VkDocument.CACHE);
                 repository.update(document);
-                subscriber.onNext(request);
+                document.setRequest(request);
+                subscriber.onNext(document);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

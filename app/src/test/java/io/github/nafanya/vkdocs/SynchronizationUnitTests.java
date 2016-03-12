@@ -63,7 +63,7 @@ public class SynchronizationUnitTests {
             } else if (event == EventType.SYNCHRONIZE) {
                 final Reference<AssertionFailedError> exception = new Reference<>();
 
-                new LoadMyDocuments(Schedulers.immediate(),
+                new NetworkMyDocuments(Schedulers.immediate(),
                         Schedulers.immediate(),
                         dummyEventBus, true, documentRepository).
                         execute(new DefaultSubscriber<List<VkDocument>>() {

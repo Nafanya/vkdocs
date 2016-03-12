@@ -12,10 +12,10 @@ import rx.Scheduler;
 /*
 Загружает доки с сервера и синхронизирует их с базой или бросает эксешпн, если получить доки не удалось.
  */
-public class LoadMyDocuments extends UseCase<List<VkDocument>> {
+public class NetworkMyDocuments extends UseCase<List<VkDocument>> {
     private DocumentRepository repository;
-    public LoadMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                           EventBus eventBus, DocumentRepository repository) {
+    public NetworkMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
+                              EventBus eventBus, DocumentRepository repository) {
         super(observerScheduler, subscriberScheduler, eventBus, true);
         this.repository = repository;
     }
