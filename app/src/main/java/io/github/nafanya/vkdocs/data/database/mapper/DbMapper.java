@@ -1,5 +1,7 @@
 package io.github.nafanya.vkdocs.data.database.mapper;
 
+import java.util.Date;
+
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
@@ -23,6 +25,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         ret.extType = vkDocumentEntity.getExtType();
         ret.setOfflineType(vkDocumentEntity.getOfflineType());
         ret.ext = vkDocumentEntity.getExt();
+        ret.date = new Date(vkDocumentEntity.getDate());
 
         if (vkDocumentEntity.getDownloadRequest() != null)
             ret.setRequest(mapper.transform(vkDocumentEntity.getDownloadRequest()));
@@ -40,6 +43,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         vk.setExtType(vkDoc.extType);
         vk.setOfflineType(vkDoc.getOfflineType());
         vk.setExt(vkDoc.getExt());
+        vk.setDate(vkDoc.date.getTime());
         return vk;
     }
 }
