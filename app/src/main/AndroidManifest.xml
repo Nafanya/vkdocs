@@ -3,7 +3,7 @@
     package="io.github.nafanya.vkdocs">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -34,7 +34,7 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity android:name=".presentation.ui.views.MainActivity" />
-
+        <activity android:name=".presentation.ui.views.DocumentsActivity"></activity>
     </application>
 
 </manifest>

@@ -22,10 +22,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_documents"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"/>
+    <include layout="@layout/content_documents"/>
 
 </android.support.design.widget.CoordinatorLayout>

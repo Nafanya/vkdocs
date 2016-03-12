@@ -40,6 +40,7 @@ public class App extends Application {
     private DocumentRepository repository;
     private FileFormatUtils fileFormatter;
     private InternetService internetService;
+    private DocIcons docIcons;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -56,6 +57,8 @@ public class App extends Application {
 
     public void onCreate() {
         super.onCreate();
+
+        docIcons = new DocIcons(this);
 
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this).withPayments();
@@ -100,5 +103,9 @@ public class App extends Application {
 
     public InternetService getInternetService() {
         return internetService;
+    }
+
+    public DocIcons getDocIcons() {
+        return docIcons;
     }
 }
