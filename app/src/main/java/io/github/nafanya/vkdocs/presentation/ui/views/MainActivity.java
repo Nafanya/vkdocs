@@ -22,7 +22,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.utils.DocIcons;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 import static io.github.nafanya.vkdocs.domain.model.VkDocument.ExtType;
@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.tab_layout) TabLayout tabLayout;
     @Bind(R.id.pager) ViewPager pager;
+
+    private FileFormatter fileFormatter;
 
     private Drawer drawer;
     private CharSequence title;
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    public DocIcons docIcons;
+    //public DocIcons docIcons;
 
     @SuppressLint("NewApi")
     @Override
@@ -73,10 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        docIcons = new DocIcons(this);
+        //docIcons = new DocIcons(this);
 
         initUI();
         initNavigationDrawer();
+        fileFormatter = new FileFormatter(this);
     }
 
     private void initUI() {
@@ -129,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 })
                 .build();
+    }
+
+    public FileFormatter getFileFormatter() {
+        return fileFormatter;
     }
 
     private static class DocumentPagerAdapter extends FragmentStatePagerAdapter {

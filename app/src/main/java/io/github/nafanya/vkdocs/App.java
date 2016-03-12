@@ -37,7 +37,7 @@ public class App extends Application {
     private EventBus eventBus;
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
-    private FileFormatter fileFormatter;
+
     private InternetService internetService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
@@ -73,7 +73,6 @@ public class App extends Application {
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
-        fileFormatter = new FileFormatter(this);
         internetService = new InternetServiceImpl();
 
         createIfNotExist("/VKDocs/offline");
@@ -98,10 +97,6 @@ public class App extends Application {
 
     public DocumentRepository getRepository() {
         return repository;
-    }
-
-    public FileFormatter getFileFormatter() {
-        return fileFormatter;
     }
 
     public InternetService getInternetService() {

@@ -41,7 +41,7 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
 
     public MyDocsAdapter newAdapter() {
         App app = (App)getActivity().getApplication();
-        return new MyDocsAdapter(app.getFileFormatter(), ((MainActivity)getActivity()).docIcons, this);
+        return new MyDocsAdapter(((MainActivity)getActivity()).getFileFormatter(), this);
     }
 
     @Override

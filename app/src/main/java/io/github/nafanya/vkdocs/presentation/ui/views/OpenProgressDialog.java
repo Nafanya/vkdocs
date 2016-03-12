@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,12 +28,14 @@ import timber.log.Timber;
 
 public class OpenProgressDialog extends AppCompatDialogFragment implements DownloadManager.RequestObserver {
 
-    private static String DOC_ID_KEY = "doc_id_key";
-    private static String DOC_TITLE_KEY = "doc_title_key";
+    private static String DOC_KEY = "doc_key";
 
     private DownloadRequest request;
-    private String title;
+    private VkDocument doc;
     private FileFormatter fileFormatter;
+
+    @Bind(R.id.ic_document_type)
+    ImageView documentTypeIcon;
 
     @Bind(R.id.text_document_title)
     TextView docTitle;
@@ -48,8 +51,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public static OpenProgressDialog newInstance(VkDocument document) {
         OpenProgressDialog fragment = new OpenProgressDialog();
         Bundle bundle = new Bundle();
-        bundle.putInt(DOC_ID_KEY, document.getId());
-        bundle.putString(DOC_TITLE_KEY, document.title);
+        bundle.putParcelable(DOC_KEY, document);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -58,29 +60,25 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App app = (App)getActivity().getApplication();
-        fileFormatter = app.getFileFormatter();
-        int docId = getArguments().getInt(DOC_ID_KEY);
-        title = getArguments().getString(DOC_TITLE_KEY);
+        fileFormatter = ((MainActivity)getActivity()).getFileFormatter();
+        doc = getArguments().getParcelable(DOC_KEY);
 
         callback = (Callback)getTargetFragment();//GET CALLBACK FRAGMENT OR ACTIVITY HERE
 
         InterruptableDownloadManager downloadManager = app.getDownloadManager();
         List<DownloadRequest> requests = downloadManager.getQueue();
-        Timber.d("size down queue = " + requests.size());
-        for (DownloadRequest r: requests) {
-            if (r.getDocId() == docId) {
+
+        for (DownloadRequest r: requests)
+            if (r.getDocId() == doc.getId()) {
                 request = r;
                 break;
             }
-            Timber.d("doc id = " + r.getDocId());
-        }
 
         if (request == null) {
             Timber.d("request is null, download is completed faster than open dialog");
             dismiss();
             callback.onCompleteCaching();
         }
-        Timber.d("ON CREATE request " + request);
     }
 
     @Override
@@ -93,7 +91,8 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         Dialog dialog = builder.create();
         ButterKnife.bind(this, rootView);
 
-        docTitle.setText(title);
+        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
+        docTitle.setText(doc.title);
         downloadProgress.setProgress(fileFormatter.getProgress(request));
         size.setText(fileFormatter.formatFrom(request));
 

@@ -18,7 +18,6 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
-import io.github.nafanya.vkdocs.utils.DocIcons;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -26,10 +25,8 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     private List<VkDocument> documents;
     private ItemEventListener listener;
     private FileFormatter fileFormatter;
-    private DocIcons docIcons;
 
-    public MyDocsAdapter(FileFormatter fileFormatter, DocIcons docIcons, ItemEventListener listener) {
-        this.docIcons = docIcons;
+    public MyDocsAdapter(FileFormatter fileFormatter, ItemEventListener listener) {
         this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
@@ -105,7 +102,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 UPD: VKApiDocument ext field is always null, so we definitely need our own model.
              */
 
-            documentTypeIcon.setImageDrawable(docIcons.getIcon(doc));
+            documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
 
             if (doc.getOfflineType() == VkDocument.OFFLINE) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);

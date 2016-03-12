@@ -1,5 +1,7 @@
 package io.github.nafanya.vkdocs.domain.model;
 
+import android.os.Parcel;
+
 import com.vk.sdk.api.model.VKApiDocument;
 
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
@@ -15,6 +17,7 @@ public class VkDocument extends VKApiDocument {
     private int offlineType;
 
     public VkDocument() {}
+
     public VkDocument(VKApiDocument doc) {
         id = doc.id;
         owner_id = doc.owner_id;
@@ -28,6 +31,17 @@ public class VkDocument extends VKApiDocument {
         photo_130 = doc.photo_130;
         photo = doc.photo;
         access_key = doc.access_key;
+    }
+
+    public VkDocument(Parcel in) {
+        super(in);
+        offlineType = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(offlineType);
     }
 
     public DownloadRequest getRequest() {
@@ -77,6 +91,16 @@ public class VkDocument extends VKApiDocument {
     public String getExt() {
         return ext;
     }
+
+    public static Creator<VkDocument> CREATOR = new Creator<VkDocument>() {
+        public VkDocument createFromParcel(Parcel source) {
+            return new VkDocument(source);
+        }
+
+        public VkDocument[] newArray(int size) {
+            return new VkDocument[size];
+        }
+    };
 
     /*
 1 - текстовые документы
