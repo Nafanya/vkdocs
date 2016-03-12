@@ -121,7 +121,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 Timber.d("Clicked context for #%d" , pos);
             } else if (v.getId() == itemView.getId()) {
                 listener.onClick(pos, documents.get(pos));
-                Timber.d("Clicked item #%d" , pos);
+                Timber.d("Clicked item #%d, %s" , pos, documents.get(pos).title);
             }
         }
     }

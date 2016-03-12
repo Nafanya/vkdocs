@@ -26,4 +26,19 @@ public class LruEventBus implements EventBus {
     public void removeEvent(int hash) {
         cache.remove(hash);
     }
+
+    @Override
+    public void removeEvent(Class<? extends UseCase<?>> clazz) {
+        removeEvent(clazz.hashCode());
+    }
+
+    @Override
+    public boolean contains(Class<? extends UseCase<?>> clazz) {
+        return getEvent(clazz.hashCode()) != null;
+    }
+
+    @Override
+    public <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz) {
+        return getEvent(clazz.hashCode());
+    }
 }

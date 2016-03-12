@@ -77,7 +77,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         if (request == null) {
             Timber.d("request is null, download is completed faster than open dialog");
             dismiss();
-            callback.onCompleteCaching();
+            callback.onCompleteCaching(doc);
         }
     }
 
@@ -93,10 +93,11 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
         documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
         docTitle.setText(doc.title);
-        downloadProgress.setProgress(fileFormatter.getProgress(request));
-        size.setText(fileFormatter.formatFrom(request));
-
-        request.setObserver(this);
+        if (request != null) {
+            downloadProgress.setProgress(fileFormatter.getProgress(request));
+            size.setText(fileFormatter.formatFrom(request));
+            request.setObserver(this);
+        }
         return dialog;
     }
 
@@ -110,7 +111,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public void onComplete() {
         Timber.d("on complete");
         dismiss();
-        callback.onCompleteCaching();
+        callback.onCompleteCaching(doc);
     }
 
     @Override
@@ -128,12 +129,12 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Override
     public void onCancel(DialogInterface dialog) {
         Timber.d("ON CANCEL DIALOG");
-        callback.onCancelCaching();
+        callback.onCancelCaching(doc);
     }
 
     public interface Callback {
-        void onCancelCaching();
-        void onCompleteCaching();
+        void onCancelCaching(VkDocument document);
+        void onCompleteCaching(VkDocument document);
         void onErrorCaching(Exception error);
     }
 }

@@ -10,15 +10,7 @@ public interface EventBus {
         return getEvent(hash) != null;
     }
 
-    default void removeEvent(Class<? extends UseCase<?>> clazz) {
-        removeEvent(clazz.hashCode());
-    }
-
-    default boolean contains(Class<? extends UseCase<?>> clazz) {
-        return getEvent(clazz.hashCode()) != null;
-    }
-
-    default <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz) {
-        return getEvent(clazz.hashCode());
-    }
+    void removeEvent(Class<? extends UseCase<?>> clazz);
+    boolean contains(Class<? extends UseCase<?>> clazz);
+    <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz);
 }

@@ -24,6 +24,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -86,14 +87,17 @@ public class DocumentsPresenter extends BasePresenter {
 
             if (!document.isDownloading()) {
                 cacheSubscriber = new CacheSubscriber();
+                Timber.d("make offline");
                 new CacheDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
                         eventBus,
                         document,
                         CACHE_PATH + document.title,
                         repository,
                         downloadManager).execute(cacheSubscriber);
-            } else
+            } else {
+                Timber.d("already downloading!");
                 callback.onAlreadyDownloading(document);
+            }
         }
     }
 
@@ -167,7 +171,7 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(List<VkDocument> vkDocuments) {
             if (callback != null) {//get actual download requests with correct request observer
-                List<DownloadRequest> requests = downloadManager.getQueue();
+                List<DownloadRequest> requests = downloadManager.getQueue();//TODO fix it or no, sync query to db from main
                 List<VkDocument> documents = filterList(vkDocuments);
                 for (VkDocument d: documents)
                     for (DownloadRequest req: requests)

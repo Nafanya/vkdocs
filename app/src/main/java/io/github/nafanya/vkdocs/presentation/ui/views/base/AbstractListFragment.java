@@ -27,7 +27,6 @@ public abstract class AbstractListFragment<AdapterType>
 
     protected DocumentsPresenter presenter;
     protected AdapterType adapter;
-    private VkDocument cachedDoc;
 
     protected abstract AdapterType newAdapter();
 
@@ -98,10 +97,8 @@ public abstract class AbstractListFragment<AdapterType>
 
     @Override
     public void onAlreadyDownloading(VkDocument document) {
-        Timber.d("on already downloading");
         DialogFragment fragment = OpenProgressDialog.newInstance(document);
         fragment.setTargetFragment(this, 0);
-        cachedDoc = document;
         fragment.show(getFragmentManager(), "progress_open");
     }
 
@@ -111,9 +108,8 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
-    public void onCancelCaching() {
+    public void onCancelCaching(VkDocument doc) {
         //TODO remove or no doc
-        cachedDoc = null;
     }
 
     @Override
@@ -122,8 +118,7 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
-    public void onCompleteCaching() {
-        openDocument(cachedDoc);
-        cachedDoc = null;
+    public void onCompleteCaching(VkDocument document) {
+        openDocument(document);
     }
 }
