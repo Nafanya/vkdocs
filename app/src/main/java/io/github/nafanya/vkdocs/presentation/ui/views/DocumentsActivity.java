@@ -1,28 +1,19 @@
 package io.github.nafanya.vkdocs.presentation.ui.views;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import java.util.Arrays;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
-import timber.log.Timber;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 
 public class DocumentsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -47,7 +38,7 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        Fragment fragment = DocumentsFragment.newInstance(null);
+        Fragment fragment = DocumentsFragment.newInstance(null, SortMode.DATE);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, fragment)
@@ -68,7 +59,14 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
             default: extType = null;
         }
 
-        Fragment fragment = DocumentsFragment.newInstance(extType);
+        final SortMode sortMode;
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof DocumentsFragment) {
+            sortMode = ((DocumentsFragment) currentFragment).getSortMode();
+        } else {
+            sortMode = SortMode.DATE;
+        }
+        Fragment fragment = DocumentsFragment.newInstance(extType, sortMode);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -78,24 +76,6 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing if no filter category was selected.
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.documents_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_sort_by:
-                return true;
-            case R.id.action_search:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }
 

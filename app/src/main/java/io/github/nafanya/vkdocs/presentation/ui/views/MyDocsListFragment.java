@@ -18,6 +18,7 @@ import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
@@ -41,7 +42,7 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter> impl
 
     public MyDocsAdapter newAdapter() {
         App app = (App)getActivity().getApplication();
-        return new MyDocsAdapter(app.getFileFormatter(), ((MainActivity)getActivity()).docIcons, this);
+        return new MyDocsAdapter(app.getFileFormatter(), ((MainActivity)getActivity()).docIcons, SortMode.DATE, this);
     }
 
     @Override
