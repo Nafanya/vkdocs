@@ -19,16 +19,16 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocIcons;
-import io.github.nafanya.vkdocs.utils.FileFormatUtils;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
     private ItemEventListener listener;
-    private FileFormatUtils fileFormatter;
+    private FileFormatter fileFormatter;
     private DocIcons docIcons;
 
-    public MyDocsAdapter(FileFormatUtils fileFormatter, DocIcons docIcons, ItemEventListener listener) {
+    public MyDocsAdapter(FileFormatter fileFormatter, DocIcons docIcons, ItemEventListener listener) {
         this.docIcons = docIcons;
         this.fileFormatter = fileFormatter;
         this.listener = listener;
@@ -117,7 +117,6 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         
         @Override
         public void onClick(View v) {
-            RecyclerView.ViewHolder holder = (RecyclerView.ViewHolder) v.getTag();
             int pos = getAdapterPosition();
 
             if (v.getId() == contextMenu.getId()) {

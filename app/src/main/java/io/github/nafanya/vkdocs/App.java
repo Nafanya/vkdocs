@@ -28,8 +28,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
-import io.github.nafanya.vkdocs.utils.DocIcons;
-import io.github.nafanya.vkdocs.utils.FileFormatUtils;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -38,7 +37,7 @@ public class App extends Application {
     private EventBus eventBus;
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
-    private FileFormatUtils fileFormatter;
+    private FileFormatter fileFormatter;
     private InternetService internetService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
@@ -74,12 +73,19 @@ public class App extends Application {
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
-        fileFormatter = new FileFormatUtils(this);
+        fileFormatter = new FileFormatter(this);
         internetService = new InternetServiceImpl();
 
-        File offlineDir = new File(Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/");
-        if (!offlineDir.exists())
-            offlineDir.mkdirs();
+        createIfNotExist("/VKDocs/offline");
+        createIfNotExist("/VKDocs/cache");
+    }
+
+    private void createIfNotExist(String path) {
+        File dir = new File(Environment.getExternalStorageDirectory().getPath() + path);
+        if (!dir.exists()) {
+            if (!dir.mkdirs())
+                throw new RuntimeException("Can't create folder " + path);
+        }
     }
 
     public EventBus getEventBus() {
@@ -94,7 +100,7 @@ public class App extends Application {
         return repository;
     }
 
-    public FileFormatUtils getFileFormatter() {
+    public FileFormatter getFileFormatter() {
         return fileFormatter;
     }
 

@@ -2,7 +2,7 @@ package io.github.nafanya.vkdocs.domain.model;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 
 public class VkDocument extends VKApiDocument {
     public enum ExtType {TEXT, ARCHIVE, GIF, IMAGE, AUDIO, VIDEO, BOOK, UNKNOWN};

@@ -7,7 +7,7 @@ import com.vk.sdk.api.model.VKApiDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
@@ -24,6 +24,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -36,7 +37,7 @@ public class DocumentsPresenter extends BasePresenter {
         void onDelete(Exception ex);
 
         void onOpenFile(VkDocument document);
-        void onDownloadingFile(VkDocument document);
+        void onAlreadyDownloading(VkDocument document);
         void onNoInternetWhenOpen();
     }
 
@@ -48,7 +49,7 @@ public class DocumentsPresenter extends BasePresenter {
     protected Subscriber<List<VkDocument>> getDocumentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected DocFilter filter;
-    protected DownloadManager<DownloadRequest> downloadManager;
+    protected DownloadManager downloadManager;
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
@@ -56,7 +57,7 @@ public class DocumentsPresenter extends BasePresenter {
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus,
                               DocumentRepository repository,
-                              DownloadManager<DownloadRequest> downloadManager,
+                              DownloadManager downloadManager,
                               InternetService internetService,
                               Callback callback) {
         this.filter = filter;
@@ -73,7 +74,7 @@ public class DocumentsPresenter extends BasePresenter {
         this.callback = callback;
     }
 
-    //TODO when finish caching, remove get documents from EventBus?
+    //TODO when caching is finished, remove GetDocuments from EventBus?
     public void openDocument(VkDocument document) {
         if (document.isOffline() || document.isCached())
             callback.onOpenFile(document);
@@ -83,21 +84,21 @@ public class DocumentsPresenter extends BasePresenter {
                 return;
             }
 
-            if (!document.isDownloading())
+            if (!document.isDownloading()) {
                 new CacheDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
                         eventBus,
                         document,
                         CACHE_PATH + document.title,
                         repository,
                         downloadManager).execute(new DefaultSubscriber<DownloadRequest>() {
-                            @Override
-                            public void onNext(DownloadRequest request) {
-                                document.setRequest(request);
-                                callback.onDownloadingFile(document);
-                            }
-                        });
-            else
-                callback.onDownloadingFile(document);
+                    @Override
+                    public void onNext(DownloadRequest request) {
+                        callback.onAlreadyDownloading(document);
+                        eventBus.removeEvent(CacheDocument.class);
+                    }
+                });
+            } else
+                callback.onAlreadyDownloading(document);
         }
     }
 

@@ -1,26 +1,24 @@
 package io.github.nafanya.vkdocs.domain.download;
 
-import android.os.Environment;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import timber.log.Timber;
 
-public class InterruptableDownloadManager implements DownloadManager<DownloadRequest> {
+public class InterruptableDownloadManager implements DownloadManager {
     private Scheduler workerScheduler;
     private RequestStorage<DownloadRequest> storage;
     private Set<DownloadRequest> memoryStorage = new TreeSet<>((lhs, rhs) -> lhs.getId() - rhs.getId());
@@ -156,8 +154,10 @@ public class InterruptableDownloadManager implements DownloadManager<DownloadReq
         private void publishProgress(Subscriber<? super Integer> subscriber, long total) {
             if (fileLength > 0) {
                 int perc = (int) (total * 100 / fileLength);
-                if (perc != prevPercentage)
+                if (perc != prevPercentage) {
                     subscriber.onNext(perc);
+                    Timber.d("publish progress " + perc);
+                }
                 prevPercentage = perc;
             } else {
                 if (prevPercentage != -1)

@@ -1,15 +1,14 @@
 package io.github.nafanya.vkdocs.utils;
 
 import android.app.Application;
-import android.content.Context;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 
-public class FileFormatUtils {
+public class FileFormatter {
     private String from;
 
-    public FileFormatUtils(Application app) {
+    public FileFormatter(Application app) {
         from = app.getString(R.string.from);
     }
 
@@ -31,11 +30,14 @@ public class FileFormatUtils {
         }
     }
 
+    public int getProgress(DownloadRequest request) {
+        return (int) (request.getBytes() * 1.0 / request.getTotalBytes() * 100);
+    }
+
     private String getFormatSize(long size, int div, String metr) {
         long kb = size / div;
         if (kb < 10)
             return (int)(size * 1.0 / div * 10) / 10.0 + metr;
         return size / div + metr;
     }
-
 }

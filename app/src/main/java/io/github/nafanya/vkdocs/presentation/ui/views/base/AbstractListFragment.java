@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.webkit.MimeTypeMap;
 
@@ -15,9 +16,11 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
+import io.github.nafanya.vkdocs.presentation.ui.views.OpenProgressDialog;
+import timber.log.Timber;
 
 public abstract class AbstractListFragment<AdapterType>
-        extends Fragment implements DocumentsPresenter.Callback, CommonItemEventListener {
+        extends Fragment implements DocumentsPresenter.Callback, CommonItemEventListener, OpenProgressDialog.Callback {
     public static String EXT_TYPE_KEY = "ext_types_key";
 
     public static DocFilter ALL = new ExtDocFilter(
@@ -34,6 +37,7 @@ public abstract class AbstractListFragment<AdapterType>
 
     protected DocumentsPresenter presenter;
     protected AdapterType adapter;
+    private VkDocument cachedDoc;
 
     protected abstract AdapterType newAdapter();
 
@@ -81,10 +85,10 @@ public abstract class AbstractListFragment<AdapterType>
         }
     }
 
-    public void openDocument(VkDocument document) {
+    private void openDocument(VkDocument document) {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension("." + document.getExt());
+        String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
 
         File fileDoc = new File("");//TODO write here path
         newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
@@ -99,16 +103,37 @@ public abstract class AbstractListFragment<AdapterType>
 
     @Override
     public void onOpenFile(VkDocument document) {
-        //TODO new intent for view
+        openDocument(document);
     }
 
     @Override
-    public void onDownloadingFile(VkDocument document) {
-
+    public void onAlreadyDownloading(VkDocument document) {
+        Timber.d("on already downloading");
+        DialogFragment fragment = OpenProgressDialog.newInstance(document);
+        fragment.setTargetFragment(this, 0);
+        cachedDoc = document;
+        fragment.show(getFragmentManager(), "progress_open");
     }
 
     @Override
     public void onNoInternetWhenOpen() {
         //TODO snackbar or smth shit
+    }
+
+    @Override
+    public void onCancelCaching() {
+        //TODO remove or no doc
+        cachedDoc = null;
+    }
+
+    @Override
+    public void onErrorCaching(Exception error) {
+        //TODO show snackbar
+    }
+
+    @Override
+    public void onCompleteCaching() {
+        openDocument(cachedDoc);
+        cachedDoc = null;
     }
 }

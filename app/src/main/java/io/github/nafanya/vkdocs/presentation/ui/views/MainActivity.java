@@ -22,8 +22,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.presentation.ui.views.MyDocsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.OfflineListFragment;
 import io.github.nafanya.vkdocs.utils.DocIcons;
 import timber.log.Timber;
 

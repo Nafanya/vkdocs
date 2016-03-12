@@ -1,6 +1,6 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
@@ -12,12 +12,12 @@ import rx.Scheduler;
 public class CancelMakeOffline extends UseCase<Void> {
     private VkDocument document;
     private DocumentRepository repository;
-    private DownloadManager<DownloadRequest> downloadManager;
+    private DownloadManager downloadManager;
 
     public CancelMakeOffline(Scheduler observerScheduler, Scheduler subscriberScheduler,
                              EventBus eventBus,
                              DocumentRepository repository,
-                             DownloadManager<DownloadRequest> downloadManager,
+                             DownloadManager downloadManager,
                              VkDocument document) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
         this.downloadManager = downloadManager;

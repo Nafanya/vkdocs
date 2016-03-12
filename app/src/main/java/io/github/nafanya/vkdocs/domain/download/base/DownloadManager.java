@@ -2,7 +2,7 @@ package io.github.nafanya.vkdocs.domain.download.base;
 
 import java.util.List;
 
-public interface DownloadManager<T extends BaseDownloadRequest> {
+public interface DownloadManager {
     interface RequestObserver {
         void onProgress(int percentage);
         void onComplete();
@@ -10,7 +10,7 @@ public interface DownloadManager<T extends BaseDownloadRequest> {
         void onInfiniteProgress();
     }
 
-    void enqueue(T request);
-    void cancelRequest(T request);
-    List<T> getQueue();
+    void enqueue(DownloadRequest request);
+    void cancelRequest(DownloadRequest request);
+    List<DownloadRequest> getQueue();
 }

@@ -1,7 +1,5 @@
-package io.github.nafanya.vkdocs.domain.download;
+package io.github.nafanya.vkdocs.domain.download.base;
 
-import io.github.nafanya.vkdocs.domain.download.base.BaseDownloadRequest;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 

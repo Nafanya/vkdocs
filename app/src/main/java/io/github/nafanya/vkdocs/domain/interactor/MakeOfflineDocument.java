@@ -1,6 +1,6 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import io.github.nafanya.vkdocs.domain.download.DownloadRequest;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
@@ -13,13 +13,13 @@ public class MakeOfflineDocument extends UseCase<Void> {
     private VkDocument document;
     private String toPath;
     private DocumentRepository repository;
-    private DownloadManager<DownloadRequest> downloadManager;
+    private DownloadManager downloadManager;
 
     public MakeOfflineDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
                                VkDocument document,
                                String toPath,
                                DocumentRepository repository,
-                               DownloadManager<DownloadRequest> downloadManager) {
+                               DownloadManager downloadManager) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
         this.document = document;
         this.toPath = toPath;

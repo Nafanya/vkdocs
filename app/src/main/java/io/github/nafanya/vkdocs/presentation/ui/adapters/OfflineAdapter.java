@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.List;
 
 import butterknife.Bind;
@@ -20,19 +18,19 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
-import io.github.nafanya.vkdocs.utils.FileFormatUtils;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
-    private FileFormatUtils formatUtils;
+    private FileFormatter fileFormatter;
 
     private List<VkDocument> documents;
     private ItemEventListener listener;
 
-    public OfflineAdapter(FileFormatUtils formatUtils, ItemEventListener listener) {
-        this.formatUtils = formatUtils;
+    public OfflineAdapter(FileFormatter fileFormatter, ItemEventListener listener) {
+        this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
 
@@ -120,19 +118,18 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
         public void setup(VkDocument doc) {
             title.setText(doc.title);
-            long sizeBytes = doc.size;
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
             prevDoc = doc;
-            downloadProgress.setProgress((int) (doc.getRequest().getBytes() * 1.0 / doc.size * 100));
-            size.setText(formatUtils.formatFrom(doc.getRequest()));
+            downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
+            size.setText(fileFormatter.formatFrom(doc.getRequest()));
 
             doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
                 @Override
                 public void onProgress(int percentage) {
                     Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
                     //.getString(R.string.from)
-                    size.setText(formatUtils.formatFrom(doc.getRequest()));
+                    size.setText(fileFormatter.formatFrom(doc.getRequest()));
                     downloadProgress.setProgress(percentage);
                 }
 
@@ -183,7 +180,7 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setup(VkDocument doc) {
             title.setText(doc.title);
-            size.setText(formatUtils.formatSize(doc.size));
+            size.setText(fileFormatter.formatSize(doc.size));
         }
 
         @Override
