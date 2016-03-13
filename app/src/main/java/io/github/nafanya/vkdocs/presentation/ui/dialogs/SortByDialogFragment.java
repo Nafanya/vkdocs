@@ -55,6 +55,13 @@ public class SortByDialogFragment extends AppCompatDialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+
+        setTargetFragment(null, 0);
+    }
+
     public interface Callback {
         void onSortModeChanged(SortMode sortMode);
     }
