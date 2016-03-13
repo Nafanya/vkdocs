@@ -44,6 +44,9 @@ public class VKDocumentEntity extends BaseModel {
     @Column
     private String ext;
 
+    @Column
+    private String path;
+
     private DownloadRequestEntity downloadRequest;
 
     public VKDocumentEntity() {}
@@ -142,5 +145,13 @@ public class VKDocumentEntity extends BaseModel {
 
     public void setExt(String ext) {
         this.ext = ext;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

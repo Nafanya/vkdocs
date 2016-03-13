@@ -7,6 +7,7 @@ import com.vk.sdk.api.model.VKApiDocument;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 
 public class VkDocument extends VKApiDocument {
+
     public enum ExtType {TEXT, ARCHIVE, GIF, IMAGE, AUDIO, VIDEO, BOOK, UNKNOWN};
 
     public static int NONE = 0;
@@ -15,6 +16,7 @@ public class VkDocument extends VKApiDocument {
 
     private DownloadRequest downloadRequest;
     private int offlineType;
+    private String path;
 
     public VkDocument() {}
 
@@ -90,6 +92,14 @@ public class VkDocument extends VKApiDocument {
 
     public String getExt() {
         return ext;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public static Creator<VkDocument> CREATOR = new Creator<VkDocument>() {

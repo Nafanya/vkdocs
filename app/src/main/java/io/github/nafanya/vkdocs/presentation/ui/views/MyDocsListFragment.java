@@ -22,6 +22,7 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import timber.log.Timber;
 
 public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>

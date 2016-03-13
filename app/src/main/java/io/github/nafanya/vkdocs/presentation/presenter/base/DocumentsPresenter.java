@@ -15,6 +15,7 @@ import io.github.nafanya.vkdocs.domain.interactor.CancelMakeOffline;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
+import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
@@ -73,6 +74,11 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    public void updateDocument(VkDocument document) {
+        new UpdateDocument(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus,
+                repository, document).execute();
     }
 
     //TODO when caching is finished, remove GetDocuments from EventBus?

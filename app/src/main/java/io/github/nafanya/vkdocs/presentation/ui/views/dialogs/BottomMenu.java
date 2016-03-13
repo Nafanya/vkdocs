@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views;
+package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

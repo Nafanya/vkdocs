@@ -14,9 +14,8 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
-import io.github.nafanya.vkdocs.presentation.ui.views.OpenProgressDialog;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import timber.log.Timber;
 
 public abstract class AbstractListFragment<AdapterType>
@@ -78,8 +77,8 @@ public abstract class AbstractListFragment<AdapterType>
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
-
-        File fileDoc = new File("");//TODO write here path
+        Timber.d("path = " + document.getPath());
+        File fileDoc = new File(document.getPath());
         newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
         try {
@@ -119,6 +118,7 @@ public abstract class AbstractListFragment<AdapterType>
 
     @Override
     public void onCompleteCaching(VkDocument document) {
+        presenter.updateDocument(document);
         openDocument(document);
     }
 }

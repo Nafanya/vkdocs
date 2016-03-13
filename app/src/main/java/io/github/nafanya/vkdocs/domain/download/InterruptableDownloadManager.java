@@ -69,7 +69,6 @@ public class InterruptableDownloadManager implements DownloadManager {
             }
 
             request.setActive(true);
-            Timber.d("in call idm = " + request.getId());
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(request.getUrl());
@@ -123,8 +122,7 @@ public class InterruptableDownloadManager implements DownloadManager {
                         while ((count = input.read(data)) != -1) {
                             // allow canceling with back button
                             if (request.isCanceled()) {
-                                deleteRequest(request);
-                                //TODO write here remove file
+                                abortRequest(request);
                                 input.close();
                                 return;
                             }
@@ -154,10 +152,8 @@ public class InterruptableDownloadManager implements DownloadManager {
         private void publishProgress(Subscriber<? super Integer> subscriber, long total) {
             if (fileLength > 0) {
                 int perc = (int) (total * 100 / fileLength);
-                if (perc != prevPercentage) {
+                if (perc != prevPercentage)
                     subscriber.onNext(perc);
-                    Timber.d("publish progress " + perc);
-                }
                 prevPercentage = perc;
             } else {
                 if (prevPercentage != -1)
@@ -170,7 +166,7 @@ public class InterruptableDownloadManager implements DownloadManager {
     public void cancelRequest(DownloadRequest request) {
         request.cancel();
         if (!request.isActive())
-            deleteRequest(request);
+            abortRequest(request);
     }
 
     private void updateRequest(DownloadRequest request) {
@@ -180,6 +176,10 @@ public class InterruptableDownloadManager implements DownloadManager {
     private void deleteRequest(DownloadRequest request) {
         storage.delete(request);
         memoryStorage.remove(request);
+    }
+
+    private void abortRequest(DownloadRequest request) {
+        deleteRequest(request);
         File file = new File(request.getDest());
         if (file.exists())
             file.delete();

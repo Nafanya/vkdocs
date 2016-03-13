@@ -23,6 +23,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         ret.extType = vkDocumentEntity.getExtType();
         ret.setOfflineType(vkDocumentEntity.getOfflineType());
         ret.ext = vkDocumentEntity.getExt();
+        ret.setPath(vkDocumentEntity.getPath());
 
         if (vkDocumentEntity.getDownloadRequest() != null)
             ret.setRequest(mapper.transform(vkDocumentEntity.getDownloadRequest()));
@@ -40,6 +41,7 @@ public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {
         vk.setExtType(vkDoc.extType);
         vk.setOfflineType(vkDoc.getOfflineType());
         vk.setExt(vkDoc.getExt());
+        vk.setPath(vkDoc.getPath());
         return vk;
     }
 }

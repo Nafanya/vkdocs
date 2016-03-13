@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views;
+package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -112,6 +112,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public void onComplete() {
         Timber.d("on complete");
         dismiss();
+        doc.setPath(request.getDest());
         callback.onCompleteCaching(doc);
     }
 
