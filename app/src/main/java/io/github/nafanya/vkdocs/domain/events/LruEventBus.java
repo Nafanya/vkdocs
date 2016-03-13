@@ -28,6 +28,11 @@ public class LruEventBus implements EventBus {
     }
 
     @Override
+    public boolean contains(int hash) {
+        return getEvent(hash) != null;
+    }
+
+    @Override
     public void removeEvent(Class<? extends UseCase<?>> clazz) {
         removeEvent(clazz.hashCode());
     }

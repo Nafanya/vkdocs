@@ -59,11 +59,11 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App app = (App)getActivity().getApplication();
-        fileFormatter = ((MainActivity)getActivity()).getFileFormatter();
         doc = getArguments().getParcelable(DOC_KEY);
 
+        App app = (App)getActivity().getApplication();
         callback = (Callback)getTargetFragment();//GET CALLBACK FRAGMENT OR ACTIVITY HERE
+        fileFormatter = app.getFileFormatter();
 
         InterruptableDownloadManager downloadManager = app.getDownloadManager();
         List<DownloadRequest> requests = downloadManager.getQueue();
@@ -91,7 +91,8 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         Dialog dialog = builder.create();
         ButterKnife.bind(this, rootView);
 
-        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
+        Timber.d("doc type ic = " + documentTypeIcon + ", fileformatter = " + fileFormatter + ", doc = " + doc);
+        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));
         docTitle.setText(doc.title);
         if (request != null) {
             downloadProgress.setProgress(fileFormatter.getProgress(request));

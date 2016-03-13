@@ -38,7 +38,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         this.listener = listener;
         setContentView(R.layout.dialog_bottom);
         ButterKnife.bind(this);
-        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
+        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
         title.setText(doc.title);
         offlineSwitch.setOnCheckedChangeListener(this);
         offlineSwitch.setChecked(doc.isOffline());

@@ -97,6 +97,6 @@ public class OfflineListFragment
 
     public OfflineAdapter newAdapter() {
         App app = (App)getActivity().getApplication();
-        return new OfflineAdapter(((MainActivity)getActivity()).getFileFormatter(), this);
+        return new OfflineAdapter(app.getFileFormatter(), this);
     }
 }

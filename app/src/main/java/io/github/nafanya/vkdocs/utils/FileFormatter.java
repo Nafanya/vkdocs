@@ -20,15 +20,17 @@ public class FileFormatter {
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
-
-        musicBox = ContextCompat.getDrawable(context, R.drawable.music_box);
-        movie = ContextCompat.getDrawable(context, R.drawable.movie);
-        filePdfBox = ContextCompat.getDrawable(context, R.drawable.file_pdf_box);
-        image = ContextCompat.getDrawable(context, R.drawable.image);
-        file = ContextCompat.getDrawable(context, R.drawable.file);
     }
 
-    public Drawable getIcon(VkDocument doc) {
+    public Drawable getIcon(VkDocument doc, Context context) {
+        if (musicBox == null) {
+            musicBox = ContextCompat.getDrawable(context, R.drawable.music_box);
+            movie = ContextCompat.getDrawable(context, R.drawable.movie);
+            filePdfBox = ContextCompat.getDrawable(context, R.drawable.file_pdf_box);
+            image = ContextCompat.getDrawable(context, R.drawable.image);
+            file = ContextCompat.getDrawable(context, R.drawable.file);
+        }
+
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
             return musicBox;
 

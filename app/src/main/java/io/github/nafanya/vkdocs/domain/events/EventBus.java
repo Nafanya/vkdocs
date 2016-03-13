@@ -6,9 +6,7 @@ public interface EventBus {
     void putEvent(UseCase<?> useCase);
     <T> UseCase<T> getEvent(int hash);
     void removeEvent(int hash);
-    default boolean contains(int hash) {
-        return getEvent(hash) != null;
-    }
+    boolean contains(int hash);
 
     void removeEvent(Class<? extends UseCase<?>> clazz);
     boolean contains(Class<? extends UseCase<?>> clazz);

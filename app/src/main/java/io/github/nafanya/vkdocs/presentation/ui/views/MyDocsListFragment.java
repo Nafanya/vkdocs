@@ -55,7 +55,7 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>
 
     public MyDocsAdapter newAdapter() {
         App app = (App)getActivity().getApplication();
-        return new MyDocsAdapter(((MainActivity)getActivity()).getFileFormatter(), this);
+        return new MyDocsAdapter(getActivity(), app.getFileFormatter(), this);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>
     /***Adapter events***/
     @Override
     public void onClickContextMenu(int position, VkDocument document) {
-        MainActivity activity = (MainActivity)getActivity();
-        BottomSheetDialog dialog = new BottomMenu(activity, document, activity.getFileFormatter(), this);
+        App app = (App)getActivity().getApplication();
+        BottomSheetDialog dialog = new BottomMenu(getActivity(), document, app.getFileFormatter(), this);
         dialog.show();
     }
 

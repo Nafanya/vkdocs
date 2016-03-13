@@ -25,8 +25,10 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     private List<VkDocument> documents;
     private ItemEventListener listener;
     private FileFormatter fileFormatter;
+    private Context context;
 
-    public MyDocsAdapter(FileFormatter fileFormatter, ItemEventListener listener) {
+    public MyDocsAdapter(Context context, FileFormatter fileFormatter, ItemEventListener listener) {
+        this.context = context;
         this.fileFormatter = fileFormatter;
         this.listener = listener;
     }
@@ -102,7 +104,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
                 UPD: VKApiDocument ext field is always null, so we definitely need our own model.
              */
 
-            documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc));
+            documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);

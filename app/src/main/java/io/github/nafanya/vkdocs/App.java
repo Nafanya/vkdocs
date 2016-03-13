@@ -28,6 +28,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -36,7 +37,7 @@ public class App extends Application {
     private EventBus eventBus;
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
-
+    private FileFormatter fileFormatter;
     private InternetService internetService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
@@ -69,6 +70,8 @@ public class App extends Application {
                 Schedulers.from(Executors.newFixedThreadPool(5)),
                 new DbRequestStorage(new DownloadRequestMapper()));
 
+        fileFormatter = new FileFormatter(this);
+
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
         NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
@@ -100,5 +103,9 @@ public class App extends Application {
 
     public InternetService getInternetService() {
         return internetService;
+    }
+
+    public FileFormatter getFileFormatter() {
+        return fileFormatter;
     }
 }

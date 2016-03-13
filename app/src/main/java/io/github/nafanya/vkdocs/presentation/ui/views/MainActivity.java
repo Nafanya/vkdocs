@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.tab_layout) TabLayout tabLayout;
     @Bind(R.id.pager) ViewPager pager;
 
-    private FileFormatter fileFormatter;
-
     private Drawer drawer;
     private CharSequence title;
 
@@ -64,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
             OfflineListFragment.newInstance(ExtType.UNKNOWN),
     };
 
-
-    //public DocIcons docIcons;
-
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         initUI();
         initNavigationDrawer();
-        fileFormatter = new FileFormatter(this);
     }
 
     private void initUI() {
@@ -130,10 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 })
                 .build();
-    }
-
-    public FileFormatter getFileFormatter() {
-        return fileFormatter;
     }
 
     private static class DocumentPagerAdapter extends FragmentStatePagerAdapter {
