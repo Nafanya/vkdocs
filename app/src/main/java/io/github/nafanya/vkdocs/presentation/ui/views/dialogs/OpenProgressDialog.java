@@ -29,9 +29,11 @@ import timber.log.Timber;
 public class OpenProgressDialog extends AppCompatDialogFragment implements DownloadManager.RequestObserver {
 
     private static String DOC_KEY = "doc_key";
+    private static String ALREADY_DOWNLOADING_KEY = "adlready_downloading";
 
     private DownloadRequest request;
     private VkDocument doc;
+    private boolean isAlreadyDownloading;
     private FileFormatter fileFormatter;
 
     @Bind(R.id.ic_document_type)
@@ -48,10 +50,11 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     private Callback callback;
 
-    public static OpenProgressDialog newInstance(VkDocument document) {
+    public static OpenProgressDialog newInstance(VkDocument document, boolean isAlreadyDownloading) {
         OpenProgressDialog fragment = new OpenProgressDialog();
         Bundle bundle = new Bundle();
         bundle.putParcelable(DOC_KEY, document);
+        bundle.putBoolean(ALREADY_DOWNLOADING_KEY, isAlreadyDownloading);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -60,6 +63,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doc = getArguments().getParcelable(DOC_KEY);
+        isAlreadyDownloading = getArguments().getBoolean(ALREADY_DOWNLOADING_KEY);
 
         App app = (App)getActivity().getApplication();
         callback = (Callback)getTargetFragment();//GET CALLBACK FRAGMENT OR ACTIVITY HERE
@@ -119,7 +123,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Override
     public void onError(Exception e) {
         dismiss();
-        callback.onErrorCaching(e);
+        callback.onErrorCaching(e, isAlreadyDownloading);
     }
 
     //Indeterminate progress cannot be infinite
@@ -131,12 +135,12 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Override
     public void onCancel(DialogInterface dialog) {
         Timber.d("ON CANCEL DIALOG");
-        callback.onCancelCaching(doc);
+        callback.onCancelCaching(doc, isAlreadyDownloading);
     }
 
     public interface Callback {
-        void onCancelCaching(VkDocument document);
+        void onCancelCaching(VkDocument document, boolean isAlreadyDownloading);
         void onCompleteCaching(VkDocument document);
-        void onErrorCaching(Exception error);
+        void onErrorCaching(Exception error, boolean isAlreadyDownloading);
     }
 }

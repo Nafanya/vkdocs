@@ -49,6 +49,18 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         presenter.onStop();
@@ -95,8 +107,8 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
-    public void onAlreadyDownloading(VkDocument document) {
-        DialogFragment fragment = OpenProgressDialog.newInstance(document);
+    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
+        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), "progress_open");
     }
@@ -107,12 +119,13 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
-    public void onCancelCaching(VkDocument doc) {
-        //TODO remove or no doc
+    public void onCancelCaching(VkDocument doc, boolean isAlreadyDownloading) {
+        if (!isAlreadyDownloading)
+            presenter.cancelDownloading(doc);
     }
 
     @Override
-    public void onErrorCaching(Exception error) {
+    public void onErrorCaching(Exception error, boolean isAlreadyDownloading) {
         //TODO show snackbar
     }
 

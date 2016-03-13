@@ -26,6 +26,7 @@ public class NetworkMyDocuments extends UseCase<List<VkDocument>> {
             try {
                 repository.synchronize();
                 subscriber.onNext(repository.getMyDocuments());
+                eventBus.removeEvent(NetworkMyDocuments.class);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

@@ -16,7 +16,6 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
@@ -81,7 +80,7 @@ public class OfflineListFragment
 
     @Override
     public void onCancelDownloading(int position, VkDocument document) {
-        presenter.cancelMakeOffline(document);
+        presenter.cancelDownloading(document);
         adapter.removeIndex(position);
     }
 

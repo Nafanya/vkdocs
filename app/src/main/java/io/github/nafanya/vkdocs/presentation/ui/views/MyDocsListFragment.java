@@ -67,9 +67,21 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
         presenter.setCallback(this);
-        presenter.getDocuments();
+
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.getDocuments();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.onPause();
     }
 
     /***Presenter events***/

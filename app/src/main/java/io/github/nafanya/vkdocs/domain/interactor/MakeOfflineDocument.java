@@ -29,17 +29,17 @@ public class MakeOfflineDocument extends UseCase<Void> {
 
     @Override
     public Observable<Void> buildUseCase() {
-
         return Observable.create(subscriber -> {
             try {
+                eventBus.removeEvent(GetMyDocuments.class);
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 request.setDocId(document.getId());
                 request.setTotalBytes(document.size);
                 downloadManager.enqueue(request);
 
                 document.setOfflineType(VkDocument.OFFLINE);
+                document.setRequest(request);
                 repository.update(document);
-                eventBus.removeEvent(GetMyDocuments.class);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

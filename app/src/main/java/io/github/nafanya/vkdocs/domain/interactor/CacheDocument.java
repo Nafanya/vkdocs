@@ -39,9 +39,11 @@ public class CacheDocument extends UseCase<VkDocument> {
                 downloadManager.enqueue(request);
 
                 document.setOfflineType(VkDocument.CACHE);
-                repository.update(document);
                 document.setRequest(request);
+                repository.update(document);
+
                 subscriber.onNext(document);
+                eventBus.removeEvent(CacheDocument.class);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

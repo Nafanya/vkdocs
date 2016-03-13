@@ -1,6 +1,5 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
@@ -8,17 +7,18 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
-public class CancelMakeOffline extends UseCase<Void> {
+public class CancelDownloadingDocument extends UseCase<Void> {
     private VkDocument document;
     private DocumentRepository repository;
     private DownloadManager downloadManager;
 
-    public CancelMakeOffline(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                             EventBus eventBus,
-                             DocumentRepository repository,
-                             DownloadManager downloadManager,
-                             VkDocument document) {
+    public CancelDownloadingDocument(Scheduler observerScheduler, Scheduler subscriberScheduler,
+                                     EventBus eventBus,
+                                     DocumentRepository repository,
+                                     DownloadManager downloadManager,
+                                     VkDocument document) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
         this.downloadManager = downloadManager;
         this.document = document;
@@ -28,9 +28,11 @@ public class CancelMakeOffline extends UseCase<Void> {
     @Override
     public Observable<Void> buildUseCase() {
         return Observable.create(subscriber -> {
+            eventBus.removeEvent(GetMyDocuments.class);
             document.setOfflineType(VkDocument.NONE);
             repository.update(document);
             downloadManager.cancelRequest(document.getRequest());
+            Timber.d("CANCELED doc = " + document);
             subscriber.onCompleted();
         });
     }
