@@ -30,6 +30,7 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialogFragment;
+import io.github.nafanya.vkdocs.utils.DocIcons;
 import timber.log.Timber;
 
 /**
@@ -141,7 +142,7 @@ public class DocumentsFragment extends Fragment implements DocumentsPresenter.Ca
     public void onGetDocuments(List<VkDocument> documents) {
         if (adapter == null) {
             App app = (App)getActivity().getApplication();
-            adapter = new MyDocsAdapter(app.getFileFormatter(), app.getDocIcons(), sortMode, this);
+            adapter = new MyDocsAdapter(app.getFileFormatter(), new DocIcons(getActivity()), sortMode, this);
         }
         adapter.setData(documents);
         recyclerView.setAdapter(adapter);
