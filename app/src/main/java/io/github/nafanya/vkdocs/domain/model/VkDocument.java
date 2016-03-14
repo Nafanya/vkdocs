@@ -112,6 +112,14 @@ public class VkDocument extends VKApiDocument {
         }
     };
 
+    public VkDocument copy() {
+        VkDocument ret = new VkDocument(this);
+        ret.setPath(path);
+        ret.setOfflineType(offlineType);
+        ret.setRequest(downloadRequest);
+        return ret;
+    }
+
     /*
 1 - текстовые документы
 2 - архивы

@@ -32,7 +32,6 @@ public class CancelDownloadingDocument extends UseCase<Void> {
             document.setOfflineType(VkDocument.NONE);
             repository.update(document);
             downloadManager.cancelRequest(document.getRequest());
-            Timber.d("CANCELED doc = " + document);
             subscriber.onCompleted();
         });
     }

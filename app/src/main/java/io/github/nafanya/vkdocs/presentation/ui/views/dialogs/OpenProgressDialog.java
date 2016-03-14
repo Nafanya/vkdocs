@@ -79,7 +79,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
             }
 
         if (request == null) {
-            Timber.d("request is null, download is completed faster than open dialog");
+            Timber.d("request is null, title: %s", doc.title);
             dismiss();
             callback.onCompleteCaching(doc);
         }
@@ -94,6 +94,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         builder.setView(rootView);
         Dialog dialog = builder.create();
         ButterKnife.bind(this, rootView);
+        dialog.setCanceledOnTouchOutside(false);
 
         Timber.d("doc type ic = " + documentTypeIcon + ", fileformatter = " + fileFormatter + ", doc = " + doc);
         documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));

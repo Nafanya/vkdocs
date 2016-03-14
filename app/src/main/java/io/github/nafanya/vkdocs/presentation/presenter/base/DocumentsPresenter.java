@@ -7,14 +7,14 @@ import com.vk.sdk.api.model.VKApiDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
-import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
+import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -25,7 +25,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -155,23 +154,17 @@ public class DocumentsPresenter extends BasePresenter {
         }
     }
 
-    @Override
+/*    @Override
     public void onResume() {
-        Timber.d("on resume!!!");
         if (eventBus.contains(GetMyDocuments.class) && documentsSubscriber.isUnsubscribed()) {
-            Timber.d("get new docs");
             documentsSubscriber = new GetDocumentsSubscriber();
             eventBus.getEvent(GetMyDocuments.class).execute(documentsSubscriber);
         }
-    }
-
-    @Override
-    public void onPause() {
-        unsubscribeIfNot(documentsSubscriber);
-    }
+    }*/
 
     @Override
     public void onStop() {
+        unsubscribeIfNot(documentsSubscriber);
         unsubscribeIfNot(networkSubscriber);
         unsubscribeIfNot(cacheSubscriber);
     }
@@ -193,8 +186,15 @@ public class DocumentsPresenter extends BasePresenter {
                             d.setRequest(req);
                             break;
                         }
-                callback.onGetDocuments(filterList(documents));
+                callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));
             }
+        }
+
+        private List<VkDocument> copyVkDocumentsList(List<VkDocument> docs) {
+            List<VkDocument> ret = new ArrayList<>();
+            for (VkDocument x : docs)
+                ret.add(x.copy());
+            return ret;
         }
 
         @Override

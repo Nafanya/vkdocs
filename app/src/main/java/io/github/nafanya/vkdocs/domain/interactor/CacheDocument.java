@@ -32,7 +32,6 @@ public class CacheDocument extends UseCase<VkDocument> {
     public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
-                Timber.d("IN CACHE DOC");
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 request.setDocId(document.getId());
                 request.setTotalBytes(document.size);

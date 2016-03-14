@@ -49,18 +49,6 @@ public abstract class AbstractListFragment<AdapterType>
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        presenter.onPause();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         presenter.onStop();
@@ -74,8 +62,6 @@ public abstract class AbstractListFragment<AdapterType>
 
     @Override
     public void onClick(int position, VkDocument document) {
-        //new OpenProgressDialog().show();
-
         if (document.getExtType() != VkDocument.ExtType.AUDIO &&
                 document.getExtType() != VkDocument.ExtType.VIDEO &&
                 document.getExtType() != VkDocument.ExtType.IMAGE) {
