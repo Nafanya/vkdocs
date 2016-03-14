@@ -5,16 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Spinner;
 
 import java.util.List;
 
@@ -28,10 +28,10 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialogFragment;
 import io.github.nafanya.vkdocs.utils.DocIcons;
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,6 +93,9 @@ public class DocumentsFragment extends Fragment implements DocumentsPresenter.Ca
         ButterKnife.bind(this, root);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
+        // Convert dp to px
+        final int px = (int) (getActivity().getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getActivity().getResources().getDisplayMetrics().density);
+        recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));
 
         presenter.setCallback(this);
         presenter.getDocuments();
@@ -103,6 +106,9 @@ public class DocumentsFragment extends Fragment implements DocumentsPresenter.Ca
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.documents_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
