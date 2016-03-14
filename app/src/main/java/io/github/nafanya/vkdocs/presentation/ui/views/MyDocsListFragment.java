@@ -67,26 +67,15 @@ public class MyDocsListFragment extends AbstractListFragment<MyDocsAdapter>
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
         presenter.setCallback(this);
-
-
-        return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         presenter.getDocuments();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        presenter.onPause();
+        Timber.d("on create view");
+        return rootView;
     }
 
     /***Presenter events***/
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("on get docs!");
         if (adapter == null)
             adapter = newAdapter();
         adapter.setData(documents);
