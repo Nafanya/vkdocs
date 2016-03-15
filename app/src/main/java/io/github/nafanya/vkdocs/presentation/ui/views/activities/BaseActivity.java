@@ -2,8 +2,14 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,7 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     private String NAV_DRAW_POS = "nav_drawer_pos";
     protected SortMode sortMode = SortMode.DATE;
     protected VkDocument.ExtType extType;
-    private int navDrawerPos = 1;//TODO make enum Section
+    protected int navDrawerPos = 1;//TODO make enum Section
 
     @Override
     protected void onCreate(Bundle state) {
@@ -116,7 +122,8 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             default: newExtType = null;
         }
         if (newExtType != extType)
-            onExtOrSortChanged(extType, sortMode);
+            onExtOrSortChanged(newExtType, sortMode);
+        extType = newExtType;
     }
 
     @Override
@@ -125,6 +132,16 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     }
 
     /***Menu callbacks***/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.documents_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -146,10 +163,9 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     /*** Sort dialog callbacks***/
     @Override
     public void onSortModeChanged(SortMode newSortMode) {
-        if (newSortMode != sortMode) {
-            sortMode = newSortMode;
-            onExtOrSortChanged(extType, sortMode);
-        }
+        if (newSortMode != sortMode)
+            onExtOrSortChanged(extType, newSortMode);
+        sortMode = newSortMode;
     }
 
     public abstract void onExtOrSortChanged(VkDocument.ExtType extType, SortMode sortMode);

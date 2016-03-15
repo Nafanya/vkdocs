@@ -14,6 +14,7 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
+import timber.log.Timber;
 
 /**
  * Implementation of {@link DocumentsPresenter} methods.
@@ -35,29 +36,15 @@ public class DocumentsFragment extends BaseDocumentsFragment {
 
     private DocumentsAdapter adapter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        App app = (App) getActivity().getApplication();
-        presenter = new DocumentsPresenter(
-                filter,
-                app.getEventBus(),
-                app.getRepository(),
-                app.getDownloadManager(),
-                app.getInternetService(),
-                this);
-    }
-
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         presenter.setCallback(this);
         presenter.getDocuments();
     }
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("ON GET DOC sz = " + documents.size());
         if (adapter == null) {
             App app = (App)getActivity().getApplication();
             adapter = new DocumentsAdapter(getActivity(), app.getFileFormatter(), sortMode, listener);

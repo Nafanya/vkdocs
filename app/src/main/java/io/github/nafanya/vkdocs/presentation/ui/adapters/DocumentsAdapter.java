@@ -47,7 +47,6 @@ public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.Docu
 
     @Override
     public void onBindViewHolder(DocumentViewHolder holder, int position) {
-        Timber.d("On BIND VIEW HOLDER position = " + position);
         holder.setup(documents.get(position));
     }
 
@@ -69,7 +68,7 @@ public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.Docu
 
     public void setData(List<VkDocument> documents) {
         this.documents = documents;
-        //Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
         notifyDataSetChanged();
     }
 

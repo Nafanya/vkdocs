@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -31,7 +30,7 @@ public class DocumentsActivity extends BaseActivity implements
         BottomMenu.MenuEventListener,
         OpenProgressDialog.Callback {
 
-    //private DocumentsPresenter presenter;
+    private DocumentsPresenter presenter;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -42,14 +41,12 @@ public class DocumentsActivity extends BaseActivity implements
     /***BaseActivity overrides***/
     @Override
     public void onExtOrSortChanged(VkDocument.ExtType extType, SortMode sortMode) {
-
+        Timber.d("ON ext or sort changed " + extType);
+        onSectionChanged(navDrawerPos, extType, sortMode);
     }
-
-    private DocumentsPresenter presenter;
 
     @Override
     public void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode) {
-        Timber.d("ON SECTION CHANGED!");
         BaseDocumentsFragment fragment;
         if (newPos == 1)
             fragment = DocumentsFragment.newInstance(extType, sortMode);
@@ -59,8 +56,6 @@ public class DocumentsActivity extends BaseActivity implements
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
-        presenter = fragment.presenter();
-        Timber.d("presenter = " + presenter);
     }
 
     /***BaseDocumentsFragments callbacks***/
@@ -124,6 +119,13 @@ public class DocumentsActivity extends BaseActivity implements
     @Override
     public void onErrorCaching(Exception error, boolean isAlreadyDownloading) {
 
+    }
+
+    /***Fragments callbacks***/
+
+    @Override
+    public void onPresenterCreated(DocumentsPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override

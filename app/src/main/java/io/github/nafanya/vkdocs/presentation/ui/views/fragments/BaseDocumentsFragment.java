@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
@@ -19,6 +20,7 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
+import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/15/16.
@@ -36,6 +38,8 @@ public abstract class BaseDocumentsFragment extends Fragment implements Document
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isRealyAlreadyDownloading);
         void onNoInternetWhenOpen();
+
+        void onPresenterCreated(DocumentsPresenter presenter);
     }
 
     public static final String ARG_DOC_TYPE = "arg_doc_type";
@@ -68,10 +72,19 @@ public abstract class BaseDocumentsFragment extends Fragment implements Document
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
-
         filter = (DocFilter) getArguments().get(ARG_DOC_TYPE);
         sortMode = (SortMode) getArguments().get(ARG_SORT_MODE);
+
+        Timber.d("onCreate base doc fragment");
+        App app = (App) getActivity().getApplication();
+        presenter = new DocumentsPresenter(
+                filter,
+                app.getEventBus(),
+                app.getRepository(),
+                app.getDownloadManager(),
+                app.getInternetService(),
+                this);
+        listener.onPresenterCreated(presenter);
     }
 
     @Override
@@ -140,18 +153,4 @@ public abstract class BaseDocumentsFragment extends Fragment implements Document
     public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
         listener.onAlreadyDownloading(document, isReallyAlreadyDownloading);
     }
-
-    public DocumentsPresenter presenter() {
-        return presenter;
-    }
-
-    /*@Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.documents_menu, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }*/
 }

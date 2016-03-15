@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -60,13 +61,24 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     }
 
     @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+
+        try {
+            callback = (Callback)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement Callback");
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doc = getArguments().getParcelable(DOC_KEY);
         isAlreadyDownloading = getArguments().getBoolean(ALREADY_DOWNLOADING_KEY);
 
         App app = (App)getActivity().getApplication();
-        callback = (Callback)getTargetFragment();//GET CALLBACK FRAGMENT OR ACTIVITY HERE
         fileFormatter = app.getFileFormatter();
 
         InterruptableDownloadManager downloadManager = app.getDownloadManager();
