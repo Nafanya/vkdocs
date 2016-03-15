@@ -3,7 +3,7 @@ package io.github.nafanya.vkdocs.presentation.ui.views.documents;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 
 import java.util.List;
@@ -12,13 +12,12 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 
 /**
  * Implementation of {@link DocumentsPresenter} methods.
  */
 public class DocumentsFragment extends BaseDocumentsFragment implements DocumentsPresenter.Callback {
-
-    private DocumentsPresenter presenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,26 +89,18 @@ public class DocumentsFragment extends BaseDocumentsFragment implements Document
 
     @Override
     public void onOpenFile(VkDocument document) {
-
+        openDocument(document);
     }
 
     @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isRealyAlreadyDownloading) {
-
+    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
+        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), "progress_open");
     }
 
     @Override
     public void onNoInternetWhenOpen() {
-
-    }
-
-    @Override
-    public void onClick(int position, VkDocument document) {
-
-    }
-
-    @Override
-    public void onClickContextMenu(int position, VkDocument document) {
 
     }
 

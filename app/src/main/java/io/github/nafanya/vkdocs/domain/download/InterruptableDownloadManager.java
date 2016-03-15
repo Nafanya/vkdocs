@@ -111,7 +111,14 @@ public class InterruptableDownloadManager implements DownloadManager {
                 // download the file
                 InputStream input = connection.getInputStream();
                 try {
+                    File destFile = new File(request.getDest());
+                    if (!destFile.exists()) {
+                        if (!destFile.createNewFile()) {
+                            throw new Exception("Can't create new file at " + request.getDest());
+                        }
+                    }
                     RandomAccessFile output = new RandomAccessFile(request.getDest(), "rw"); //new FileOutputStream(request.getDest());
+
 
                     try {
                         byte data[] = new byte[4096];

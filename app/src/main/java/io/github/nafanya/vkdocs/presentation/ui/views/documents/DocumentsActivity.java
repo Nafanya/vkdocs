@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,11 +22,14 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
+import timber.log.Timber;
 
 public class DocumentsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.toolbar_spinner) Spinner spinner;
+
+    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,31 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, fragment)
                 .commit();
+
+        initNavigationDrawer();
+    }
+
+    private void initNavigationDrawer() {
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_my_documents).withIcon(R.drawable.ic_folder),
+                        new PrimaryDrawerItem().withName(R.string.drawer_offline).withIcon(R.drawable.ic_offline),
+                        new PrimaryDrawerItem().withName(R.string.drawer_uploads).withIcon(R.drawable.ic_upload),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings))
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    Timber.d("[Documents activity] Nav drawer position: %d", position);
+                    drawer.closeDrawer();
+                    return true;
+                })
+                .build();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }
 
     @Override

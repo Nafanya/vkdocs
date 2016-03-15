@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/bottom_share_external"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/share_external"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/share_external"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/bottom_share"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/share"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/send"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View style="@style/Divider.SubSection"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/bottom_download"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/download"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/download"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/body_available_offline"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/offline_grey"/>
+
+            <TextView
+                android:id="@+id/text_available_offline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/available_offline"
+                android:layout_toLeftOf="@+id/switch1"
+                android:layout_toStartOf="@+id/switch1" />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/m_grid_1x"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/switch1"
+                style="?switchStyle"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/bottom_rename"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/rename_box"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/rename"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View style="@style/Divider.SubSection"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <RelativeLayout
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/bottom_delete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/bottom_dialog_item_height">
+
+            <ImageView
+                android:layout_width="@dimen/m_entry_icon_size"
+                android:layout_height="@dimen/m_entry_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/m_grid_2x"
+                style="@style/FixedSizeIcon"
+                app:srcCompat="@drawable/delete"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ListEntryTitle.BottomList.Relative"
+                android:text="@string/delete"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
