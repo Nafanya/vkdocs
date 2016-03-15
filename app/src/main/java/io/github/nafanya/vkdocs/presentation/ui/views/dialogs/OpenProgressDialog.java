@@ -147,8 +147,8 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        Timber.d("ON CANCEL DIALOG");
-        // TODO: callback is null after back button pressed -> NPE
+        /**TODO show dialog:
+        Check int connection: retry cancel**/
         callback.onCancelCaching(doc, isAlreadyDownloading);
     }
 

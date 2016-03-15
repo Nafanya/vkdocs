@@ -16,9 +16,7 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.AbstractAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
@@ -26,12 +24,10 @@ import timber.log.Timber;
 /**
  * Created by pva701 on 15.03.16.
  */
-public abstract class PresenterActivity extends BaseActivity implements
-        DocumentsPresenter.Callback,
-        OfflineAdapter.ItemEventListener {
+public abstract class PresenterActivity extends BaseActivity implements DocumentsPresenter.Callback {
 
     protected DocumentsPresenter presenter;
-    protected AbstractAdapter adapter;
+    protected BaseSortedAdapter adapter;
     protected FileFormatter fileFormatter;
 
     @Override
@@ -62,19 +58,14 @@ public abstract class PresenterActivity extends BaseActivity implements
         }
     }
 
-    protected AbstractAdapter newAdapter(int section) {
-        if (section == 1)
-            return new DocumentsAdapter(this, fileFormatter, sortMode, this);
-        else
-            return new OfflineAdapter(this, fileFormatter, sortMode, this);
-    }
+    protected abstract BaseSortedAdapter newAdapter();
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
         if (adapter == null)
-            adapter = newAdapter(navDrawerPos);
+            adapter = newAdapter();
         adapter.setData(documents);
-        if (recyclerView.getAdapter() == null)
+        if (recyclerView.getAdapter() != adapter)
             recyclerView.setAdapter(adapter);
     }
 
@@ -112,11 +103,6 @@ public abstract class PresenterActivity extends BaseActivity implements
     public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
         DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
         fragment.show(getSupportFragmentManager(), "progress_open");
-    }
-
-    @Override
-    public void onNoInternetWhenOpen() {
-
     }
 
     protected void openDocument(VkDocument document) {

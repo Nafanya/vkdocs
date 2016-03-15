@@ -13,7 +13,7 @@ public class DocumentComparator {
     public static Comparator<VkDocument> offlineComparator(SortMode sortMode) {
         Comparator<VkDocument> comparator = getComparator(sortMode);
         return (lhs, rhs) -> {
-            boolean eq = lhs.isOfflineInProgress() ^ lhs.isOfflineInProgress();
+            boolean eq = lhs.isOfflineInProgress() ^ rhs.isOfflineInProgress();
             if (!eq)
                 return comparator.compare(lhs, rhs);
             if (lhs.isOfflineInProgress())

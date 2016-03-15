@@ -112,7 +112,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                     drawer.closeDrawer();
                     if (navDrawerPos != position) {
                         navDrawerPos = position;
-                        onSectionChanged(navDrawerPos, extType, sortMode);
+                        onSectionChanged(navDrawerPos);
                     }
                     return true;
                 }).build();
@@ -138,7 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             default: newExtType = null;
         }
         if (newExtType != extType)
-            onExtensionChanged(newExtType);
+            onTypeFilterChanged(newExtType);
         extType = newExtType;
 
     }
@@ -183,7 +183,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         sortMode = newSortMode;
     }
 
-    public abstract void onExtensionChanged(VkDocument.ExtType newExtType);
-    public abstract void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode);
+    public abstract void onTypeFilterChanged(VkDocument.ExtType newExtType);
+    public abstract void onSectionChanged(int newPos);
 }
 

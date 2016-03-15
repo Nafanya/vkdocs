@@ -1,14 +1,17 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
-import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import timber.log.Timber;
@@ -18,11 +21,12 @@ import timber.log.Timber;
  */
 public class DocumentsActivity extends PresenterActivity implements
         BottomMenu.MenuEventListener,
-        OpenProgressDialog.Callback {
+        OpenProgressDialog.Callback,
+        OfflineAdapter.ItemEventListener {
 
     /***BaseActivity overrides***/
     @Override
-    public void onExtensionChanged(VkDocument.ExtType extType) {
+    public void onTypeFilterChanged(VkDocument.ExtType extType) {
         presenter.setFilter(getFilter(navDrawerPos, extType));
         presenter.getDocuments();
     }
@@ -34,20 +38,13 @@ public class DocumentsActivity extends PresenterActivity implements
     }
 
     @Override
-    public void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode) {
-        adapter = newAdapter(newPos);
-        adapter.setData(adapter.getData());
-        recyclerView.setAdapter(adapter);
+    public void onSectionChanged(int newSection) {
+        presenter.setFilter(getFilter(newSection, extType));
+        adapter = null;
+        presenter.getDocuments();
     }
 
-    /***BaseDocumentsFragments callbacks***/
-    @Override
-    public void onClickContextMenu(int position, VkDocument document) {
-        App app = (App)getApplication();
-        BottomSheetDialog dialog = new BottomMenu(this, document, app.getFileFormatter(), this);
-        dialog.show();
-    }
-
+    /***Adapter callback***/
     @Override
     public void onClick(int position, VkDocument document) {
         if (document.getExtType() != VkDocument.ExtType.AUDIO &&
@@ -61,11 +58,24 @@ public class DocumentsActivity extends PresenterActivity implements
         }
     }
 
-    /***Adapter callback***/
+    @Override
+    public void onClickContextMenu(int position, VkDocument document) {
+        App app = (App)getApplication();
+        BottomSheetDialog dialog = new BottomMenu(this, document, app.getFileFormatter(), this);
+        dialog.show();
+    }
+
+
     @Override
     public void onCancelDownloading(int position, VkDocument document) {
         presenter.cancelDownloading(document);
         ((OfflineAdapter) adapter).removeIndex(position);
+    }
+
+
+    @Override
+    public void onCompleteDownloading(int position, VkDocument document) {
+        presenter.updateDocument(document);
     }
 
     /***BottomMenu callbacks***/
@@ -86,12 +96,19 @@ public class DocumentsActivity extends PresenterActivity implements
 
     @Override
     public void onCompleteCaching(VkDocument document) {
-        //presenter.updateDocument(document);
         openDocument(document);
     }
 
     @Override
     public void onErrorCaching(Exception error, boolean isAlreadyDownloading) {
 
+    }
+
+    @Override
+    protected BaseSortedAdapter newAdapter() {
+        if (navDrawerPos == 1)
+            return new DocumentsAdapter(this, fileFormatter, sortMode, this);
+        else
+            return new OfflineAdapter(this, fileFormatter, sortMode, this);
     }
 }

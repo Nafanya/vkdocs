@@ -19,33 +19,25 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.AbstractAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
-public class OfflineAdapter extends AbstractAdapter {
+public class OfflineAdapter extends BaseSortedAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
-    private FileFormatter fileFormatter;
-
-    private List<VkDocument> documents;
     private ItemEventListener listener;
-    private Context context;
-    private SortMode sortMode;
 
     public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
-        this.context = context;
-        this.fileFormatter = fileFormatter;
+        super(context, fileFormatter, sortMode);
         this.listener = listener;
-        this.sortMode = sortMode;
     }
-
 
     public void setData(List<VkDocument> documents) {
         this.documents = documents;
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
         notifyDataSetChanged();
     }
 
@@ -55,7 +47,7 @@ public class OfflineAdapter extends AbstractAdapter {
 
     public void setSortMode(SortMode sortMode) {
         this.sortMode = sortMode;
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
         notifyDataSetChanged();
     }
 
@@ -89,17 +81,16 @@ public class OfflineAdapter extends AbstractAdapter {
 
     }
 
-    @Override
-    public int getItemCount() {
-        return documents.size();
-    }
-
     public void removeIndex(int position) {
         documents.remove(position);
         notifyDataSetChanged();
     }
 
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        @Nullable
+        @Bind(R.id.ic_document_type)
+        ImageView documentTypeIcon;
 
         @Nullable
         @Bind(R.id.text_document_title)
@@ -137,6 +128,8 @@ public class OfflineAdapter extends AbstractAdapter {
         //TODO maybe add downloaded bytes and full size in progress callbacks
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
         public void setup(VkDocument doc) {
+            //documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
+
             title.setText(doc.title);
             if (prevDoc != null && prevDoc.getRequest() != null)
                 prevDoc.getRequest().setObserver(null);
@@ -156,6 +149,8 @@ public class OfflineAdapter extends AbstractAdapter {
                 @Override
                 public void onComplete() {
                     doc.resetRequest();
+                    listener.onCompleteDownloading(getAdapterPosition(), doc);
+                    Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
                     notifyDataSetChanged();
                 }
 
@@ -173,6 +168,8 @@ public class OfflineAdapter extends AbstractAdapter {
 
         @Override
         public void onClick(View v) {
+            if (listener == null)
+                return;
             int pos = getAdapterPosition();
             if (v == cancelButton)
                 listener.onCancelDownloading(pos, documents.get(pos));
@@ -181,36 +178,8 @@ public class OfflineAdapter extends AbstractAdapter {
         }
     }
 
-    public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.text_document_title)
-        TextView title;
-
-        @Bind(R.id.size)
-        TextView size;
-
-        private ItemEventListener listener;
-
-        public DocumentViewHolder(View view, ItemEventListener listener) {
-            super(view);
-            this.listener = listener;
-
-            ButterKnife.bind(this, view);
-            view.setOnClickListener(this);
-        }
-
-        public void setup(VkDocument doc) {
-            title.setText(doc.title);
-            size.setText(fileFormatter.formatSize(doc.size));
-        }
-
-        @Override
-        public void onClick(View v) {
-            int pos = getAdapterPosition();
-            listener.onClick(pos, documents.get(pos));
-        }
-    }
-
     public interface ItemEventListener extends CommonItemEventListener {
         void onCancelDownloading(int position, VkDocument document);
+        void onCompleteDownloading(int position, VkDocument document);
     }
 }

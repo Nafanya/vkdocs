@@ -39,7 +39,6 @@ public class DocumentsPresenter extends BasePresenter {
 
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
-        void onNoInternetWhenOpen();
     }
 
     private String OFFLINE_PATH = Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/";
@@ -87,11 +86,6 @@ public class DocumentsPresenter extends BasePresenter {
         if (document.isOffline() || document.isCached())
             callback.onOpenDocument(document);
         else {
-            if (!internetService.hasInternetConnection()) {
-                callback.onNoInternetWhenOpen();
-                return;
-            }
-
             if (!document.isDownloading()) {
                 cacheSubscriber = new CacheSubscriber();
                 new CacheDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
