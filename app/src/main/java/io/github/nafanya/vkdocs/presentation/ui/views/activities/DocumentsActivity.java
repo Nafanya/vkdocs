@@ -53,7 +53,9 @@ public class DocumentsActivity extends PresenterActivity implements
         if (document.getExtType() != VkDocument.ExtType.AUDIO &&
                 document.getExtType() != VkDocument.ExtType.VIDEO &&
                 document.getExtType() != VkDocument.ExtType.IMAGE) {
-           presenter.openDocument(document);
+            Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
+            Timber.d("is off %b, is cached %b", document.isOffline(), document.isCached());
+            presenter.openDocument(document);
         } else {
             //TODO
         }
@@ -78,14 +80,13 @@ public class DocumentsActivity extends PresenterActivity implements
     /***OpenProgressDialog callbacks***/
     @Override
     public void onCancelCaching(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading) {
+        if (!isAlreadyDownloading)
             presenter.cancelDownloading(document);
-        }
     }
 
     @Override
     public void onCompleteCaching(VkDocument document) {
-        presenter.updateDocument(document);
+        //presenter.updateDocument(document);
         openDocument(document);
     }
 

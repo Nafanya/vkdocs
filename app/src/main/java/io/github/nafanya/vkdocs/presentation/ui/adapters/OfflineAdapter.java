@@ -211,7 +211,6 @@ public class OfflineAdapter extends AbstractAdapter {
     }
 
     public interface ItemEventListener extends CommonItemEventListener {
-        void onClick(int position, VkDocument document);
         void onCancelDownloading(int position, VkDocument document);
     }
 }
