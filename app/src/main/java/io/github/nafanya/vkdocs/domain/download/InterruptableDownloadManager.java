@@ -16,6 +16,7 @@ import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 public class InterruptableDownloadManager implements DownloadManager {
@@ -59,7 +60,6 @@ public class InterruptableDownloadManager implements DownloadManager {
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
             Timber.d("download task " + request.getUrl() + " " + request.getDocId() + " " + request.getDest());
-
             if (request.getTotalBytes() > 0)
                 fileLength = request.getTotalBytes();
 
@@ -119,7 +119,6 @@ public class InterruptableDownloadManager implements DownloadManager {
                     }
                     RandomAccessFile output = new RandomAccessFile(request.getDest(), "rw"); //new FileOutputStream(request.getDest());
 
-
                     try {
                         byte data[] = new byte[4096];
                         long total = request.getBytes();
@@ -162,11 +161,11 @@ public class InterruptableDownloadManager implements DownloadManager {
                 if (perc != prevPercentage)
                     subscriber.onNext(perc);
                 prevPercentage = perc;
-            } else {
+            } /*else {
                 if (prevPercentage != -1)
                     subscriber.onNext(-1);
                 prevPercentage = -1;
-            }
+            }*/
         }
     }
 
@@ -215,34 +214,24 @@ public class InterruptableDownloadManager implements DownloadManager {
     private void runTask(DownloadTask task) {
         final DownloadRequest request = task.getRequest();
 
-        Observable.create(task). //TODO add here .cache() or no?
+        Observable.create(task).
                 subscribeOn(workerScheduler).
-                observeOn(request.getObserveScheduler()).
+                observeOn(AndroidSchedulers.mainThread()).
                 subscribe(new Subscriber<Integer>   () {
                     @Override
                     public void onCompleted() {
-                        RequestObserver callback = request.getObserver();
-                        if (callback != null)
-                            callback.onComplete();
+                        request.publishComplete();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Timber.d("exc = " + e.getMessage());
-                        RequestObserver callback = request.getObserver();
-                        if (callback != null)
-                            callback.onError((Exception) e);
+                        request.publishError((Exception)e);
                     }
 
                     @Override
                     public void onNext(Integer progress) {
-                        RequestObserver callback = request.getObserver();
-                        if (callback != null) {
-                            if (progress == -1)
-                                callback.onInfiniteProgress();
-                            else
-                                callback.onProgress(progress);
-                        }
+                        request.publishProgress(progress);
                     }
                 });
     }

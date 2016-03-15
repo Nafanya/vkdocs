@@ -16,13 +16,15 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
+import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
 public class OfflineAdapter extends BaseSortedAdapter {
@@ -112,7 +114,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
         @Bind(R.id.context_menu)
         ImageView contextMenuButton;
 
-        private VkDocument prevDoc;
+        private Subscription prevSubscription = Subscriptions.empty();
 
         private ItemEventListener listener;
 
@@ -131,13 +133,11 @@ public class OfflineAdapter extends BaseSortedAdapter {
             //documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             title.setText(doc.title);
-            if (prevDoc != null && prevDoc.getRequest() != null)
-                prevDoc.getRequest().setObserver(null);
-            prevDoc = doc;
+            prevSubscription.unsubscribe();
             downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
             size.setText(fileFormatter.formatFrom(doc.getRequest()));
 
-            doc.getRequest().setObserver(new DownloadManager.RequestObserver() {
+            prevSubscription = doc.getRequest().addListener(new DownloadRequest.RequestListener() {
                 @Override
                 public void onProgress(int percentage) {
                     Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
@@ -148,6 +148,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
                 @Override
                 public void onComplete() {
+                    doc.setPath(doc.getRequest().getDest());
+                    Timber.d("path doc = " + doc.getPath());
                     doc.resetRequest();
                     listener.onCompleteDownloading(getAdapterPosition(), doc);
                     Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
@@ -157,11 +159,6 @@ public class OfflineAdapter extends BaseSortedAdapter {
                 @Override
                 public void onError(Exception e) {
                     //TODO write here. snackbar?
-                }
-
-                @Override
-                public void onInfiniteProgress() {
-                    downloadProgress.setIndeterminate(true);
                 }
             });
         }

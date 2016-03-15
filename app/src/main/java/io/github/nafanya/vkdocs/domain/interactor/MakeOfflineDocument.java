@@ -35,11 +35,29 @@ public class MakeOfflineDocument extends UseCase<Void> {
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 request.setDocId(document.getId());
                 request.setTotalBytes(document.size);
-                downloadManager.enqueue(request);
+                request.addListener(new DownloadRequest.RequestListener() {
+                    @Override
+                    public void onProgress(int percentage) {
 
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        document.setPath(request.getDest());
+                        new UpdateDocument(observerScheduler, subscriberScheduler, eventBus, repository, document).execute();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
+
+                downloadManager.enqueue(request);
                 document.setOfflineType(VkDocument.OFFLINE);
                 document.setRequest(request);
                 repository.update(document);
+
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

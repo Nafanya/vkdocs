@@ -1,13 +1,17 @@
 package io.github.nafanya.vkdocs.domain.download.base;
 
-import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.Subscription;
 
 public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
-    private volatile DownloadManager.RequestObserver observer;
-    private Scheduler observeScheduler = AndroidSchedulers.mainThread();
+    //private ReplaySubject<Integer> progressSubject = ReplaySubject.createWithSize(1);
+    //private volatile DownloadManager.RequestListener observer;
+    //private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
+    private List<RequestListener> listeners = new ArrayList<>();
 
     public DownloadRequest() {
         super(null, null);
@@ -17,23 +21,30 @@ public class DownloadRequest extends BaseDownloadRequest {
         super(url, destination);
     }
 
-    public DownloadRequest(String url, String destination, DownloadManager.RequestObserver observer) {
-        super(url, destination);
-        this.observer = observer;
-    }
+    public Subscription addListener(RequestListener listener) {
+        Subscription subscription = new Subscription() {
+            private boolean isUnsub = false;
 
-    public DownloadRequest(String url, String dest, Scheduler observeScheduler, DownloadManager.RequestObserver observer) {
-        super(url, dest);
-        this.observeScheduler = observeScheduler;
-        this.observer = observer;
-    }
+            @Override
+            public void unsubscribe() {
+                isUnsub = true;
+                listeners.remove(listener);
+            }
 
-    public void setObserver(DownloadManager.RequestObserver observer) {
-        this.observer = observer;
-    }
+            @Override
+            public boolean isUnsubscribed() {
+                return isUnsub;
+            }
+        };
 
-    public void setObserveScheduler(Scheduler observeScheduler) {
-        this.observeScheduler = observeScheduler;
+        listeners.add(listener);
+        if (isCompleted)
+            listener.onComplete();
+        else if (lastPer != null)
+            listener.onProgress(lastPer);
+        else if (lastEx != null)
+            listener.onError(lastEx);
+        return subscription;
     }
 
     public void cancel() {
@@ -44,19 +55,45 @@ public class DownloadRequest extends BaseDownloadRequest {
         return isCanceled;
     }
 
-    public DownloadManager.RequestObserver getObserver() {
-        return observer;
-    }
-
-    public Scheduler getObserveScheduler() {
-        return observeScheduler;
-    }
-
     public boolean isActive() {
         return isActive;
     }
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    /***Holy shit code, I hate Observers and Subscribers, so weak***/
+    private Exception lastEx;
+    private Integer lastPer;
+    private boolean isCompleted;
+
+    public void publishProgress(int perc) {
+        if (isCompleted)
+            throw new IllegalStateException("cant publish progress");
+        lastEx = null;
+        isCompleted = false;
+        lastPer = perc;
+        for (RequestListener l: listeners)
+            l.onProgress(lastPer);
+    }
+
+    public void publishComplete() {
+        isCompleted = true;
+        for (RequestListener l: listeners)
+            l.onComplete();
+    }
+
+    public void publishError(Exception e) {
+        lastEx = e;
+        lastPer = null;
+        for (RequestListener l: listeners)
+            l.onError(e);
+    }
+
+    public interface RequestListener {
+        void onProgress(int percentage);
+        void onComplete();
+        void onError(Exception e);
     }
 }

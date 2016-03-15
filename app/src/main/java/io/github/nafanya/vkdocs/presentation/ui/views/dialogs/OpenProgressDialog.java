@@ -20,14 +20,14 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
+import rx.Subscription;
 import timber.log.Timber;
 
 
-public class OpenProgressDialog extends AppCompatDialogFragment implements DownloadManager.RequestObserver {
+public class OpenProgressDialog extends AppCompatDialogFragment implements DownloadRequest.RequestListener {
 
     private static String DOC_KEY = "doc_key";
     private static String ALREADY_DOWNLOADING_KEY = "already_downloading";
@@ -103,6 +103,8 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         }
     }
 
+    private Subscription subscription;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -117,13 +119,27 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         Timber.d("doc type ic = " + documentTypeIcon + ", fileformatter = " + fileFormatter + ", doc = " + doc);
         documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));
         docTitle.setText(doc.title);
+
         if (request != null) {
             Timber.d("request isn't null");
             downloadProgress.setProgress(fileFormatter.getProgress(request));
             size.setText(fileFormatter.formatFrom(request));
-            request.setObserver(this);
         }
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (request != null)
+            subscription = request.addListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        if (subscription != null)
+            subscription.unsubscribe();
+        super.onStop();
     }
 
     @Override
@@ -134,7 +150,6 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onComplete() {
-        Timber.d("on complete");
         dismiss();
         doc.setPath(request.getDest());
         callback.onCompleteCaching(doc);
@@ -142,15 +157,8 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onError(Exception e) {
-        Timber.d("on error caching = " + e);
         dismiss();
         callback.onErrorCaching(e, doc, isAlreadyDownloading);
-    }
-
-    //Indeterminate progress cannot be infinite
-    @Override
-    public void onInfiniteProgress() {
-        downloadProgress.setIndeterminate(true);
     }
 
     @Override
