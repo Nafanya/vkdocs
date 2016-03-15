@@ -8,13 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SplashTheme" parent="AppTheme">
+    <style name="AppTheme.Splash">
         <item name="android:windowBackground">@drawable/splashscreen</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -84,6 +79,13 @@
         <item name="android:layout_marginTop">@dimen/m_grid_1x</item>
     </style>
 
+    <style name="AppTheme.Spinner.DropDown.ActionBar" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:dropDownSelector">?attr/selectableItemBackground</item>
+        <item name="android:divider">@null</item>
+        <item name="overlapAnchor">true</item>
+    </style>
+
     <style name="ListEntryTitle">
         <item name="android:enabled">false</item>
         <item name="android:textSize">@dimen/m_entry_text_size_secondary</item>
@@ -114,7 +116,6 @@
     <style name="ListEntryTitle.BottomList.Relative" parent="@style/ListEntryTitle.BottomList">
         <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
     </style>
-
 
     <style name="DialogOpenName">
         <item name="android:layout_marginTop">@dimen/m_grid_2x</item>

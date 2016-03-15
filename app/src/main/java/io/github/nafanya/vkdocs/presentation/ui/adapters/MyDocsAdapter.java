@@ -11,12 +11,15 @@ import android.widget.TextView;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
@@ -30,6 +33,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     public MyDocsAdapter(Context context, FileFormatter fileFormatter, ItemEventListener listener) {
         this.context = context;
         this.fileFormatter = fileFormatter;
+        this.sortMode = sortMode;
         this.listener = listener;
     }
 
@@ -57,8 +61,15 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         return documents.size();
     }
 
+    public void setSortMode(SortMode sortMode) {
+        this.sortMode = sortMode;
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        notifyDataSetChanged();
+    }
+
     public void setData(List<VkDocument> documents) {
         this.documents = documents;
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
         notifyDataSetChanged();
     }
 
@@ -96,13 +107,6 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
             contextMenu.setOnClickListener(this);
 
             title.setText(doc.title);
-            /*
-                TODO:
-                1) Add type info to VKApiDocuent model since file type is more accurate when got through api.
-                2) Add offline availability flag to model
-
-                UPD: VKApiDocument ext field is always null, so we definitely need our own model.
-             */
 
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
@@ -111,7 +115,25 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
             } else {
                 documentOfflineIcon.setVisibility(View.GONE);
             }
-            statusLables.setText(fileFormatter.formatSize(doc.size));
+
+            final int sortLabelText;
+            final String statusLabelText;
+            switch (sortMode) {
+                case DATE:
+                    sortLabelText = R.string.label_modified;
+                    statusLabelText = fileFormatter.formatDate(doc.date);
+                    break;
+                case SIZE:case NAME:
+                    sortLabelText = R.string.label_size;
+                    statusLabelText = fileFormatter.formatSize(doc.size);
+                    break;
+                default:
+                    sortLabelText = R.string.label_size;
+                    statusLabelText = fileFormatter.formatSize(doc.size);
+            }
+
+            sortLabel.setText(sortLabelText);
+            statusLables.setText(statusLabelText);
         }
         
         @Override
