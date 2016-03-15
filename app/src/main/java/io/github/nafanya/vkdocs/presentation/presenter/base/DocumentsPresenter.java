@@ -37,7 +37,7 @@ public class DocumentsPresenter extends BasePresenter {
         void onDelete(Exception ex);
 
         void onOpenFile(VkDocument document);
-        void onAlreadyDownloading(VkDocument document, boolean isRealyAlreadyDownloading);
+        void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
         void onNoInternetWhenOpen();
     }
 

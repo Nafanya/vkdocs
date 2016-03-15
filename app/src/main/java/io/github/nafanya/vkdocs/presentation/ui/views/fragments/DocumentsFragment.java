@@ -1,7 +1,8 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.documents;
+package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -11,13 +12,31 @@ import java.util.List;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
+import timber.log.Timber;
 
 /**
  * Implementation of {@link DocumentsPresenter} methods.
  */
-public class DocumentsFragment extends BaseDocumentsFragment implements DocumentsPresenter.Callback {
+public class DocumentsFragment extends BaseDocumentsFragment {
+
+    public static DocumentsFragment newInstance(VkDocument.ExtType type, @NonNull SortMode sortMode) {
+        Bundle bundle = new Bundle();
+        if (type == null) {
+            bundle.putSerializable(ARG_DOC_TYPE, ExtDocFilter.ALL);
+        } else {
+            bundle.putSerializable(ARG_DOC_TYPE, new ExtDocFilter(type));
+        }
+        bundle.putSerializable(ARG_SORT_MODE, sortMode);
+        DocumentsFragment fragment = new DocumentsFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    private MyDocsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,67 +60,15 @@ public class DocumentsFragment extends BaseDocumentsFragment implements Document
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        presenter.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.onDestroy();
-    }
-
-    @Override
     public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("ON GET DOCS sz = " + documents.size());
         if (adapter == null) {
             App app = (App)getActivity().getApplication();
-            adapter = new MyDocsAdapter(getActivity(), app.getFileFormatter(), sortMode, this);
+            adapter = new MyDocsAdapter(getActivity(), app.getFileFormatter(), sortMode, listener);
         }
         adapter.setData(documents);
-        recyclerView.setAdapter(adapter);
+        Timber.d("rec = " + recyclerView.getAdapter());
+        //if (recyclerView.getAdapter() == null)
+            recyclerView.setAdapter(adapter);
     }
-
-    @Override
-    public void onNetworkError(Exception ex) {
-
-    }
-
-    @Override
-    public void onDatabaseError(Exception ex) {
-
-    }
-
-    @Override
-    public void onMakeOffline(Exception ex) {
-
-    }
-
-    @Override
-    public void onRename(Exception ex) {
-
-    }
-
-    @Override
-    public void onDelete(Exception ex) {
-
-    }
-
-    @Override
-    public void onOpenFile(VkDocument document) {
-        openDocument(document);
-    }
-
-    @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), "progress_open");
-    }
-
-    @Override
-    public void onNoInternetWhenOpen() {
-
-    }
-
 }

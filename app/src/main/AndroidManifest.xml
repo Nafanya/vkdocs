@@ -33,8 +33,7 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
-        <activity android:name=".presentation.ui.views.MainActivity" />
-        <activity android:name=".presentation.ui.views.DocumentsActivity" />
+        <activity android:name=".presentation.ui.views.activities.DocumentsActivity" />
     </application>
 
 </manifest>

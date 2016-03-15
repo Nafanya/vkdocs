@@ -5,6 +5,10 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -72,5 +76,10 @@ public class FileFormatter {
         if (kb < 10)
             return (int)(size * 1.0 / div * 10) / 10.0 + metr;
         return size / div + metr;
+    }
+
+    private DateFormat df = new SimpleDateFormat();
+    public String formatDate(Date date) {
+        return df.format(date);
     }
 }

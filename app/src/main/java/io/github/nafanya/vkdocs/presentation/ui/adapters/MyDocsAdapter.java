@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.vk.sdk.api.model.VKApiDocument;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -21,16 +20,18 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
+import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
-    private ItemEventListener listener;
+    private CommonItemEventListener listener;
     private FileFormatter fileFormatter;
     private Context context;
+    private SortMode sortMode;
 
-    public MyDocsAdapter(Context context, FileFormatter fileFormatter, ItemEventListener listener) {
+    public MyDocsAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, CommonItemEventListener listener) {
         this.context = context;
         this.fileFormatter = fileFormatter;
         this.sortMode = sortMode;
@@ -48,6 +49,7 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
     @Override
     public void onBindViewHolder(DocumentViewHolder holder, int position) {
+        Timber.d("On BIND VIEW HOLDER position = " + position);
         holder.setup(documents.get(position));
     }
 
@@ -78,10 +80,6 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         notifyItemChanged(pos);
     }
 
-    public VKApiDocument getItem(int pos) {
-        return documents.get(pos);
-    }
-
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Bind(R.id.ic_document_type) ImageView documentTypeIcon;
@@ -91,9 +89,9 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
         @Bind(R.id.sortLabel) TextView sortLabel; // Only size yet
         @Bind(R.id.statusLabels) TextView statusLables; // Only size yet
 
-        private ItemEventListener listener;
+        private CommonItemEventListener listener;
 
-        public DocumentViewHolder(View view, ItemEventListener listener) {
+        public DocumentViewHolder(View view, CommonItemEventListener listener) {
             super(view);
             this.listener = listener;
 
@@ -151,7 +149,6 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
     }
 
     public interface ItemEventListener extends CommonItemEventListener {
-        void onClick(int position, VkDocument document);
-        void onClickContextMenu(int position, VkDocument document);
+
     }
 }

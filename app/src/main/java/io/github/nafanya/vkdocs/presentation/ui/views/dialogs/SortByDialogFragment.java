@@ -1,5 +1,6 @@
-package io.github.nafanya.vkdocs.presentation.ui.dialogs;
+package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,10 +28,15 @@ public class SortByDialogFragment extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-        listener = (Callback) getTargetFragment();
+        try {
+            listener = (Callback)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement Callback");
+        }
     }
 
     @NonNull
