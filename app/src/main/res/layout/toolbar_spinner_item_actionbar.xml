@@ -10,11 +10,10 @@
         android:layout_height="wrap_content"
         android:drawablePadding="@dimen/m_grid_1x"
         android:drawableRight="@drawable/abc_spinner_mtrl_am_alpha"
-        android:fontFamily="sans-serif"
         android:paddingLeft="@dimen/m_grid_2x"
         android:paddingRight="4dp"
         android:textColor="@color/md_dark_primary_text"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
 </LinearLayout>
