@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import java.util.Arrays;
@@ -34,7 +33,7 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        
+
         List<String> spinnerItems = Arrays.asList(getResources().getStringArray(R.array.doc_type_filter_items));
         SpinnerAdapter adapter = new SpinnerAdapter(this);
         adapter.addItems(spinnerItems);
