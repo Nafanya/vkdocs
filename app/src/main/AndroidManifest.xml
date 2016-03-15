@@ -3,7 +3,7 @@
     package="io.github.nafanya.vkdocs">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".presentation.ui.views.LoginActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <data android:scheme="vk5252455" />
 
@@ -34,7 +34,7 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity android:name=".presentation.ui.views.MainActivity" />
-
+        <activity android:name=".presentation.ui.views.DocumentsActivity" />
     </application>
 
 </manifest>

@@ -127,7 +127,7 @@ public class LoginActivity extends FragmentActivity {
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, DocumentsActivity.class);
         startActivity(intent);
         finish();
     }
