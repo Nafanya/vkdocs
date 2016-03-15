@@ -2,7 +2,6 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -25,7 +24,6 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialogFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.DocumentsFragment;
 import timber.log.Timber;
 
 public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialogFragment.Callback {
@@ -38,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     private String SORT_MODE_KEY = "sort_mode_arg";
     private String EXT_TYPE_KEY = "ext_type_key";
     private String NAV_DRAW_POS = "nav_drawer_pos";
-    protected SortMode sortMode;
+    protected SortMode sortMode = SortMode.DATE;
     protected VkDocument.ExtType extType;
     private int navDrawerPos = 1;//TODO make enum Section
 
@@ -142,7 +140,6 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
 
     private void showSortByDialog(SortMode currentSortMode) {
         DialogFragment dialog = SortByDialogFragment.create(currentSortMode);
-        //dialog.setTargetFragment(this, 0);
         dialog.show(getSupportFragmentManager(), "sortmode");
     }
 

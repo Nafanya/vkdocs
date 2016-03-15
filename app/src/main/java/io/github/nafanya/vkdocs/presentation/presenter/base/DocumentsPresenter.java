@@ -25,6 +25,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
 
@@ -137,6 +138,7 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public void getDocuments() {
+        Timber.d("get documents");
         documentsSubscriber = new GetDocumentsSubscriber();
         new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository).execute(documentsSubscriber);
     }

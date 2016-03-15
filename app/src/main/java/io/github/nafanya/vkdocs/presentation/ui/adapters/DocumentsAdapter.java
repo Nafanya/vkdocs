@@ -9,8 +9,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -24,14 +22,14 @@ import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
-public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentViewHolder> {
+public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.DocumentViewHolder> {
     private List<VkDocument> documents;
     private CommonItemEventListener listener;
     private FileFormatter fileFormatter;
     private Context context;
     private SortMode sortMode;
 
-    public MyDocsAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, CommonItemEventListener listener) {
+    public DocumentsAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, CommonItemEventListener listener) {
         this.context = context;
         this.fileFormatter = fileFormatter;
         this.sortMode = sortMode;
@@ -71,13 +69,8 @@ public class MyDocsAdapter extends RecyclerView.Adapter<MyDocsAdapter.DocumentVi
 
     public void setData(List<VkDocument> documents) {
         this.documents = documents;
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        //Collections.sort(documents, DocumentComparator.getComparator(sortMode));
         notifyDataSetChanged();
-    }
-
-    public void removeIndex(int pos) {
-        documents.remove(pos);
-        notifyItemChanged(pos);
     }
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

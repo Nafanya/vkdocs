@@ -2,27 +2,15 @@ package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.MyDocsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.base.AbstractListFragment;
 import timber.log.Timber;
 
 public class OfflineDocumentsFragment extends BaseDocumentsFragment implements OfflineAdapter.ItemEventListener  {

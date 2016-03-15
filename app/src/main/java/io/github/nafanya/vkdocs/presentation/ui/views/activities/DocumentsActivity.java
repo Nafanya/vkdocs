@@ -49,6 +49,7 @@ public class DocumentsActivity extends BaseActivity implements
 
     @Override
     public void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode) {
+        Timber.d("ON SECTION CHANGED!");
         BaseDocumentsFragment fragment;
         if (newPos == 1)
             fragment = DocumentsFragment.newInstance(extType, sortMode);
