@@ -29,7 +29,12 @@ import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.net.InternetServiceImpl;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
+import rx.subjects.ReplaySubject;
 import timber.log.Timber;
 
 public class App extends Application {
@@ -79,6 +84,52 @@ public class App extends Application {
 
         createIfNotExist("/VKDocs/offline");
         createIfNotExist("/VKDocs/cache");
+
+        /*ConnectableObservable<Integer> ob = Observable.create(
+                new Observable.OnSubscribe<Integer>() {
+           @Override
+           public void call(Subscriber<? super Integer> subscriber) {
+               Timber.d("here nahuj");
+               for (int i = 1; i <= 5; ++i) {
+                   try {
+                       Thread.sleep(1000);
+                       subscriber.onNext(i);
+                   } catch (Exception ignore) {
+                   }
+                   //subscriber.onError(new RuntimeException("lil"));
+               }
+           }
+       }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).replay(1);
+        ob.connect();*/
+
+
+        /*ReplaySubject<Integer> ob = ReplaySubject.createWithSize(1);
+        ob.replay(1);
+        ob.onNext(1);
+        ob.onNext(2);
+        ob.onNext(3);
+        ob.onError(new RuntimeException("LIL"));
+
+        for (int i = 1; i <= 3; ++i) {
+            Timber.d("sub %d", i);
+            final int number = i;
+            ob.subscribe(new Subscriber<Integer>() {
+                @Override
+                public void onCompleted() {
+                    Timber.d("my on complete: %d", number);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Timber.d("my exception: %d on error = %s", number, e);
+                }
+
+                @Override
+                public void onNext(Integer integer) {
+                    Timber.d("my number: %d on next = %d", number, integer);
+                }
+            });
+        }*/
     }
 
     private void createIfNotExist(String path) {

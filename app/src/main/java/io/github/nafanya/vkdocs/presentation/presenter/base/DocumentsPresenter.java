@@ -83,6 +83,7 @@ public class DocumentsPresenter extends BasePresenter {
 
     //TODO when caching is finished, remove GetDocuments from EventBus?
     public void openDocument(VkDocument document) {
+        Timber.d("[open document] %s: request %s", document.title, document.getRequest());
         if (document.isOffline() || document.isCached())
             callback.onOpenDocument(document);
         else {

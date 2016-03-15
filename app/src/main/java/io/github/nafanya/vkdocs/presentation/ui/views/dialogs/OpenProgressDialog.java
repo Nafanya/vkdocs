@@ -30,7 +30,13 @@ import timber.log.Timber;
 public class OpenProgressDialog extends AppCompatDialogFragment implements DownloadManager.RequestObserver {
 
     private static String DOC_KEY = "doc_key";
-    private static String ALREADY_DOWNLOADING_KEY = "adlready_downloading";
+    private static String ALREADY_DOWNLOADING_KEY = "already_downloading";
+
+    public interface Callback {
+        void onCancelCaching(VkDocument document, boolean isAlreadyDownloading);
+        void onCompleteCaching(VkDocument document);
+        void onErrorCaching(Exception error, VkDocument document, boolean isAlreadyDownloading);
+    }
 
     private DownloadRequest request;
     private VkDocument doc;
@@ -112,6 +118,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));
         docTitle.setText(doc.title);
         if (request != null) {
+            Timber.d("request isn't null");
             downloadProgress.setProgress(fileFormatter.getProgress(request));
             size.setText(fileFormatter.formatFrom(request));
             request.setObserver(this);
@@ -135,8 +142,9 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onError(Exception e) {
+        Timber.d("on error caching = " + e);
         dismiss();
-        callback.onErrorCaching(e, isAlreadyDownloading);
+        callback.onErrorCaching(e, doc, isAlreadyDownloading);
     }
 
     //Indeterminate progress cannot be infinite
@@ -147,22 +155,6 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        /**TODO show dialog:
-        Check int connection: retry cancel**/
         callback.onCancelCaching(doc, isAlreadyDownloading);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle bundle) {
-        super.onSaveInstanceState(bundle);
-
-        setTargetFragment(null, 0);
-    }
-
-
-    public interface Callback {
-        void onCancelCaching(VkDocument document, boolean isAlreadyDownloading);
-        void onCompleteCaching(VkDocument document);
-        void onErrorCaching(Exception error, boolean isAlreadyDownloading);
     }
 }

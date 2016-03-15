@@ -1,9 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.support.design.widget.BottomSheetDialog;
-
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.app.DialogFragment;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -11,8 +9,8 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import timber.log.Timber;
 
@@ -22,6 +20,7 @@ import timber.log.Timber;
 public class DocumentsActivity extends PresenterActivity implements
         BottomMenu.MenuEventListener,
         OpenProgressDialog.Callback,
+        ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener {
 
     /***BaseActivity overrides***/
@@ -42,6 +41,14 @@ public class DocumentsActivity extends PresenterActivity implements
         presenter.setFilter(getFilter(newSection, extType));
         adapter = null;
         presenter.getDocuments();
+    }
+
+    @Override
+    protected BaseSortedAdapter newAdapter() {
+        if (navDrawerPos == 1)
+            return new DocumentsAdapter(this, fileFormatter, sortMode, this);
+        else
+            return new OfflineAdapter(this, fileFormatter, sortMode, this);
     }
 
     /***Adapter callback***/
@@ -87,6 +94,23 @@ public class DocumentsActivity extends PresenterActivity implements
         }
     }
 
+    /***Presenter callback for open document***/
+    @Override
+    public void onOpenDocument(VkDocument document) {
+        openDocument(document);
+    }
+
+    @Override
+    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
+        if (isReallyAlreadyDownloading)
+            Timber.d("%s is already downloading now", document.title);
+        else
+            Timber.d("%s isn't downloading now yet", document.title);
+
+        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
+        fragment.show(getSupportFragmentManager(), "progress_open");
+    }
+
     /***OpenProgressDialog callbacks***/
     @Override
     public void onCancelCaching(VkDocument document, boolean isAlreadyDownloading) {
@@ -100,15 +124,19 @@ public class DocumentsActivity extends PresenterActivity implements
     }
 
     @Override
-    public void onErrorCaching(Exception error, boolean isAlreadyDownloading) {
+    public void onErrorCaching(Exception error, VkDocument document, boolean isAlreadyDownloading) {
+        DialogFragment fragment = ErrorOpenDialog.newInstance(document, isAlreadyDownloading);
+        fragment.show(getSupportFragmentManager(), "error_open");
+    }
 
+    /***ErrorOpen dialog callbacks***/
+    @Override
+    public void onRetry(VkDocument document, boolean isAlreadyDownloading) {
+        Timber.d("on retry");
     }
 
     @Override
-    protected BaseSortedAdapter newAdapter() {
-        if (navDrawerPos == 1)
-            return new DocumentsAdapter(this, fileFormatter, sortMode, this);
-        else
-            return new OfflineAdapter(this, fileFormatter, sortMode, this);
+    public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
+        Timber.d("on cancel");
     }
 }

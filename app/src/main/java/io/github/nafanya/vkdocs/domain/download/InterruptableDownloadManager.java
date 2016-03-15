@@ -172,8 +172,7 @@ public class InterruptableDownloadManager implements DownloadManager {
 
     public void cancelRequest(DownloadRequest request) {
         request.cancel();
-        if (!request.isActive())
-            abortRequest(request);
+        abortRequest(request);
     }
 
     private void updateRequest(DownloadRequest request) {
@@ -208,6 +207,7 @@ public class InterruptableDownloadManager implements DownloadManager {
             throw new RuntimeException("This request already executing!");
 
         insertRequest(request);
+        Timber.d("enqueue request " + request);
         runTask(new DownloadTask(request));
     }
 
@@ -215,7 +215,7 @@ public class InterruptableDownloadManager implements DownloadManager {
     private void runTask(DownloadTask task) {
         final DownloadRequest request = task.getRequest();
 
-        Observable.create(task).//TODO add here .cache() or no?
+        Observable.create(task). //TODO add here .cache() or no?
                 subscribeOn(workerScheduler).
                 observeOn(request.getObserveScheduler()).
                 subscribe(new Subscriber<Integer>   () {

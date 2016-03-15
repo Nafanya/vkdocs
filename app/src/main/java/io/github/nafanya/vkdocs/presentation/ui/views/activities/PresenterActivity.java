@@ -94,17 +94,6 @@ public abstract class PresenterActivity extends BaseActivity implements Document
 
     }
 
-    @Override
-    public void onOpenDocument(VkDocument document) {
-        openDocument(document);
-    }
-
-    @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "progress_open");
-    }
-
     protected void openDocument(VkDocument document) {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
