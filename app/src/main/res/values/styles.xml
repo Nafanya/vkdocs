@@ -79,6 +79,13 @@
         <item name="android:layout_marginTop">@dimen/m_grid_1x</item>
     </style>
 
+    <style name="AppTheme.Spinner.DropDown.ActionBar" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:dropDownSelector">?attr/selectableItemBackground</item>
+        <item name="android:divider">@null</item>
+        <item name="overlapAnchor">true</item>
+    </style>
+
     <style name="ListEntryTitle">
         <item name="android:enabled">false</item>
         <item name="android:textSize">@dimen/m_entry_text_size_secondary</item>
