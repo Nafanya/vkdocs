@@ -9,11 +9,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import java.util.Arrays;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
 
 public class DocumentsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -30,11 +34,11 @@ public class DocumentsActivity extends AppCompatActivity implements AdapterView.
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        
+        List<String> spinnerItems = Arrays.asList(getResources().getStringArray(R.array.doc_type_filter_items));
+        SpinnerAdapter adapter = new SpinnerAdapter(this);
+        adapter.addItems(spinnerItems);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getSupportActionBar().getThemedContext(),
-                R.array.doc_type_filter_items, R.layout.appbar_filter_title);
-        adapter.setDropDownViewResource(R.layout.appbar_filter_list);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
