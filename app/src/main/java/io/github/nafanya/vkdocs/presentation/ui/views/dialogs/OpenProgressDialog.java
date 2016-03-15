@@ -136,8 +136,17 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Override
     public void onCancel(DialogInterface dialog) {
         Timber.d("ON CANCEL DIALOG");
+        // TODO: callback is null after back button pressed -> NPE
         callback.onCancelCaching(doc, isAlreadyDownloading);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+
+        setTargetFragment(null, 0);
+    }
+
 
     public interface Callback {
         void onCancelCaching(VkDocument document, boolean isAlreadyDownloading);
