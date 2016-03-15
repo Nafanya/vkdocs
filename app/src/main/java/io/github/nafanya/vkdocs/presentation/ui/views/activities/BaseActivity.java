@@ -2,12 +2,12 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,13 +29,19 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
+import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialogFragment;
 import timber.log.Timber;
 
 public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialogFragment.Callback {
 
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.toolbar_spinner) Spinner spinner;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.toolbar_spinner)
+    Spinner spinner;
+    @Bind(R.id.list_documents)
+    RecyclerView recyclerView;
 
     private Drawer drawer;
 
@@ -64,11 +70,21 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         List<String> spinnerItems = Arrays.asList(getResources().getStringArray(R.array.doc_type_filter_items));
         SpinnerAdapter adapter = new SpinnerAdapter(this);
         adapter.addItems(spinnerItems);
-
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        initRecyclerView();
+
         initNavigationDrawer(navDrawerPos);
+    }
+
+    private void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new SimpleDivierItermDecorator(this));
+        // Convert dp to px
+        final int px = (int) (this.getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getResources().getDisplayMetrics().density);
+        recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));
+
     }
 
     @Override
@@ -122,8 +138,9 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             default: newExtType = null;
         }
         if (newExtType != extType)
-            onExtOrSortChanged(newExtType, sortMode);
+            onExtensionChanged(newExtType);
         extType = newExtType;
+
     }
 
     @Override
@@ -163,12 +180,10 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     /*** Sort dialog callbacks***/
     @Override
     public void onSortModeChanged(SortMode newSortMode) {
-        if (newSortMode != sortMode)
-            onExtOrSortChanged(extType, newSortMode);
         sortMode = newSortMode;
     }
 
-    public abstract void onExtOrSortChanged(VkDocument.ExtType extType, SortMode sortMode);
+    public abstract void onExtensionChanged(VkDocument.ExtType newExtType);
     public abstract void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode);
 }
 

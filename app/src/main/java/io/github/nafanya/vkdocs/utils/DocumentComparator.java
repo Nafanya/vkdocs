@@ -10,6 +10,18 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
  */
 public class DocumentComparator {
 
+    public static Comparator<VkDocument> offlineComparator(SortMode sortMode) {
+        Comparator<VkDocument> comparator = getComparator(sortMode);
+        return (lhs, rhs) -> {
+            boolean eq = lhs.isOfflineInProgress() ^ lhs.isOfflineInProgress();
+            if (!eq)
+                return comparator.compare(lhs, rhs);
+            if (lhs.isOfflineInProgress())
+                return -1;
+            return 1;
+        };
+    }
+
     private static Comparator<VkDocument> sizeComparator() {
         return (lhs, rhs) -> {
             long diff = rhs.size - lhs.size;

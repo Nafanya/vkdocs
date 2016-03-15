@@ -1,61 +1,43 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.app.DialogFragment;
-import android.webkit.MimeTypeMap;
 
-import java.io.File;
+import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.BaseDocumentsFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.DocumentsFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.OfflineDocumentsFragment;
 import timber.log.Timber;
 
 /**
  * Created by pva701 on 15.03.16.
  */
-public class DocumentsActivity extends BaseActivity implements
-        BaseDocumentsFragment.Callback,
+public class DocumentsActivity extends PresenterActivity implements
         BottomMenu.MenuEventListener,
         OpenProgressDialog.Callback {
 
-    private DocumentsPresenter presenter;
-
-    @Override
-    protected void onCreate(Bundle state) {
-        super.onCreate(state);
-        onSectionChanged(1, extType, sortMode);
-    }
-
     /***BaseActivity overrides***/
     @Override
-    public void onExtOrSortChanged(VkDocument.ExtType extType, SortMode sortMode) {
-        Timber.d("ON ext or sort changed " + extType);
-        onSectionChanged(navDrawerPos, extType, sortMode);
+    public void onExtensionChanged(VkDocument.ExtType extType) {
+        presenter.setFilter(getFilter(navDrawerPos, extType));
+        presenter.getDocuments();
+    }
+
+    @Override
+    public void onSortModeChanged(SortMode sortMode) {
+        super.onSortModeChanged(sortMode);
+        adapter.setSortMode(sortMode);
     }
 
     @Override
     public void onSectionChanged(int newPos, VkDocument.ExtType extType, SortMode sortMode) {
-        BaseDocumentsFragment fragment;
-        if (newPos == 1)
-            fragment = DocumentsFragment.newInstance(extType, sortMode);
-        else
-            fragment = OfflineDocumentsFragment.newInstance(extType, sortMode);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+        adapter = newAdapter(newPos);
+        adapter.setData(adapter.getData());
+        recyclerView.setAdapter(adapter);
     }
 
     /***BaseDocumentsFragments callbacks***/
@@ -77,20 +59,11 @@ public class DocumentsActivity extends BaseActivity implements
         }
     }
 
-    public void openDocument(VkDocument document) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
-        Timber.d("[openDocument] path = %s", document.getPath());
-        File fileDoc = new File(document.getPath());
-        newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
-        try {
-            startActivity(newIntent);
-        } catch (ActivityNotFoundException e) {
-            //TODO do something
-            //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
-        }
+    /***Adapter callback***/
+    @Override
+    public void onCancelDownloading(int position, VkDocument document) {
+        presenter.cancelDownloading(document);
+        ((OfflineAdapter) adapter).removeIndex(position);
     }
 
     /***BottomMenu callbacks***/
@@ -118,54 +91,6 @@ public class DocumentsActivity extends BaseActivity implements
 
     @Override
     public void onErrorCaching(Exception error, boolean isAlreadyDownloading) {
-
-    }
-
-    /***Fragments callbacks***/
-
-    @Override
-    public void onPresenterCreated(DocumentsPresenter presenter) {
-        this.presenter = presenter;
-    }
-
-    @Override
-    public void onNetworkError(Exception ex) {
-
-    }
-
-    @Override
-    public void onDatabaseError(Exception ex) {
-
-    }
-
-    @Override
-    public void onMakeOffline(Exception ex) {
-
-    }
-
-    @Override
-    public void onRename(Exception ex) {
-
-    }
-
-    @Override
-    public void onDelete(Exception ex) {
-
-    }
-
-    @Override
-    public void onOpenDocument(VkDocument document) {
-        openDocument(document);
-    }
-
-    @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "progress_open");
-    }
-
-    @Override
-    public void onNoInternetWhenOpen() {
 
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -17,21 +18,45 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.AbstractAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
+import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
-public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class OfflineAdapter extends AbstractAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
     private FileFormatter fileFormatter;
 
     private List<VkDocument> documents;
     private ItemEventListener listener;
+    private Context context;
+    private SortMode sortMode;
 
-    public OfflineAdapter(FileFormatter fileFormatter, ItemEventListener listener) {
+    public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
+        this.context = context;
         this.fileFormatter = fileFormatter;
         this.listener = listener;
+        this.sortMode = sortMode;
+    }
+
+
+    public void setData(List<VkDocument> documents) {
+        this.documents = documents;
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        notifyDataSetChanged();
+    }
+
+    public List<VkDocument> getData() {
+        return documents;
+    }
+
+    public void setSortMode(SortMode sortMode) {
+        this.sortMode = sortMode;
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        notifyDataSetChanged();
     }
 
     @Override
@@ -67,11 +92,6 @@ public class OfflineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         return documents.size();
-    }
-
-    public void setData(List<VkDocument> documents) {
-        this.documents = documents;
-        notifyDataSetChanged();
     }
 
     public void removeIndex(int position) {

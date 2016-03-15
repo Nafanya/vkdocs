@@ -17,12 +17,13 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.AbstractAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
-public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.DocumentViewHolder> {
+public class DocumentsAdapter extends AbstractAdapter {
     private List<VkDocument> documents;
     private CommonItemEventListener listener;
     private FileFormatter fileFormatter;
@@ -46,7 +47,8 @@ public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.Docu
     }
 
     @Override
-    public void onBindViewHolder(DocumentViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder hold, int position) {
+        DocumentViewHolder holder = (DocumentViewHolder)hold;
         holder.setup(documents.get(position));
     }
 
@@ -70,6 +72,10 @@ public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.Docu
         this.documents = documents;
         Collections.sort(documents, DocumentComparator.getComparator(sortMode));
         notifyDataSetChanged();
+    }
+
+    public List<VkDocument> getData() {
+        return documents;
     }
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

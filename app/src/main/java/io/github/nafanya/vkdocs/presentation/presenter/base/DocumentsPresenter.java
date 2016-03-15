@@ -37,7 +37,7 @@ public class DocumentsPresenter extends BasePresenter {
         void onRename(Exception ex);
         void onDelete(Exception ex);
 
-        void onOpenFile(VkDocument document);
+        void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
         void onNoInternetWhenOpen();
     }
@@ -69,6 +69,10 @@ public class DocumentsPresenter extends BasePresenter {
         this.internetService = internetService;
     }
 
+    public void setFilter(DocFilter filter) {
+        this.filter = filter;
+    }
+
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
@@ -81,7 +85,7 @@ public class DocumentsPresenter extends BasePresenter {
     //TODO when caching is finished, remove GetDocuments from EventBus?
     public void openDocument(VkDocument document) {
         if (document.isOffline() || document.isCached())
-            callback.onOpenFile(document);
+            callback.onOpenDocument(document);
         else {
             if (!internetService.hasInternetConnection()) {
                 callback.onNoInternetWhenOpen();

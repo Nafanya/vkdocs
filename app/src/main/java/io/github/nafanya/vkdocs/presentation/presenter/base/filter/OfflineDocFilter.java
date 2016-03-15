@@ -3,6 +3,8 @@ package io.github.nafanya.vkdocs.presentation.presenter.base.filter;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class OfflineDocFilter implements DocFilter {
+    public static DocFilter ALL= (DocFilter) doc -> doc.isOffline() || doc.isOfflineInProgress();
+
     private VkDocument.ExtType[] types;
 
     public OfflineDocFilter(VkDocument.ExtType... types) {
