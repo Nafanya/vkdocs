@@ -91,6 +91,10 @@ public class DownloadRequest extends BaseDownloadRequest {
             l.onError(e);
     }
 
+    public void resetError() {
+        lastEx = null;
+    }
+
     public interface RequestListener {
         void onProgress(int percentage);
         void onComplete();

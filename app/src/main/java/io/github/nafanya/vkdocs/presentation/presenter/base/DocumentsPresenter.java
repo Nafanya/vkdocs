@@ -7,6 +7,7 @@ import com.vk.sdk.api.model.VKApiDocument;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -49,7 +50,7 @@ public class DocumentsPresenter extends BasePresenter {
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
 
     protected DocFilter filter;
-    protected DownloadManager downloadManager;
+    protected InterruptableDownloadManager downloadManager;
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
@@ -57,7 +58,7 @@ public class DocumentsPresenter extends BasePresenter {
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus,
                               DocumentRepository repository,
-                              DownloadManager downloadManager,
+                              InterruptableDownloadManager downloadManager,
                               InternetService internetService,
                               Callback callback) {
         this.filter = filter;
@@ -95,8 +96,14 @@ public class DocumentsPresenter extends BasePresenter {
                         CACHE_PATH + document.title,
                         repository,
                         downloadManager).execute(cacheSubscriber);
-            } else
-                callback.onAlreadyDownloading(document, true);
+            } else {
+                if (document.getRequest().isActive())
+                    callback.onAlreadyDownloading(document, true);
+                else {
+                    downloadManager.retry(document.getRequest());
+                    callback.onAlreadyDownloading(document, true);
+                }
+            }
         }
     }
 
@@ -120,6 +127,17 @@ public class DocumentsPresenter extends BasePresenter {
                 repository,
                 downloadManager,
                 document).execute();
+    }
+
+    public void retryDownloadDocument(VkDocument document) {
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (DownloadRequest req: requests)
+            if (req.getDocId() == document.getId()) {
+                document.setRequest(req);
+                req.resetError();//smth holy shit
+                break;
+            }
+        openDocument(document);
     }
 
     public void rename(VKApiDocument document, String newName) {

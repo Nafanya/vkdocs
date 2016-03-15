@@ -47,6 +47,7 @@ public class ErrorOpenDialog extends AppCompatDialogFragment {
         doc = getArguments().getParcelable(DOC_KEY);
         isAlreadyDownloading = getArguments().getBoolean(ALREADY_DOWNLOADING_KEY);
 
+        //TODO move to resources, translate, Nikitos
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Error").
                 setMessage("Не удалость открыть документ из-за неполадок сети.\nПроверьте интернет соединение и повторите попытку").

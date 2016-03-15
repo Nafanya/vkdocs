@@ -157,6 +157,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
 
     @Override
     public void onError(Exception e) {
+        Timber.d("on error retry cache");
         dismiss();
         callback.onErrorCaching(e, doc, isAlreadyDownloading);
     }

@@ -68,6 +68,9 @@ public class InterruptableDownloadManager implements DownloadManager {
                 return;
             }
 
+            if (request.isActive())//already downloaded
+                return;
+
             request.setActive(true);
             HttpURLConnection connection = null;
             try {

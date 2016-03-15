@@ -132,11 +132,12 @@ public class DocumentsActivity extends PresenterActivity implements
     /***ErrorOpen dialog callbacks***/
     @Override
     public void onRetry(VkDocument document, boolean isAlreadyDownloading) {
-        Timber.d("on retry");
+        presenter.retryDownloadDocument(document);
     }
 
     @Override
     public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
-        Timber.d("on cancel");
+        if (!isAlreadyDownloading)
+            presenter.cancelDownloading(document);
     }
 }
