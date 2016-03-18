@@ -5,12 +5,11 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.observers.Subscribers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public abstract class UseCase<T> {
+    private Subscriber<T> EMPTY = new DefaultSubscriber<>();
+
     private Observable<T> observable;
     protected Subscription subscription = Subscriptions.empty();
     protected final Scheduler subscriberScheduler;
@@ -47,7 +46,7 @@ public abstract class UseCase<T> {
 
     @SuppressWarnings("unchecked")
     public void execute() {
-        subscription = getUseCase().observable.subscribe(Subscribers.empty());
+        subscription = getUseCase().observable.subscribe(EMPTY);
     }
 
 

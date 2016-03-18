@@ -14,6 +14,7 @@ import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.utils.Utils;
+import timber.log.Timber;
 
 
 public class NetworkRepositoryImpl implements NetworkRepository {
@@ -45,9 +46,15 @@ public class NetworkRepositoryImpl implements NetworkRepository {
 
     //async delete
     @Override
-    public void delete(final VKApiDocument document) throws VKException {
+    public void delete(final VkDocument document) throws VKException {
         //Utils.syncVKRequest(VKApi.docs().getDeleteRequest(document.owner_id, document.id));
         VKApi.docs().getDeleteRequest(document.owner_id, document.id).start();
+    }
+
+    @Override
+    public void rename(VkDocument document) throws Exception {
+        Timber.d(document.owner_id + " " + document.id + " " + document.title);
+        VKApi.docs().getEdit(document.owner_id, document.id, document.title).start();
     }
 
     @Override

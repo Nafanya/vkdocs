@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.download.InterruptableDownloadManager;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
 import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
@@ -16,12 +15,14 @@ import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.RenameDocument;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.InternetService;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
@@ -55,6 +56,8 @@ public class DocumentsPresenter extends BasePresenter {
     protected EventBus eventBus;
     protected DocumentRepository repository;
     protected InternetService internetService;
+    protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
+    protected final Scheduler SUBSCRIBER = Schedulers.io();
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus,
                               DocumentRepository repository,
@@ -78,7 +81,7 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public void updateDocument(VkDocument document) {
-        new UpdateDocument(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus,
+        new UpdateDocument(OBSERVER, SUBSCRIBER, eventBus,
                 repository, document).execute();
     }
 
@@ -90,7 +93,7 @@ public class DocumentsPresenter extends BasePresenter {
         else {
             if (!document.isDownloading()) {
                 cacheSubscriber = new CacheSubscriber();
-                new CacheDocument(AndroidSchedulers.mainThread(), Schedulers.io(),
+                new CacheDocument(OBSERVER, SUBSCRIBER,
                         eventBus,
                         document,
                         CACHE_PATH + document.title,
@@ -110,8 +113,8 @@ public class DocumentsPresenter extends BasePresenter {
     //TODO add on progress callback for more informative?
     public void makeOffline(VkDocument document) {
         new MakeOfflineDocument(
-                AndroidSchedulers.mainThread(),
-                Schedulers.io(),
+                OBSERVER,
+                SUBSCRIBER,
                 eventBus,
                 document,
                 OFFLINE_PATH + document.title,
@@ -121,8 +124,8 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void cancelDownloading(VkDocument document) {
         new CancelDownloadingDocument(
-                AndroidSchedulers.mainThread(),
-                Schedulers.io(),
+                OBSERVER,
+                SUBSCRIBER,
                 eventBus,
                 repository,
                 downloadManager,
@@ -140,8 +143,8 @@ public class DocumentsPresenter extends BasePresenter {
         openDocument(document);
     }
 
-    public void rename(VKApiDocument document, String newName) {
-
+    public void rename(VkDocument document, String newName) {
+        new RenameDocument(OBSERVER, SUBSCRIBER, eventBus, repository, document, newName).execute();
     }
 
     public void delete(VKApiDocument document) {
@@ -150,14 +153,14 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void forceNetworkLoad() {
         networkSubscriber = new NetworkSubscriber();
-        new NetworkMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository).
+        new NetworkMyDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).
                 execute(networkSubscriber);
     }
 
     public void getDocuments() {
         Timber.d("get documents");
         documentsSubscriber = new GetDocumentsSubscriber();
-        new GetMyDocuments(AndroidSchedulers.mainThread(), Schedulers.io(), eventBus, repository).execute(documentsSubscriber);
+        new GetMyDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(documentsSubscriber);
     }
 
     @Override

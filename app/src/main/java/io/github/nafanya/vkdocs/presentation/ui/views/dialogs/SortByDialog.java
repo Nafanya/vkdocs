@@ -13,16 +13,16 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 /**
  * Created by nafanya on 3/12/16.
  */
-public class SortByDialogFragment extends AppCompatDialogFragment {
+public class SortByDialog extends AppCompatDialogFragment {
 
     private static final String POSITION = "position";
 
     private Callback listener;
 
-    public static SortByDialogFragment create(SortMode mode) {
+    public static SortByDialog create(SortMode mode) {
         Bundle args = new Bundle();
         args.putSerializable(POSITION, mode);
-        SortByDialogFragment dialogFragment = new SortByDialogFragment();
+        SortByDialog dialogFragment = new SortByDialog();
         dialogFragment.setArguments(args);
         return dialogFragment;
     }

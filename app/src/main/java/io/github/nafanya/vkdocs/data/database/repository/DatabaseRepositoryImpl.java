@@ -20,22 +20,12 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
         this.mapper = mapper;
     }
 
-    //TODO fix it or no
     @Override
     public List<VKDocumentEntity> getMyDocuments() {
         List<VKDocumentEntity> all = SQLite.select().from(VKDocumentEntity.class).
                 where(VKDocumentEntity_Table.sync.notEq(VKDocumentEntity.DELETED)).
                 orderBy(VKDocumentEntity_Table.id, false).
                 queryList();
-
-        /*List<DownloadRequestEntity> requests =
-                SQLite.select().from(DownloadRequestEntity.class).queryList();
-        for (VKDocumentEntity x: all)
-            for (DownloadRequestEntity req: requests)
-                if (x.getId() == req.getDocId()) {
-                    x.setDownloadRequest(req);
-                    break;
-                }*/
         return all;
     }
 
@@ -75,6 +65,14 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
         TransactionManager.transact(DocumentsDatabase.NAME, () -> {
             for (VKDocumentEntity doc : list)
                 doc.delete();
+        });
+    }
+
+    @Override
+    public void updateAll(List<VKDocumentEntity> list) {
+        TransactionManager.transact(DocumentsDatabase.NAME, () -> {
+            for (VKDocumentEntity doc : list)
+                doc.update();
         });
     }
 }

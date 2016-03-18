@@ -16,4 +16,5 @@ public interface DatabaseRepository {
     void update(VKDocumentEntity document);
     void addAll(Iterable<VKDocumentEntity> list);
     void deleteAll(Iterable<VKDocumentEntity> list);
+    void updateAll(List<VKDocumentEntity> updatedDocuments);
 }

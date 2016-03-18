@@ -15,6 +15,7 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import timber.log.Timber;
 
 public class DocumentRepositoryImpl implements DocumentRepository {
     private static final Comparator<VKDocumentEntity> COMPARATOR = (lhs, rhs) -> lhs.getId() - rhs.getId();
@@ -62,35 +63,70 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public void synchronize() throws Exception {
         List<VkDocument> netDocs = netMapper.transform(networkRepository.getMyDocuments());
-        Map<Integer, Integer> syncState = new TreeMap<>();
+        Map<Integer, VKDocumentEntity> dbDocs = new TreeMap<>();
         Set<VKDocumentEntity> deleteDbDocs = new TreeSet<>(COMPARATOR);
 
-        List<VKDocumentEntity> dbDocs = databaseRepository.getAllRecords();
-        for (int i = 0; i < dbDocs.size(); ++i) {
-            syncState.put(dbDocs.get(i).getId(), dbDocs.get(i).getSync());
-            deleteDbDocs.add(dbDocs.get(i));
+        List<VKDocumentEntity> allRecords = databaseRepository.getAllRecords();
+        for (VKDocumentEntity e: allRecords) {
+            dbDocs.put(e.getId(), e);
+            deleteDbDocs.add(e);
         }
+
         List<VKDocumentEntity> newDocuments = new ArrayList<>();
+        List<VKDocumentEntity> updatedDocuments = new ArrayList<>();
         VKDocumentEntity dummyDoc = new VKDocumentEntity();
 
         for (int i = 0; i < netDocs.size(); ++i) {
             VkDocument cur = netDocs.get(i);
-            Integer state =  syncState.get(cur.getId());
+            VKDocumentEntity dbDoc = dbDocs.get(cur.getId());
             dummyDoc.setId(cur.getId());
             deleteDbDocs.remove(dummyDoc);
 
-            if (state == null)
+            if (dbDoc == null)
                 newDocuments.add(dbMapper.transformInv(cur));
-            else if (state == VKDocumentEntity.DELETED) {
+            else if (dbDoc.getSync() == VKDocumentEntity.DELETED) {
                 try {
                     networkRepository.delete(cur);
                 } catch (Exception ignore) {
                     //этот документ удалится в следующий раз
                 }
+            } else {
+                boolean updated = false;
+                if (!cur.url.equals(dbDoc.getUrl())) {
+                    dbDoc.setUrl(cur.url);
+                    updated = true;
+                }
+
+                if (dbDoc.getSync() == VKDocumentEntity.RENAMED) {
+                    try {
+                        networkRepository.rename(dbMapper.transform(dbDoc));
+                    } catch (Exception ignore) {
+                        Timber.d("exception = " + ignore);
+                        //этот документ переименуется в следующий раз
+                    }
+                } else if (!cur.title.equals(dbDoc.getTitle())) {
+                    dbDoc.setTitle(cur.title);
+                    updated = true;
+                } else if (dbDoc.getSync() != VKDocumentEntity.SYNCHRONIZED) {
+                    dbDoc.setSync(VKDocumentEntity.SYNCHRONIZED);
+                    updated = true;
+                }
+                if (updated)
+                    updatedDocuments.add(dbDoc);
+
             }
         }
 
+        databaseRepository.updateAll(updatedDocuments);//batch synchronously update
         databaseRepository.addAll(newDocuments);//batch synchronously insert
         databaseRepository.deleteAll(deleteDbDocs);//batch synchronously delete
+    }
+
+    @Override
+    public void rename(VkDocument document, String newName) {
+        VKDocumentEntity entity = dbMapper.transformInv(document);
+        entity.setTitle(newName);
+        entity.setSync(VKDocumentEntity.RENAMED);
+        entity.update();
     }
 }

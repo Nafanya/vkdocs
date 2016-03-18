@@ -6,25 +6,32 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
-public class UpdateDocument extends UseCase<Void> {
+public class RenameDocument extends UseCase<Void> {
     private DocumentRepository repository;
     private VkDocument document;
+    private String newName;
 
-    public UpdateDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
-                          DocumentRepository repository, VkDocument document) {
+    public RenameDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
+                          DocumentRepository repository,
+                          VkDocument document,
+                          String newName) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
         this.repository = repository;
         this.document = document;
+        this.newName = newName;
     }
 
     @Override
     public Observable<Void> buildUseCase() {
+        document.title = newName;
         return Observable.create(subscriber -> {
             try {
-                repository.update(document);
-                eventBus.removeEvent(GetMyDocuments.class);//TODO fix it
-                subscriber.onCompleted();
+                Timber.d("IN RENAME");
+                eventBus.removeEvent(GetMyDocuments.class);
+                repository.rename(document, newName);
+                repository.synchronize();
             } catch (Exception e) {
                 subscriber.onError(e);
             }

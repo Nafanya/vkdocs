@@ -31,10 +31,10 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialogFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import timber.log.Timber;
 
-public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialogFragment.Callback {
+public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -173,7 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     }
 
     private void showSortByDialog(SortMode currentSortMode) {
-        DialogFragment dialog = SortByDialogFragment.create(currentSortMode);
+        DialogFragment dialog = SortByDialog.create(currentSortMode);
         dialog.show(getSupportFragmentManager(), "sortmode");
     }
 

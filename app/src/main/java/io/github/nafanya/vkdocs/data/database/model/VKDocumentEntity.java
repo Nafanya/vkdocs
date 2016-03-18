@@ -10,6 +10,7 @@ import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
 
 @Table(database = DocumentsDatabase.class)
 public class VKDocumentEntity extends BaseModel {
+    public static int RENAMED = 2;
     public static int DELETED = 1;
     public static int SYNCHRONIZED = 0;
 
@@ -22,6 +23,7 @@ public class VKDocumentEntity extends BaseModel {
     /*
     sync == 0, обычный документ
     sync == 1, если документ удален офлайн и это еще не синхронизировано с сервером
+    sync == 2, если документ переименован и это еще не синхронизировано с сервером
      */
     @Column
     private int sync;

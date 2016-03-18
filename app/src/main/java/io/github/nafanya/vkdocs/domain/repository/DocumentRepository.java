@@ -13,4 +13,5 @@ public interface DocumentRepository {
     void add(VKApiDocument document) throws Exception;
     void update(VkDocument document);
     void synchronize() throws Exception;
+    void rename(VkDocument document, String newName);
 }

@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
+import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
 
@@ -12,6 +13,8 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.RenameDialog;
+import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 /**
@@ -21,7 +24,35 @@ public class DocumentsActivity extends PresenterActivity implements
         BottomMenu.MenuEventListener,
         OpenProgressDialog.Callback,
         ErrorOpenDialog.Callback,
-        OfflineAdapter.ItemEventListener {
+        OfflineAdapter.ItemEventListener,
+        RenameDialog.Callback {
+    private static String CONTEXT_DOC_KEY = "context_doc_key";
+    private static String CONTEXT_POS_KEY = "context_pos_key";
+
+    private BottomSheetDialog dialog;
+    private VkDocument contextMenuDoc;
+    private int position;
+    private FileFormatter fileFormatter;
+
+    @Override
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        App app = (App)getApplication();
+        fileFormatter = app.getFileFormatter();
+        if (state != null) {
+            contextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
+            position = state.getInt(CONTEXT_POS_KEY);
+        }
+        if (contextMenuDoc != null)
+            onClickContextMenu(position, contextMenuDoc);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putParcelable(CONTEXT_DOC_KEY, contextMenuDoc);
+        state.putInt(CONTEXT_POS_KEY, position);
+        super.onSaveInstanceState(state);
+    }
 
     /***BaseActivity overrides***/
     @Override
@@ -67,18 +98,19 @@ public class DocumentsActivity extends PresenterActivity implements
 
     @Override
     public void onClickContextMenu(int position, VkDocument document) {
-        App app = (App)getApplication();
-        BottomSheetDialog dialog = new BottomMenu(this, document, app.getFileFormatter(), this);
+        contextMenuDoc = document;
+        this.position = position;
+        dialog = new BottomMenu(this, position, document, fileFormatter, this);
         dialog.show();
     }
 
 
+    /***Offline adapter callbacks***/
     @Override
     public void onCancelDownloading(int position, VkDocument document) {
         presenter.cancelDownloading(document);
         ((OfflineAdapter) adapter).removeIndex(position);
     }
-
 
     @Override
     public void onCompleteDownloading(int position, VkDocument document) {
@@ -92,6 +124,19 @@ public class DocumentsActivity extends PresenterActivity implements
         if (isMakeOffline) {
             presenter.makeOffline(document);
         }
+    }
+
+    @Override
+    public void onClickRename(VkDocument document) {
+        dialog.dismiss();
+        DialogFragment fragment = RenameDialog.newInstance(position, document);
+        fragment.show(getSupportFragmentManager(), "rename");
+    }
+
+    public void dismissContextMenu() {
+        dialog.dismiss();
+        dialog = null;
+        contextMenuDoc = null;
     }
 
     /***Presenter callback for open document***/
@@ -139,5 +184,19 @@ public class DocumentsActivity extends PresenterActivity implements
     public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
         if (!isAlreadyDownloading)
             presenter.cancelDownloading(document);
+    }
+
+    /***Rename dialog callbacks***/
+    @Override
+    public void onCancelRename(VkDocument document) {
+
+    }
+
+    @Override
+    public void onRename(int position, VkDocument document, String newName) {
+        Timber.d("[On rename] %s newName %s", document.title, newName);
+        presenter.rename(document, newName);
+        dismissContextMenu();
+        adapter.notifyItemChanged(position);
     }
 }
