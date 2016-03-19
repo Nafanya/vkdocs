@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.net;
 
 import io.github.nafanya.vkdocs.Utils;
+import io.github.nafanya.vkdocs.net.base.InternetService;
 
 /**
  * Created by pva701 on 24.02.16.

@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.domain.download.base;
+package io.github.nafanya.vkdocs.net.base.download;
 
 
 public class BaseDownloadRequest {

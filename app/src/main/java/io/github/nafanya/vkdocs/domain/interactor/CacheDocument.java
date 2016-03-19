@@ -1,7 +1,7 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
+import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -43,7 +43,7 @@ public class CacheDocument extends UseCase<VkDocument> {
                     @Override
                     public void onComplete() {
                         document.setPath(request.getDest());
-                        new UpdateDocument(observerScheduler, subscriberScheduler, eventBus, repository, document).execute();
+                        new UpdateDocument(subscriberScheduler, eventBus, repository, document).execute();
                     }
 
                     @Override

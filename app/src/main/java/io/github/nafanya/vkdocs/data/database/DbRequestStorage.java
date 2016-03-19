@@ -6,8 +6,8 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
-import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.base.download.RequestStorage;
 
 public class DbRequestStorage implements RequestStorage<DownloadRequest> {
     private Mapper<DownloadRequestEntity, DownloadRequest> mapper;

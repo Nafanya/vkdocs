@@ -5,7 +5,7 @@ import java.util.Date;
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class DbMapper extends Mapper<VKDocumentEntity, VkDocument> {

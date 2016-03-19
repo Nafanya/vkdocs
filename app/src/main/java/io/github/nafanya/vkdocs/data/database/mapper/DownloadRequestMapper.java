@@ -2,7 +2,7 @@ package io.github.nafanya.vkdocs.data.database.mapper;
 
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 
 public class DownloadRequestMapper extends Mapper<DownloadRequestEntity, DownloadRequest> {
     @Override

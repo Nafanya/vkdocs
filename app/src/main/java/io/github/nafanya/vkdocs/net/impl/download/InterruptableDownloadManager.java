@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.domain.download;
+package io.github.nafanya.vkdocs.net.impl.download;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import io.github.nafanya.vkdocs.domain.download.base.DownloadManager;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
-import io.github.nafanya.vkdocs.domain.download.base.RequestStorage;
+import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.base.download.RequestStorage;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
@@ -209,7 +209,6 @@ public class InterruptableDownloadManager implements DownloadManager {
             throw new RuntimeException("This request already executing!");
 
         insertRequest(request);
-        Timber.d("enqueue request " + request);
         runTask(new DownloadTask(request));
     }
 

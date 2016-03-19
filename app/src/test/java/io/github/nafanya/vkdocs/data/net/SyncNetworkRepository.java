@@ -12,7 +12,7 @@ import io.github.nafanya.vkdocs.Utils;
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.ServerSideNetworkRepository;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.net.InternetService;
+import io.github.nafanya.vkdocs.net.base.InternetService;
 
 /**
  * Created by pva701 on 24.02.16.

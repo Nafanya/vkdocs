@@ -8,7 +8,7 @@ import java.util.List;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public interface DocumentRepository {
-    List<VkDocument> getMyDocuments() throws Exception;
+    List<VkDocument> getMyDocuments();
     void delete(VkDocument document) throws Exception;
     void add(VKApiDocument document) throws Exception;
     void update(VkDocument document);

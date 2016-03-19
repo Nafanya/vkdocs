@@ -1,6 +1,5 @@
 package io.github.nafanya.vkdocs.utils;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -10,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class FileFormatter {

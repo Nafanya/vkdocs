@@ -12,7 +12,7 @@ import java.util.List;
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.net.InternetService;
+import io.github.nafanya.vkdocs.net.base.InternetService;
 import io.github.nafanya.vkdocs.utils.Utils;
 import timber.log.Timber;
 

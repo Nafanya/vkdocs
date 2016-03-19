@@ -4,7 +4,7 @@ import android.os.Parcel;
 
 import com.vk.sdk.api.model.VKApiDocument;
 
-import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 
 public class VkDocument extends VKApiDocument {
 

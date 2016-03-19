@@ -1,8 +1,9 @@
-package io.github.nafanya.vkdocs.domain.download.base;
+package io.github.nafanya.vkdocs.net.impl.download;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.net.base.download.BaseDownloadRequest;
 import rx.Subscription;
 
 public class DownloadRequest extends BaseDownloadRequest {
@@ -12,6 +13,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     //private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
     private List<RequestListener> listeners = new ArrayList<>();
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     public DownloadRequest() {
         super(null, null);
@@ -28,7 +30,9 @@ public class DownloadRequest extends BaseDownloadRequest {
             @Override
             public void unsubscribe() {
                 isUnsub = true;
-                listeners.remove(listener);
+                int ind = listeners.indexOf(listener);
+                listeners.remove(ind);
+                subscriptions.remove(ind);
             }
 
             @Override
@@ -38,6 +42,8 @@ public class DownloadRequest extends BaseDownloadRequest {
         };
 
         listeners.add(listener);
+        subscriptions.add(subscription);
+
         if (isCompleted)
             listener.onComplete();
         else if (lastPer != null)
@@ -45,6 +51,11 @@ public class DownloadRequest extends BaseDownloadRequest {
         else if (lastEx != null)
             listener.onError(lastEx);
         return subscription;
+    }
+
+    public void removeListener(RequestListener listener) {
+        int ind = listeners.indexOf(listener);
+        subscriptions.get(ind).unsubscribe();
     }
 
     public void cancel() {

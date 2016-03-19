@@ -6,14 +6,15 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class UpdateDocument extends UseCase<Void> {
     private DocumentRepository repository;
     private VkDocument document;
 
-    public UpdateDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
+    public UpdateDocument(Scheduler subscriberScheduler, EventBus eventBus,
                           DocumentRepository repository, VkDocument document) {
-        super(observerScheduler, subscriberScheduler, eventBus, false);
+        super(AndroidSchedulers.mainThread(), subscriberScheduler, eventBus, false);
         this.repository = repository;
         this.document = document;
     }

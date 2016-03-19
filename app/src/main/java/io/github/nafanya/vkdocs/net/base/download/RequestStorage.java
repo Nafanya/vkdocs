@@ -1,6 +1,8 @@
-package io.github.nafanya.vkdocs.domain.download.base;
+package io.github.nafanya.vkdocs.net.base.download;
 
 import java.util.List;
+
+import io.github.nafanya.vkdocs.net.base.download.BaseDownloadRequest;
 
 public interface RequestStorage<T extends BaseDownloadRequest> {
     /*
