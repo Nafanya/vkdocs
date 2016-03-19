@@ -52,7 +52,7 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     @Bind(R.id.down_progress)
     ProgressBar downloadProgress;
 
-    @Bind(R.id.size)
+    @Bind(R.id.statusLabels)
     TextView size;
 
     private Callback callback;

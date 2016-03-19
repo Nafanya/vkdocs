@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/md_grey_200"
     tools:context=".presentation.ui.views.activities.DocumentsActivity">
 
     <!-- TODO: move background color to resources -->

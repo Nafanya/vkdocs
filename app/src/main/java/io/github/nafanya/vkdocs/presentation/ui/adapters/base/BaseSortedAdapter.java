@@ -45,7 +45,7 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         ImageView documentTypeIcon;
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.extraMenu)
+        @Bind(R.id.buttonContextMenu)
         ImageButton contextMenu;
         @Bind(R.id.text_document_title)
         TextView title;

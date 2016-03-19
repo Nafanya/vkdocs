@@ -93,4 +93,9 @@ public class InMemoryDatabaseRepository implements DatabaseRepository {
                     database.remove(d);
         } catch (InterruptedException ignore) {}
     }
+
+    @Override
+    public void updateAll(List<VKDocumentEntity> updatedDocuments) {
+        throw new RuntimeException("Unimplemented");
+    }
 }

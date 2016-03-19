@@ -4,7 +4,6 @@
     android:id="@+id/header"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
     android:clickable="true"
     android:focusable="true"
     android:minHeight="@dimen/doclist_entry_height">
@@ -50,16 +49,18 @@
     <!-- TODO: make dots button clickable zone larger -->
 
     <LinearLayout
+        style=""
         android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/doclist_entry_height"
         android:layout_alignBottom="@id/body"
         android:layout_alignRight="@id/body"
-        android:layout_alignTop="@id/body">
+        android:layout_alignTop="@id/body"
+        android:orientation="horizontal">
 
         <!-- TODO separate styles for image button -->
         <ImageButton
-            android:id="@+id/extraMenu"
+            android:id="@+id/buttonContextMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -67,10 +68,15 @@
             android:layout_marginRight="16dp"
             app:srcCompat="@drawable/dots_vertical"/>
 
-        <FrameLayout
-            android:id="@+id/more_actions_button_container"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent" />
+        <ImageButton
+            android:id="@+id/buttonCancel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="#0000"
+            android:layout_marginRight="16dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_clear"/>
     </LinearLayout>
 
     <LinearLayout
@@ -116,8 +122,10 @@
                 android:layout_width="0.0px"
                 android:layout_weight="1.0"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <!--style="@style/EntryProgress.List"--> />
+                android:visibility="gone"
+                android:max="100"
+                android:indeterminate="false"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

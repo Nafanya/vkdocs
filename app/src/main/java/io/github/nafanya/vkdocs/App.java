@@ -82,8 +82,8 @@ public class App extends Application {
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
         internetService = new InternetServiceImpl();
 
-        createIfNotExist("/VKDocs/offline");
-        createIfNotExist("/VKDocs/cache");
+        createIfNotExist(getAppCacheRoot());
+        createIfNotExist(getAppOfflineRoot());
 
         /*ConnectableObservable<Integer> ob = Observable.create(
                 new Observable.OnSubscribe<Integer>() {
@@ -132,11 +132,17 @@ public class App extends Application {
         }*/
     }
 
-    private void createIfNotExist(String path) {
-        File dir = new File(Environment.getExternalStorageDirectory().getPath() + path);
-        if (!dir.exists()) {
-            if (!dir.mkdirs())
-                throw new RuntimeException("Can't create folder " + path);
+    public File getAppCacheRoot() {
+        return getExternalCacheDir();
+    }
+
+    public File getAppOfflineRoot() {
+        return getExternalFilesDir(null);
+    }
+
+    private void createIfNotExist(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Can't create " + dir);
         }
     }
 
