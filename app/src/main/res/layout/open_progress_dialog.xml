@@ -40,7 +40,7 @@
             android:id="@+id/down_progress" />
 
         <TextView
-            android:id="@+id/size"
+            android:id="@+id/statusLabels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"

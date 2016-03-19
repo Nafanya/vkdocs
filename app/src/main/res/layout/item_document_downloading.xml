@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="3.3MB из 6MB"
-                android:id="@+id/size"
+                android:id="@+id/statusLabels"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="3dp" />
 

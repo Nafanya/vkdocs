@@ -42,8 +42,8 @@ public class DocumentsPresenter extends BasePresenter {
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
     }
 
-    private String OFFLINE_PATH = Environment.getExternalStorageDirectory().getPath() + "/VKDocs/offline/";
-    private String CACHE_PATH = Environment.getExternalStorageDirectory().getPath() + "/VKDocs/cache/";
+    private String OFFLINE_PATH;
+    private String CACHE_PATH;
 
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
@@ -69,6 +69,9 @@ public class DocumentsPresenter extends BasePresenter {
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
+        this.internetService = internetService;
+        this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
+        this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
         this.offlineManager = offlineManager;
     }
 
