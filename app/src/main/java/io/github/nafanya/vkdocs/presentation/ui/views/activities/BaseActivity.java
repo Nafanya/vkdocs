@@ -36,7 +36,7 @@ import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDeco
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import timber.log.Timber;
 
-public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener {
+public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
 
     @Bind(R.id.coordinator_layout)
     LinearLayout cooridnatorLayout;
@@ -59,9 +59,11 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     private String EXT_TYPE_KEY = "ext_type_key";
     private String NAV_DRAW_POS = "nav_drawer_pos_key";
     private String REFRESH_KEY = "refreshing_key";
+    private String SEARCH_FILTER_KEY = "search_filter_key";
 
     protected SortMode sortMode = SortMode.DATE;
     protected VkDocument.ExtType extType;
+    protected String searchFilter = "";
     protected int navDrawerPos = 1;//TODO make enum Section
     private boolean isRefreshing;
 
@@ -73,6 +75,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             extType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
             navDrawerPos = state.getInt(NAV_DRAW_POS);
             isRefreshing = state.getBoolean(REFRESH_KEY);
+            searchFilter = state.getString(SEARCH_FILTER_KEY);
         }
 
         setContentView(R.layout.activity_documents);
@@ -119,6 +122,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         state.putSerializable(EXT_TYPE_KEY, extType);
         state.putInt(NAV_DRAW_POS, navDrawerPos);
         state.putBoolean(REFRESH_KEY, isRefreshing);
+        state.putString(SEARCH_FILTER_KEY, searchFilter);
         super.onSaveInstanceState(state);
     }
 
@@ -189,6 +193,9 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         inflater.inflate(R.menu.documents_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+        // The only valid fix to make SearchView expand full width
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         return true;
     }
 
@@ -218,5 +225,17 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
 
     public abstract void onTypeFilterChanged(VkDocument.ExtType newExtType);
     public abstract void onSectionChanged(int newPos);
+
+    /*** SerachView callbacks ***/
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        searchFilter = newText;
+        return true;
+    }
 }
 

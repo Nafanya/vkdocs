@@ -7,6 +7,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -19,8 +23,10 @@ import timber.log.Timber;
 
 public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     protected List<VkDocument> documents;
+    protected List<VkDocument> documentsOriginal;
     protected FileFormatter fileFormatter;
     protected SortMode sortMode;
+    protected String searchFilter;
     protected Context context;
 
     public BaseSortedAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode) {
@@ -45,9 +51,7 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         ImageView documentTypeIcon;
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_offline_progress)
-        ImageView documentOfflineInProgressIcon;
-        @Bind(R.id.extraMenu)
+        @Bind(R.id.buttonContextMenu)
         ImageButton contextMenu;
         @Bind(R.id.text_document_title)
         TextView title;
@@ -73,13 +77,10 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
-            documentOfflineIcon.setVisibility(View.GONE);
-            documentOfflineInProgressIcon.setVisibility(View.GONE);
-
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
-            } else if (doc.isOfflineInProgress()) {
-                documentOfflineInProgressIcon.setVisibility(View.VISIBLE);
+            } else {
+                documentOfflineIcon.setVisibility(View.GONE);
             }
 
             final int sortLabelText;
@@ -118,7 +119,30 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    public abstract void setData(List<VkDocument> documents);
+    public void setSearchFilter(String filter) {
+        if (filter == null) {
+            filter = "";
+        }
+        searchFilter = filter;
+        if (documents == null || documentsOriginal == null) {
+            return;
+        }
+        documents = Stream.of(documentsOriginal)
+                .filter(doc -> doc.title.toLowerCase().contains(searchFilter.toLowerCase()))
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Don't forget to call super method since it sets documents variables.
+     * @param documents
+     */
+    public void setData(List<VkDocument> documents) {
+        this.documentsOriginal = documents;
+        this.documents = new ArrayList<>(documentsOriginal);
+    }
+
     public abstract void setSortMode(SortMode sortMode);
     public void removeIndex(int position) {
         documents.remove(position);

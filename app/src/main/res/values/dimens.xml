@@ -31,6 +31,7 @@
 
 
     <item type="dimen" name="doclist_entry_height">@dimen/m_entry_height_two_line</item>
+    <item type="dimen" name="doclist_button_width">@dimen/m_grid_5x</item>
 
     <item type="dimen" name="bottom_dialog_min_height">@dimen/m_bottom_dialog_min_height</item>
     <item type="dimen" name="bottom_dialog_header_height">@dimen/m_entry_height_two_line</item>

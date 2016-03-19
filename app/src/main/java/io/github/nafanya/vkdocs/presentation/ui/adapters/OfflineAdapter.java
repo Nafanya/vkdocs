@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
     }
 
     public void setData(List<VkDocument> documents) {
-        this.documents = documents;
+        super.setData(documents);
         Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
         notifyDataSetChanged();
     }
@@ -65,21 +66,21 @@ public class OfflineAdapter extends BaseSortedAdapter {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
+        View view = inflater.inflate(R.layout.item_document, parent, false);
         if (viewType == DOCUMENT_STATE_NORMAL) {
-            View view = inflater.inflate(R.layout.item_document, parent, false);
             return new DocumentViewHolder(view, listener);
         } else {
-            View view = inflater.inflate(R.layout.item_document_downloading, parent, false);
             return new DownloadingDocViewHolder(view, listener);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof DownloadingDocViewHolder)
-            ((DownloadingDocViewHolder)holder).setup(documents.get(position));
-        else
-            ((DocumentViewHolder)holder).setup(documents.get(position));
+        if (holder instanceof DownloadingDocViewHolder) {
+            ((DownloadingDocViewHolder) holder).setup(documents.get(position));
+        } else {
+            ((DocumentViewHolder) holder).setup(documents.get(position));
+        }
 
     }
 
@@ -94,20 +95,22 @@ public class OfflineAdapter extends BaseSortedAdapter {
         TextView title;
 
         @Nullable
-        @Bind(R.id.size)
+        @Bind(R.id.statusLabels)
         TextView size;
 
+        @Bind(R.id.sortLabel) TextView sortLabel;
+
         @Nullable
-        @Bind(R.id.down_progress)
+        @Bind(R.id.progress)
         ProgressBar downloadProgress;
 
         @Nullable
-        @Bind(R.id.down_button)
-        ImageView cancelButton;
+        @Bind(R.id.buttonContextMenu)
+        ImageButton buttonContext;
 
         @Nullable
-        @Bind(R.id.context_menu)
-        ImageView contextMenuButton;
+        @Bind(R.id.buttonCancel)
+        ImageButton buttonCancel;
 
         private Subscription prevSubscription = Subscriptions.empty();
 
@@ -118,8 +121,14 @@ public class OfflineAdapter extends BaseSortedAdapter {
             this.listener = listener;
 
             ButterKnife.bind(this, view);
+
+
+            downloadProgress.setVisibility(View.VISIBLE);
+            sortLabel.setVisibility(View.GONE);
+
             view.setOnClickListener(this);
-            cancelButton.setOnClickListener(this);
+            buttonContext.setOnClickListener(this);
+            buttonCancel.setOnClickListener(this);
         }
 
         //TODO maybe add downloaded bytes and full size in progress callbacks
@@ -131,6 +140,13 @@ public class OfflineAdapter extends BaseSortedAdapter {
             prevSubscription.unsubscribe();
             downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
             size.setText(fileFormatter.formatFrom(doc.getRequest()));
+            if (doc.isDownloading()) {
+                buttonContext.setVisibility(View.GONE);
+                buttonCancel.setVisibility(View.VISIBLE);
+            } else {
+                buttonContext.setVisibility(View.VISIBLE);
+                buttonCancel.setVisibility(View.GONE);
+            }
 
             prevSubscription = doc.getRequest().addListener(new DownloadRequest.RequestListener() {
                 @Override
@@ -163,10 +179,13 @@ public class OfflineAdapter extends BaseSortedAdapter {
             if (listener == null)
                 return;
             int pos = getAdapterPosition();
-            if (v == cancelButton)
+            if (v == buttonCancel) {
                 listener.onCancelDownloading(pos, documents.get(pos));
-            else
+            } else if (v == buttonContext) {
+                listener.onClickContextMenu(pos, documents.get(pos));
+            } else {
                 listener.onClick(pos, documents.get(pos));
+            }
         }
     }
 
