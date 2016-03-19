@@ -84,17 +84,25 @@ public class App extends Application {
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
 
-        createIfNotExist("/VKDocs/offline");
-        createIfNotExist("/VKDocs/cache");
+        createIfNotExist(getAppCacheRoot());
+        createIfNotExist(getAppOfflineRoot());
+
     }
 
-    private void createIfNotExist(String path) {
-        File dir = new File(Environment.getExternalStorageDirectory().getPath() + path);
-        if (!dir.exists()) {
-            if (!dir.mkdirs())
-                throw new RuntimeException("Can't create folder " + path);
+    public File getAppCacheRoot() {
+        return getExternalCacheDir();
+    }
+
+    public File getAppOfflineRoot() {
+        return getExternalFilesDir(null);
+    }
+
+    private void createIfNotExist(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Can't create " + dir);
         }
     }
+
 
     public EventBus getEventBus() {
         return eventBus;

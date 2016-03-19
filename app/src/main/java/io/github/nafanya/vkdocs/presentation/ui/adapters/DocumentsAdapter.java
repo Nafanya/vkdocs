@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,8 +48,9 @@ public class DocumentsAdapter extends BaseSortedAdapter {
         notifyDataSetChanged();
     }
 
+    @Override
     public void setData(List<VkDocument> documents) {
-        this.documents = documents;
+        super.setData(documents);
         Collections.sort(documents, DocumentComparator.getComparator(sortMode));
         notifyDataSetChanged();
     }

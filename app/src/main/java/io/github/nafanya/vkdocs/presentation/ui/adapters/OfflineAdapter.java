@@ -39,7 +39,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
     }
 
     public void setData(List<VkDocument> documents) {
-        this.documents = documents;
+        super.setData(documents);
         Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
         notifyDataSetChanged();
     }
@@ -66,11 +66,10 @@ public class OfflineAdapter extends BaseSortedAdapter {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
+        View view = inflater.inflate(R.layout.item_document, parent, false);
         if (viewType == DOCUMENT_STATE_NORMAL) {
-            View view = inflater.inflate(R.layout.item_document, parent, false);
             return new DocumentViewHolder(view, listener);
         } else {
-            View view = inflater.inflate(R.layout.item_document, parent, false);
             return new DownloadingDocViewHolder(view, listener);
         }
     }

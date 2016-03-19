@@ -43,7 +43,6 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 app.getRepository(),
                 app.getDownloadManager(),
                 app.getOfflineManager(),
-                app.getInternetService(),
                 app.getAppCacheRoot(),
                 app.getAppOfflineRoot(),
                 this);
@@ -68,6 +67,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
         if (adapter == null)
             adapter = newAdapter();
         adapter.setData(documents);
+        adapter.setSearchFilter(searchFilter);
         if (recyclerView.getAdapter() != adapter)
             recyclerView.setAdapter(adapter);
     }

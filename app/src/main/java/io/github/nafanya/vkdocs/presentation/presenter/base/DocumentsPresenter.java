@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.presenter.base;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,13 +64,13 @@ public class DocumentsPresenter extends BasePresenter {
                               DocumentRepository repository,
                               InterruptableDownloadManager downloadManager,
                               OfflineManager offlineManager,
+                              File offlineRoot, File cacheRoot,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
-        this.internetService = internetService;
         this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
         this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
         this.offlineManager = offlineManager;
