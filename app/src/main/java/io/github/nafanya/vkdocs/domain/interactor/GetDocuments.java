@@ -8,17 +8,18 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
 /*
 Получает доки из локальной базы данных.
 */
 
-public class GetMyDocuments extends UseCase<List<VkDocument>> {
+public class GetDocuments extends UseCase<List<VkDocument>> {
     private DocumentRepository repository;
 
-    public GetMyDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                          EventBus eventBus,
-                          DocumentRepository repository) {
+    public GetDocuments(Scheduler observerScheduler, Scheduler subscriberScheduler,
+                        EventBus eventBus,
+                        DocumentRepository repository) {
         super(observerScheduler, subscriberScheduler, eventBus, true);
         this.repository = repository;
     }
@@ -32,7 +33,6 @@ public class GetMyDocuments extends UseCase<List<VkDocument>> {
                     repository.synchronize();//Get data from network and synchronize it
                     subscriber.onNext(repository.getMyDocuments());
                 } catch (Exception ignore) {}
-
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

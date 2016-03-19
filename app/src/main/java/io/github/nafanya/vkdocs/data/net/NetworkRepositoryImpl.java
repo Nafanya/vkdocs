@@ -44,15 +44,15 @@ public class NetworkRepositoryImpl implements NetworkRepository {
         return documents;
     }
 
-    //async delete
+    //async deleteAsync
     @Override
-    public void delete(final VkDocument document) throws VKException {
+    public void deleteAsync(final VkDocument document) throws VKException {
         //Utils.syncVKRequest(VKApi.docs().getDeleteRequest(document.owner_id, document.id));
         VKApi.docs().getDeleteRequest(document.owner_id, document.id).start();
     }
 
     @Override
-    public void rename(VkDocument document) throws Exception {
+    public void rename(VkDocument document) {
         Timber.d(document.owner_id + " " + document.id + " " + document.title);
         VKApi.docs().getEdit(document.owner_id, document.id, document.title).start();
     }

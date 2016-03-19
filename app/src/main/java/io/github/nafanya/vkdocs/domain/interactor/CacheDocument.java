@@ -34,6 +34,23 @@ public class CacheDocument extends UseCase<VkDocument> {
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 request.setDocId(document.getId());
                 request.setTotalBytes(document.size);
+                request.addListener(new DownloadRequest.RequestListener() {
+                    @Override
+                    public void onProgress(int percentage) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        document.setPath(request.getDest());
+                        new UpdateDocument(observerScheduler, subscriberScheduler, eventBus, repository, document).execute();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
                 downloadManager.enqueue(request);
 
                 document.setOfflineType(VkDocument.CACHE);

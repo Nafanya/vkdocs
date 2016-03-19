@@ -56,6 +56,13 @@ public class DocumentsActivity extends PresenterActivity implements
         super.onSaveInstanceState(state);
     }
 
+    @Override
+    public void onRefresh() {
+        Timber.d("ON REFRESH");
+        setRefresh(true);
+        presenter.forceNetworkLoad();
+    }
+
     /***BaseActivity overrides***/
     @Override
     public void onTypeFilterChanged(VkDocument.ExtType extType) {
@@ -140,6 +147,11 @@ public class DocumentsActivity extends PresenterActivity implements
         dismissContextMenu();
         DialogFragment fragment = DeleteDialog.newInstance(position, document);
         fragment.show(getSupportFragmentManager(), "delete");
+    }
+
+    @Override
+    public void onCloseContextMenu() {
+        dismissContextMenu();
     }
 
     public void dismissContextMenu() {

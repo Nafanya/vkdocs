@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -34,23 +36,34 @@ import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDeco
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import timber.log.Timber;
 
-public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback {
+public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener {
+
+    @Bind(R.id.coordinator_layout)
+    LinearLayout cooridnatorLayout;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.toolbar_spinner)
     Spinner spinner;
+
     @Bind(R.id.list_documents)
     RecyclerView recyclerView;
+
+    @Bind(R.id.swipe_container)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private Drawer drawer;
 
     private String SORT_MODE_KEY = "sort_mode_arg";
     private String EXT_TYPE_KEY = "ext_type_key";
-    private String NAV_DRAW_POS = "nav_drawer_pos";
+    private String NAV_DRAW_POS = "nav_drawer_pos_key";
+    private String REFRESH_KEY = "refreshing_key";
+
     protected SortMode sortMode = SortMode.DATE;
     protected VkDocument.ExtType extType;
     protected int navDrawerPos = 1;//TODO make enum Section
+    private boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -59,6 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             sortMode = (SortMode)state.getSerializable(SORT_MODE_KEY);
             extType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
             navDrawerPos = state.getInt(NAV_DRAW_POS);
+            isRefreshing = state.getBoolean(REFRESH_KEY);
         }
 
         setContentView(R.layout.activity_documents);
@@ -74,8 +88,20 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         spinner.setOnItemSelectedListener(this);
 
         initRecyclerView();
+        initNavigationDrawer();
+        initSwipeRefreshLayout();
+    }
 
-        initNavigationDrawer(navDrawerPos);
+    private void initSwipeRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        Timber.d("in init swipe refresh layout = " + isRefreshing);
+
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
+        setRefresh(isRefreshing);
     }
 
     private void initRecyclerView() {
@@ -92,10 +118,11 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         state.putSerializable(SORT_MODE_KEY, sortMode);
         state.putSerializable(EXT_TYPE_KEY, extType);
         state.putInt(NAV_DRAW_POS, navDrawerPos);
+        state.putBoolean(REFRESH_KEY, isRefreshing);
         super.onSaveInstanceState(state);
     }
 
-    private void initNavigationDrawer(int restorePosition) {
+    private void initNavigationDrawer() {
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -118,10 +145,16 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 }).build();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        drawer.setSelectionAtPosition(restorePosition);
+        drawer.setSelectionAtPosition(navDrawerPos);
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }
 
+    //TODO fix infinite refreshing
+    protected void setRefresh(boolean isRef) {
+        isRefreshing = isRef;
+        //swipeRefreshLayout.setRefreshing(isRefreshing);
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
+    }
 
     /*** Spinner callbacks***/
     @Override

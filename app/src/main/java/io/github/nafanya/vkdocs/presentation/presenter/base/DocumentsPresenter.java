@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
 import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,9 @@ import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
-import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
-import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.NetworkDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.RenameDocument;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
@@ -32,11 +33,9 @@ public class DocumentsPresenter extends BasePresenter {
 
     public interface Callback {
         void onGetDocuments(List<VkDocument> documents);
+        void onNetworkDocuments(List<VkDocument> documents);
         void onNetworkError(Exception ex);
         void onDatabaseError(Exception ex);
-        void onMakeOffline(Exception ex);
-        void onRename(Exception ex);
-        void onDelete(Exception ex);
 
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
@@ -62,7 +61,7 @@ public class DocumentsPresenter extends BasePresenter {
                               DocumentRepository repository,
                               InterruptableDownloadManager downloadManager,
                               InternetService internetService,
-                              Callback callback) {
+                              @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
@@ -73,10 +72,6 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void setFilter(DocFilter filter) {
         this.filter = filter;
-    }
-
-    public void setCallback(Callback callback) {
-        this.callback = callback;
     }
 
     public void updateDocument(VkDocument document) {
@@ -109,7 +104,6 @@ public class DocumentsPresenter extends BasePresenter {
         }
     }
 
-    //TODO add on progress callback for more informative?
     public void makeOffline(VkDocument document) {
         new MakeOfflineDocument(
                 OBSERVER,
@@ -152,21 +146,20 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void forceNetworkLoad() {
         networkSubscriber = new NetworkSubscriber();
-        new NetworkMyDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).
+        new NetworkDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).
                 execute(networkSubscriber);
     }
 
     public void getDocuments() {
-        Timber.d("get documents");
         documentsSubscriber = new GetDocumentsSubscriber();
-        new GetMyDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(documentsSubscriber);
+        new GetDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(documentsSubscriber);
     }
 
     @Override
     public void onStart() {
-        if (eventBus.contains(NetworkMyDocuments.class) && networkSubscriber.isUnsubscribed()) {
+        if (eventBus.contains(NetworkDocuments.class) && networkSubscriber.isUnsubscribed()) {
             networkSubscriber = new NetworkSubscriber();
-            eventBus.getEvent(NetworkMyDocuments.class).execute(networkSubscriber);
+            eventBus.getEvent(NetworkDocuments.class).execute(networkSubscriber);
         }
 
         if (eventBus.contains(CacheDocument.class) && cacheSubscriber.isUnsubscribed()) {
@@ -177,9 +170,9 @@ public class DocumentsPresenter extends BasePresenter {
 
 /*    @Override
     public void onResume() {
-        if (eventBus.contains(GetMyDocuments.class) && documentsSubscriber.isUnsubscribed()) {
+        if (eventBus.contains(GetDocuments.class) && documentsSubscriber.isUnsubscribed()) {
             documentsSubscriber = new GetDocumentsSubscriber();
-            eventBus.getEvent(GetMyDocuments.class).execute(documentsSubscriber);
+            eventBus.getEvent(GetDocuments.class).execute(documentsSubscriber);
         }
     }*/
 
@@ -195,20 +188,23 @@ public class DocumentsPresenter extends BasePresenter {
             subscriber.unsubscribe();
     }
 
+    private void findDownloadRequests(List<VkDocument> documents) {
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (VkDocument d: documents)
+            for (DownloadRequest req: requests)
+                if (req.getDocId() == d.getId()) {
+                    d.setRequest(req);
+                    break;
+                }
+    }
+
     public class GetDocumentsSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
         public void onNext(List<VkDocument> vkDocuments) {
-            if (callback != null) {//get actual download requests with correct request observer
-                List<DownloadRequest> requests = downloadManager.getQueue();
-                List<VkDocument> documents = filterList(vkDocuments);
-                for (VkDocument d: documents)
-                    for (DownloadRequest req: requests)
-                        if (req.getDocId() == d.getId()) {
-                            d.setRequest(req);
-                            break;
-                        }
-                callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));
-            }
+            List<VkDocument> documents = filterList(vkDocuments);
+            findDownloadRequests(documents);
+            callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));
+            eventBus.removeEvent(GetDocuments.class);
         }
 
         private List<VkDocument> copyVkDocumentsList(List<VkDocument> docs) {
@@ -220,27 +216,28 @@ public class DocumentsPresenter extends BasePresenter {
 
         @Override
         public void onError(Throwable e) {
-            if (callback != null)
-                callback.onDatabaseError((Exception)e);
+            callback.onDatabaseError((Exception)e);
+            eventBus.removeEvent(GetDocuments.class);
         }
     }
 
     public class NetworkSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
-        public void onNext(List<VkDocument> vkApiDocuments) {
-            if (callback != null)
-                callback.onGetDocuments(filterList(vkApiDocuments));
+        public void onNext(List<VkDocument> vkDocuments) {
+            List<VkDocument> list = filterList(vkDocuments);
+            findDownloadRequests(list);
+            callback.onNetworkDocuments(list);
+            eventBus.removeEvent(NetworkDocuments.class);
         }
 
         @Override
         public void onError(Throwable e) {
-            if (callback != null)
-                callback.onNetworkError((Exception) e);
+            callback.onNetworkError((Exception) e);
+            eventBus.removeEvent(NetworkDocuments.class);
         }
     }
 
     public class CacheSubscriber extends DefaultSubscriber<VkDocument> {
-
         @Override
         public void onNext(VkDocument document) {
             callback.onAlreadyDownloading(document, false);

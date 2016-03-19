@@ -15,7 +15,6 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import timber.log.Timber;
 
 public class DocumentRepositoryImpl implements DocumentRepository {
     private static final Comparator<VKDocumentEntity> COMPARATOR = (lhs, rhs) -> lhs.getId() - rhs.getId();
@@ -44,7 +43,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             VKDocumentEntity doc = dbMapper.transformInv(document);
             doc.setSync(VKDocumentEntity.DELETED);
             databaseRepository.update(doc);
-            networkRepository.delete(document);
+            networkRepository.deleteAsync(document);
         } catch (Exception e) {
             //документ удалится в следующий раз
         }
@@ -86,31 +85,33 @@ public class DocumentRepositoryImpl implements DocumentRepository {
                 newDocuments.add(dbMapper.transformInv(cur));
             else if (dbDoc.getSync() == VKDocumentEntity.DELETED) {
                 try {
-                    networkRepository.delete(cur);
+                    networkRepository.deleteAsync(cur);
                 } catch (Exception ignore) {
                     //этот документ удалится в следующий раз
                 }
             } else {
                 boolean updated = false;
-                if (!cur.url.equals(dbDoc.getUrl())) {
+                /*if (!cur.url.equals(dbDoc.getUrl())) {
+                    Timber.d("update url");
                     dbDoc.setUrl(cur.url);
                     updated = true;
-                }
+                }*/
 
                 if (dbDoc.getSync() == VKDocumentEntity.RENAMED) {
                     try {
                         networkRepository.rename(dbMapper.transform(dbDoc));
+                        dbDoc.setSync(VKDocumentEntity.SYNCHRONIZED);
+                        updated = true;
                     } catch (Exception ignore) {
-                        Timber.d("exception = " + ignore);
                         //этот документ переименуется в следующий раз
                     }
                 } else if (!cur.title.equals(dbDoc.getTitle())) {
                     dbDoc.setTitle(cur.title);
                     updated = true;
-                } else if (dbDoc.getSync() != VKDocumentEntity.SYNCHRONIZED) {
+                }/* else if (dbDoc.getSync() != VKDocumentEntity.SYNCHRONIZED) {
                     dbDoc.setSync(VKDocumentEntity.SYNCHRONIZED);
                     updated = true;
-                }
+                }*/
                 if (updated)
                     updatedDocuments.add(dbDoc);
 
@@ -119,7 +120,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
         databaseRepository.updateAll(updatedDocuments);//batch synchronously update
         databaseRepository.addAll(newDocuments);//batch synchronously insert
-        databaseRepository.deleteAll(deleteDbDocs);//batch synchronously delete
+        databaseRepository.deleteAll(deleteDbDocs);//batch synchronously deleteAsync
     }
 
     @Override

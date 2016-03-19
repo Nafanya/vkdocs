@@ -27,7 +27,7 @@ public class RenameDocument extends UseCase<Void> {
         document.title = newName;
         return Observable.create(subscriber -> {
             try {
-                eventBus.removeEvent(GetMyDocuments.class);
+                eventBus.removeEvent(GetDocuments.class);
                 repository.rename(document, newName);
                 repository.synchronize();
                 subscriber.onCompleted();

@@ -31,7 +31,7 @@ public class MakeOfflineDocument extends UseCase<Void> {
     public Observable<Void> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
-                eventBus.removeEvent(GetMyDocuments.class);
+                eventBus.removeEvent(GetDocuments.class);
                 DownloadRequest request = new DownloadRequest(document.url, toPath);
                 request.setDocId(document.getId());
                 request.setTotalBytes(document.size);

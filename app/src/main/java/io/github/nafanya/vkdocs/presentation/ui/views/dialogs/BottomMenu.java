@@ -41,7 +41,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
 
     private MenuEventListener listener;
 
-    public BottomMenu(@NonNull Context context, int position, VkDocument doc, FileFormatter fileFormatter, MenuEventListener listener) {
+    public BottomMenu(@NonNull Context context, int position, VkDocument doc, FileFormatter fileFormatter, @NonNull MenuEventListener listener) {
         super(context);
         this.position = position;
         this.doc = doc;
@@ -76,5 +76,12 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         void onClickMakeOffline(VkDocument document, boolean isMakeOffline);
         void onClickRename(int position, VkDocument document);
         void onClickDelete(int position, VkDocument document);
+        void onCloseContextMenu();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        listener.onCloseContextMenu();
     }
 }

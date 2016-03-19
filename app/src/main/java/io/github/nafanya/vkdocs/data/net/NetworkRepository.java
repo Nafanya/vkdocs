@@ -10,7 +10,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public interface NetworkRepository {
     List<VKApiDocument> getMyDocuments() throws Exception;
-    void delete(VkDocument document) throws Exception;
+    void deleteAsync(VkDocument document) throws Exception;
     void rename(VkDocument document) throws Exception;
     Mapper<VKApiDocument, VkDocument> getMapper();
 }

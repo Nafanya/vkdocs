@@ -2,8 +2,11 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -58,8 +61,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
 
     protected abstract BaseSortedAdapter newAdapter();
 
-    @Override
-    public void onGetDocuments(List<VkDocument> documents) {
+    private void updateData(List<VkDocument> documents) {
         if (adapter == null)
             adapter = newAdapter();
         adapter.setData(documents);
@@ -68,27 +70,33 @@ public abstract class PresenterActivity extends BaseActivity implements Document
     }
 
     @Override
-    public void onNetworkError(Exception ex) {
+    public void onGetDocuments(List<VkDocument> documents) {
+        Timber.d("ON GET DOCUMENTS");
+        updateData(documents);
+    }
 
+    @Override
+    public void onNetworkDocuments(List<VkDocument> documents) {
+        Timber.d("ON NETWORK DOCUMENTS");
+        setRefresh(false);
+        updateData(documents);
+    }
+
+    @Override
+    public void onNetworkError(Exception ex) {
+        setRefresh(false);
+        Snackbar snackbar = Snackbar
+                .make(cooridnatorLayout, "No internet connection", Snackbar.LENGTH_LONG)
+                .setAction("RETRY", view -> {
+                    Timber.d("retry refresh");
+                    onRefresh();
+                });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
     }
 
     @Override
     public void onDatabaseError(Exception ex) {
-
-    }
-
-    @Override
-    public void onMakeOffline(Exception ex) {
-
-    }
-
-    @Override
-    public void onRename(Exception ex) {
-
-    }
-
-    @Override
-    public void onDelete(Exception ex) {
 
     }
 

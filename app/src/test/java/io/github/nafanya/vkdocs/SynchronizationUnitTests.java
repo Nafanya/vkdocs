@@ -57,13 +57,13 @@ public class SynchronizationUnitTests {
             } else if (event == EventType.DELETE_DOCUMENT && databaseRepository.getMyDocuments().size() != 0) {
                 List<VKDocumentEntity> dbDocs = databaseRepository.getMyDocuments();
                 VKDocumentEntity vkDocumentEntity = dbDocs.get(Utils.randInt(dbDocs.size()));
-                documentRepository.delete(mapper.transform(vkDocumentEntity));
+                documentRepository.deleteAsync(mapper.transform(vkDocumentEntity));
 
                 correct.remove(mapper.transform(vkDocumentEntity));
             } else if (event == EventType.SYNCHRONIZE) {
                 final Reference<AssertionFailedError> exception = new Reference<>();
 
-                new NetworkMyDocuments(Schedulers.immediate(),
+                new NetworkDocuments(Schedulers.immediate(),
                         Schedulers.immediate(),
                         dummyEventBus, true, documentRepository).
                         execute(new DefaultSubscriber<List<VkDocument>>() {

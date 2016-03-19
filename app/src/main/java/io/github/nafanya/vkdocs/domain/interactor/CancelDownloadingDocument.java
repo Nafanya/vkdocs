@@ -32,7 +32,7 @@ public class CancelDownloadingDocument extends UseCase<Void> {
             downloadManager.cancelRequest(document.getRequest());
             document.setRequest(null);
             subscriber.onCompleted();
-            eventBus.removeEvent(GetMyDocuments.class);//TODO replace removes to update cache
+            eventBus.removeEvent(GetDocuments.class);//TODO replace removes to update cache
         });
     }
 }

@@ -27,7 +27,7 @@ public class DeleteDocument extends UseCase<Integer> {
     public Observable<Integer> buildUseCase() {
         return Observable.create(subscriber ->  {
             try {
-                eventBus.removeEvent(GetMyDocuments.class);
+                eventBus.removeEvent(GetDocuments.class);
                 repository.delete(doc);
                 subscriber.onCompleted();
             } catch (Exception e) {

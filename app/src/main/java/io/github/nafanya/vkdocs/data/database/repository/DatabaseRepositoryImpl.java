@@ -7,11 +7,9 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.data.Mapper;
 import io.github.nafanya.vkdocs.data.database.DocumentsDatabase;
-import io.github.nafanya.vkdocs.data.database.model.DownloadRequestEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity;
 import io.github.nafanya.vkdocs.data.database.model.VKDocumentEntity_Table;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import timber.log.Timber;
 
 public class DatabaseRepositoryImpl implements DatabaseRepository {
     private Mapper<VKDocumentEntity, VkDocument> mapper;
@@ -59,7 +57,7 @@ public class DatabaseRepositoryImpl implements DatabaseRepository {
         });
     }
 
-    //Batch delete
+    //Batch deleteAsync
     @Override
     public void deleteAll(final Iterable<VKDocumentEntity> list) {
         TransactionManager.transact(DocumentsDatabase.NAME, () -> {
