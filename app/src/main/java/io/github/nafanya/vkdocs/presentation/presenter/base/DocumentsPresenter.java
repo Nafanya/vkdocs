@@ -2,8 +2,6 @@ package io.github.nafanya.vkdocs.presentation.presenter.base;
 
 import android.os.Environment;
 
-import com.vk.sdk.api.model.VKApiDocument;
-
 import java.util.ArrayList;
 import java.util.List;
 

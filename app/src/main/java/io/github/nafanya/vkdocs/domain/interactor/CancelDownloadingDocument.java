@@ -7,7 +7,6 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
-import timber.log.Timber;
 
 public class CancelDownloadingDocument extends UseCase<Void> {
     private VkDocument document;

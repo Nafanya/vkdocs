@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -17,7 +16,6 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 

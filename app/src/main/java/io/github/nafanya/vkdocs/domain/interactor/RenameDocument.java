@@ -6,7 +6,6 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
-import timber.log.Timber;
 
 public class RenameDocument extends UseCase<Void> {
     private DocumentRepository repository;
