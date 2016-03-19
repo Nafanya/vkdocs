@@ -12,12 +12,13 @@ import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
-public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCheckedChangeListener {
 
     @Bind(R.id.text_document_title)
     TextView title;
@@ -30,6 +31,9 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
 
     @Bind(R.id.bottom_rename)
     RelativeLayout renameButton;
+
+    @Bind(R.id.bottom_delete)
+    RelativeLayout deleteButton;
 
     private VkDocument doc;
     private int position;
@@ -49,7 +53,8 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         title.setText(doc.title);
         offlineSwitch.setOnCheckedChangeListener(this);
         offlineSwitch.setChecked(doc.isOffline());
-        renameButton.setOnClickListener(this);
+        //renameButton.setOnClickListener(this);
+        //deleteButton.setOnClickListener(this);
     }
 
     @Override
@@ -57,14 +62,19 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         listener.onClickMakeOffline(doc, isChecked);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.bottom_rename)
-            listener.onClickRename(doc);
+    @OnClick(R.id.bottom_rename)
+    public void onClickRename(View v) {
+            listener.onClickRename(position, doc);
+    }
+
+    @OnClick(R.id.bottom_delete)
+    public void onClickDelete(View v) {
+        listener.onClickDelete(position, doc);
     }
 
     public interface MenuEventListener {
         void onClickMakeOffline(VkDocument document, boolean isMakeOffline);
-        void onClickRename(VkDocument document);
+        void onClickRename(int position, VkDocument document);
+        void onClickDelete(int position, VkDocument document);
     }
 }

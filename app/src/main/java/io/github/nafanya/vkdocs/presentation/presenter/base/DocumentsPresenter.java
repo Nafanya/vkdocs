@@ -12,6 +12,7 @@ import io.github.nafanya.vkdocs.domain.download.base.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
+import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetMyDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkMyDocuments;
@@ -147,8 +148,8 @@ public class DocumentsPresenter extends BasePresenter {
         new RenameDocument(OBSERVER, SUBSCRIBER, eventBus, repository, document, newName).execute();
     }
 
-    public void delete(VKApiDocument document) {
-
+    public void delete(VkDocument document) {
+        new DeleteDocument(OBSERVER, SUBSCRIBER, eventBus, repository, document).execute();
     }
 
     public void forceNetworkLoad() {

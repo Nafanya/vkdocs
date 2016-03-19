@@ -28,10 +28,10 @@ public class RenameDocument extends UseCase<Void> {
         document.title = newName;
         return Observable.create(subscriber -> {
             try {
-                Timber.d("IN RENAME");
                 eventBus.removeEvent(GetMyDocuments.class);
                 repository.rename(document, newName);
                 repository.synchronize();
+                subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
             }

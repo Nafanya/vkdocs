@@ -11,6 +11,7 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.DeleteDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.RenameDialog;
@@ -25,13 +26,14 @@ public class DocumentsActivity extends PresenterActivity implements
         OpenProgressDialog.Callback,
         ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener,
-        RenameDialog.Callback {
+        RenameDialog.Callback,
+        DeleteDialog.Callback {
     private static String CONTEXT_DOC_KEY = "context_doc_key";
     private static String CONTEXT_POS_KEY = "context_pos_key";
 
     private BottomSheetDialog dialog;
-    private VkDocument contextMenuDoc;
-    private int position;
+    private VkDocument restoreContextMenuDoc;
+    private int restoreDocPosition;
     private FileFormatter fileFormatter;
 
     @Override
@@ -40,17 +42,17 @@ public class DocumentsActivity extends PresenterActivity implements
         App app = (App)getApplication();
         fileFormatter = app.getFileFormatter();
         if (state != null) {
-            contextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
-            position = state.getInt(CONTEXT_POS_KEY);
+            restoreContextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
+            restoreDocPosition = state.getInt(CONTEXT_POS_KEY);
         }
-        if (contextMenuDoc != null)
-            onClickContextMenu(position, contextMenuDoc);
+        if (restoreContextMenuDoc != null)
+            onClickContextMenu(restoreDocPosition, restoreContextMenuDoc);
     }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putParcelable(CONTEXT_DOC_KEY, contextMenuDoc);
-        state.putInt(CONTEXT_POS_KEY, position);
+        state.putParcelable(CONTEXT_DOC_KEY, restoreContextMenuDoc);
+        state.putInt(CONTEXT_POS_KEY, restoreDocPosition);
         super.onSaveInstanceState(state);
     }
 
@@ -98,8 +100,8 @@ public class DocumentsActivity extends PresenterActivity implements
 
     @Override
     public void onClickContextMenu(int position, VkDocument document) {
-        contextMenuDoc = document;
-        this.position = position;
+        restoreContextMenuDoc = document;
+        this.restoreDocPosition = position;
         dialog = new BottomMenu(this, position, document, fileFormatter, this);
         dialog.show();
     }
@@ -109,7 +111,7 @@ public class DocumentsActivity extends PresenterActivity implements
     @Override
     public void onCancelDownloading(int position, VkDocument document) {
         presenter.cancelDownloading(document);
-        ((OfflineAdapter) adapter).removeIndex(position);
+        adapter.removeIndex(position);
     }
 
     @Override
@@ -127,16 +129,24 @@ public class DocumentsActivity extends PresenterActivity implements
     }
 
     @Override
-    public void onClickRename(VkDocument document) {
-        dialog.dismiss();
+    public void onClickRename(int position, VkDocument document) {
+        dismissContextMenu();
         DialogFragment fragment = RenameDialog.newInstance(position, document);
         fragment.show(getSupportFragmentManager(), "rename");
+    }
+
+    @Override
+    public void onClickDelete(int position, VkDocument document) {
+        dismissContextMenu();
+        DialogFragment fragment = DeleteDialog.newInstance(position, document);
+        fragment.show(getSupportFragmentManager(), "delete");
     }
 
     public void dismissContextMenu() {
         dialog.dismiss();
         dialog = null;
-        contextMenuDoc = null;
+        restoreContextMenuDoc = null;
+        restoreDocPosition = -1;
     }
 
     /***Presenter callback for open document***/
@@ -196,7 +206,19 @@ public class DocumentsActivity extends PresenterActivity implements
     public void onRename(int position, VkDocument document, String newName) {
         Timber.d("[On rename] %s newName %s", document.title, newName);
         presenter.rename(document, newName);
-        dismissContextMenu();
         adapter.notifyItemChanged(position);
+    }
+
+    /***Delete dialog callbacks***/
+    @Override
+    public void onCancelDelete(VkDocument document) {
+
+    }
+
+    @Override
+    public void onDelete(int position, VkDocument document) {
+        Timber.d("[On delete] %s", document.title);
+        presenter.delete(document);
+        adapter.removeIndex(position);
     }
 }

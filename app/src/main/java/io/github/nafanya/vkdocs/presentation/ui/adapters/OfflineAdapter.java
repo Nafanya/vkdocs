@@ -83,11 +83,6 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     }
 
-    public void removeIndex(int position) {
-        documents.remove(position);
-        notifyDataSetChanged();
-    }
-
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Nullable

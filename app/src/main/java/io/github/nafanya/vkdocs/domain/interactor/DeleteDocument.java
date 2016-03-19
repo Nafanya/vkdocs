@@ -14,10 +14,10 @@ public class DeleteDocument extends UseCase<Integer> {
 
     public DeleteDocument(Scheduler observerScheduler,
                           Scheduler subscriberScheduler,
-                          EventBus eventBus, boolean isCached,
+                          EventBus eventBus,
                           DocumentRepository repository,
                           VkDocument doc) {
-        super(observerScheduler, subscriberScheduler, eventBus, isCached);
+        super(observerScheduler, subscriberScheduler, eventBus, false);
         this.repository = repository;
         this.doc = doc;
     }

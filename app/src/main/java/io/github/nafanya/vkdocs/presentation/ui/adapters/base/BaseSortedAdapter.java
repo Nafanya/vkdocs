@@ -115,7 +115,12 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public abstract void setData(List<VkDocument> documents);
     public abstract void setSortMode(SortMode sortMode);
+    public void removeIndex(int position) {
+        documents.remove(position);
+        notifyDataSetChanged();
+    }
     public List<VkDocument> getData() {
         return documents;
     }
+
 }
