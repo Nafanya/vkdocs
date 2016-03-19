@@ -194,6 +194,8 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
+        // The only valid fix to make SearchView expand full width
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         return true;
     }
 
