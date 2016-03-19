@@ -59,7 +59,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        listener.onClickMakeOffline(doc, isChecked);
+        listener.onClickMakeOffline(position, doc, isChecked);
     }
 
     @OnClick(R.id.bottom_rename)
@@ -73,7 +73,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     }
 
     public interface MenuEventListener {
-        void onClickMakeOffline(VkDocument document, boolean isMakeOffline);
+        void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline);
         void onClickRename(int position, VkDocument document);
         void onClickDelete(int position, VkDocument document);
         void onCloseContextMenu();

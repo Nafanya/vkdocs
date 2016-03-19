@@ -128,11 +128,12 @@ public class DocumentsActivity extends PresenterActivity implements
 
     /***BottomMenu callbacks***/
     @Override
-    public void onClickMakeOffline(VkDocument document, boolean isMakeOffline) {
+    public void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline) {
         Timber.d("[Bottom menu] clicked offline button for doc (title=%s, isMakeOffline=%s)", document.title, isMakeOffline);
         if (isMakeOffline) {
             presenter.makeOffline(document);
         }
+        adapter.notifyItemChanged(position);
     }
 
     @Override
