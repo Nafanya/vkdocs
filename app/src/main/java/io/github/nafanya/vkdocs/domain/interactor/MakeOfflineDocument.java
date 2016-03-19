@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -12,19 +13,16 @@ import rx.Scheduler;
 public class MakeOfflineDocument extends UseCase<Void> {
     private VkDocument document;
     private String toPath;
-    private DocumentRepository repository;
-    private DownloadManager downloadManager;
+    private OfflineManager offlineManager;
 
     public MakeOfflineDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
+                               OfflineManager offlineManager,
                                VkDocument document,
-                               String toPath,
-                               DocumentRepository repository,
-                               DownloadManager downloadManager) {
+                               String toPath) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
+        this.offlineManager = offlineManager;
         this.document = document;
         this.toPath = toPath;
-        this.repository = repository;
-        this.downloadManager = downloadManager;
     }
 
     @Override
@@ -32,34 +30,7 @@ public class MakeOfflineDocument extends UseCase<Void> {
         return Observable.create(subscriber -> {
             try {
                 eventBus.removeEvent(GetDocuments.class);
-
-                DownloadRequest request = new DownloadRequest(document.url, toPath);
-                request.setDocId(document.getId());
-                request.setTotalBytes(document.size);
-
-                request.addListener(new DownloadRequest.RequestListener() {
-                    @Override
-                    public void onProgress(int percentage) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        document.setPath(request.getDest());
-                        new UpdateDocument(subscriberScheduler, eventBus, repository, document).execute();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
-
-                downloadManager.enqueue(request);
-                document.setOfflineType(VkDocument.OFFLINE);
-                document.setRequest(request);
-                repository.update(document);
-
+                offlineManager.makeOffline(document, toPath);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

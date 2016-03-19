@@ -8,9 +8,6 @@ import rx.Subscription;
 
 public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
-    //private ReplaySubject<Integer> progressSubject = ReplaySubject.createWithSize(1);
-    //private volatile DownloadManager.RequestListener observer;
-    //private Scheduler observeScheduler = AndroidSchedulers.mainThread();
     private volatile boolean isActive;
     private List<RequestListener> listeners = new ArrayList<>();
     private List<Subscription> subscriptions = new ArrayList<>();

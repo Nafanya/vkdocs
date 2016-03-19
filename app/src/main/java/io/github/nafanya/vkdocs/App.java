@@ -22,6 +22,8 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.mapper.NetMapper;
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
+import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
@@ -40,6 +42,7 @@ public class App extends Application {
     private DocumentRepository repository;
     private FileFormatter fileFormatter;
     private InternetServiceImpl internetService;
+    private OfflineManager offlineManager;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -75,10 +78,11 @@ public class App extends Application {
         fileFormatter = new FileFormatter(this);
 
         DatabaseRepository databaseRepository = new DatabaseRepositoryImpl(new DbMapper(new DownloadRequestMapper()));
-        NetworkRepository networkRepository = new NetworkRepositoryImpl(new InternetServiceImpl(), new NetMapper());
+        NetworkRepository networkRepository = new NetworkRepositoryImpl(new NetMapper());
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
-        internetService = new InternetServiceImpl();
+        internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
 
         createIfNotExist("/VKDocs/offline");
         createIfNotExist("/VKDocs/cache");
@@ -110,5 +114,9 @@ public class App extends Application {
 
     public FileFormatter getFileFormatter() {
         return fileFormatter;
+    }
+
+    public OfflineManager getOfflineManager() {
+        return offlineManager;
     }
 }

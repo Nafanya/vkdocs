@@ -1,5 +1,7 @@
 package io.github.nafanya.vkdocs.net.impl;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -11,6 +13,7 @@ import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class InterruptableOfflineManager implements OfflineManager, InternetService.InternetStateListener {
     private InterruptableDownloadManager downloadManager;
@@ -28,11 +31,11 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         this.eventBus = eventBus;
 
         List<DownloadRequest> reqs = downloadManager.getQueue();
-        List<VkDocument> docs = repository.getMyDocuments();//TODO make async
+        List<VkDocument> docs = repository.getMyDocuments();//TODO make async or faster
         for (DownloadRequest request : reqs) {
             VkDocument document = null;
             for (VkDocument d: docs)
-                if (d.getId() == request.getId()) {
+                if (d.getId() == request.getDocId()) {
                     document = d;
                     break;
                 }
@@ -54,6 +57,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
 
     @Override
     public void onEnableNetwork() {
+        Timber.d("on enable network");
         List<DownloadRequest> reqs = downloadManager.getQueue();
         for (DownloadRequest request : reqs) {
             request.resetError();
@@ -79,7 +83,8 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         private VkDocument document;
         private DownloadRequest request;
 
-        public CompleteDownloadingListener(VkDocument document, DownloadRequest request) {
+        public CompleteDownloadingListener(@NonNull VkDocument document,
+                                           @NonNull DownloadRequest request) {
             this.document = document;
             this.request = request;
         }
@@ -93,7 +98,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         public void onComplete() {
             document.setPath(request.getDest());
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
-            request.removeListener(this);
+            //request.removeListener(this);TODO fix it
         }
 
         @Override

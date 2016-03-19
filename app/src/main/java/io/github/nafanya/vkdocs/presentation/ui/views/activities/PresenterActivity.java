@@ -42,7 +42,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 app.getEventBus(),
                 app.getRepository(),
                 app.getDownloadManager(),
-                app.getInternetService(),
+                app.getOfflineManager(),
                 this);
         presenter.getDocuments();
     }

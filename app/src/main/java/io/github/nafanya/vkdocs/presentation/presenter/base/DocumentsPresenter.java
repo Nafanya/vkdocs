@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -53,21 +54,22 @@ public class DocumentsPresenter extends BasePresenter {
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
-    protected InternetService internetService;
+    protected OfflineManager offlineManager;
+
     protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
     protected final Scheduler SUBSCRIBER = Schedulers.io();
 
     public DocumentsPresenter(DocFilter filter, EventBus eventBus,
                               DocumentRepository repository,
                               InterruptableDownloadManager downloadManager,
-                              InternetService internetService,
+                              OfflineManager offlineManager,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
-        this.internetService = internetService;
+        this.offlineManager = offlineManager;
     }
 
     public void setFilter(DocFilter filter) {
@@ -108,10 +110,9 @@ public class DocumentsPresenter extends BasePresenter {
                 OBSERVER,
                 SUBSCRIBER,
                 eventBus,
+                offlineManager,
                 document,
-                OFFLINE_PATH + document.title,
-                repository,
-                downloadManager).execute();
+                OFFLINE_PATH + document.title).execute();
     }
 
     public void cancelDownloading(VkDocument document) {

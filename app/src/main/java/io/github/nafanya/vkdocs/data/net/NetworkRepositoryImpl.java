@@ -19,11 +19,9 @@ import timber.log.Timber;
 
 public class NetworkRepositoryImpl implements NetworkRepository {
 
-    private InternetService internetService;//TODO check internet connection
     private Mapper<VKApiDocument, VkDocument> mapper;
 
-    public NetworkRepositoryImpl(InternetService internetService, Mapper<VKApiDocument, VkDocument> mapper) {
-        this.internetService = internetService;
+    public NetworkRepositoryImpl(Mapper<VKApiDocument, VkDocument> mapper) {
         this.mapper = mapper;
     }
 
