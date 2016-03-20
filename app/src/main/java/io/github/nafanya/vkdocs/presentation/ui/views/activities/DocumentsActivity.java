@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
@@ -103,12 +104,16 @@ public class DocumentsActivity extends PresenterActivity implements
     public void onClick(int position, VkDocument document) {
         if (document.getExtType() != VkDocument.ExtType.AUDIO &&
                 document.getExtType() != VkDocument.ExtType.VIDEO &&
-                document.getExtType() != VkDocument.ExtType.IMAGE) {
+                document.getExtType() != VkDocument.ExtType.IMAGE &&
+                document.getExtType() != VkDocument.ExtType.GIF) {
             Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
             Timber.d("is off %b, is cached %b", document.isOffline(), document.isCached());
             presenter.openDocument(document);
         } else {
-            //TODO
+            Intent intent = new Intent(this, DocumentViewerActivity.class);
+            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
+            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
+            startActivity(intent);
         }
     }
 

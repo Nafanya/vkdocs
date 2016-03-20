@@ -24,7 +24,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
 
 public class DocumentViewerActivity extends AppCompatActivity {
-
+    public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
 
     private DocumentsPagerAdapter documentsPagerAdapter;
@@ -42,6 +42,10 @@ public class DocumentViewerActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (state == null)
+            state = getIntent().getExtras();
+
+        int position = state.getInt(POSITION_KEY);
         List<VkDocument> documents = state.getParcelableArrayList(DOCUMENTS_KEY);
 
         // Create the adapter that will return a fragment for each of the three
@@ -51,6 +55,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(documentsPagerAdapter);
+        viewPager.setCurrentItem(position);
     }
 
 
@@ -92,10 +97,11 @@ public class DocumentViewerActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            VkDocument document = documents.get(position);
             VkDocument.ExtType extType = documents.get(position).getExtType();
             Fragment ret = null;
-            if (extType == VkDocument.ExtType.AUDIO) {
-                ret = MusicPlayFragment.newInstance();
+            /*if (extType == VkDocument.ExtType.AUDIO) {
+                ret = MusicPlayFragment.newInstance(document);
             } else if (extType == VkDocument.ExtType.VIDEO) {
 
             } else if (extType == VkDocument.ExtType.IMAGE) {
@@ -104,7 +110,8 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
             } else {
 
-            }
+            }*/
+            ret = MusicPlayFragment.newInstance(document);
             return ret;
         }
 
