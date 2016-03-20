@@ -29,6 +29,9 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     @Bind(R.id.switch1)
     Switch offlineSwitch;
 
+    @Bind(R.id.bottom_download)
+    RelativeLayout downloadButton;
+
     @Bind(R.id.bottom_rename)
     RelativeLayout renameButton;
 
@@ -60,6 +63,11 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         listener.onClickMakeOffline(position, doc, isChecked);
     }
 
+    @OnClick(R.id.bottom_download)
+    public void onClickDownload(View v) {
+        listener.onClickDownload(position, doc);
+    }
+
     @OnClick(R.id.bottom_rename)
     public void onClickRename(View v) {
             listener.onClickRename(position, doc);
@@ -75,6 +83,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         void onClickRename(int position, VkDocument document);
         void onClickDelete(int position, VkDocument document);
         void onCloseContextMenu();
+        void onClickDownload(int position, VkDocument document);
     }
 
     @Override

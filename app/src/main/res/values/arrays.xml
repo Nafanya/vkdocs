@@ -25,6 +25,7 @@
         <item>@string/books</item>
         <item>@string/archives</item>
         <item>@string/gifs</item>
+        <item>@string/images</item>
         <item>@string/music</item>
         <item>@string/video</item>
         <item>@string/other</item>
@@ -41,6 +42,7 @@
     <string name="books">Books</string>
     <string name="archives">Archives</string>
     <string name="gifs">Gifs</string>
+    <string name="images">Images</string>
     <string name="music">Music</string>
     <string name="video">Video</string>
     <string name="other">Other</string>

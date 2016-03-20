@@ -1,13 +1,17 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.webkit.MimeTypeMap;
+
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.vk.sdk.api.model.VKApiUser;
 
 import java.io.File;
 import java.util.List;
@@ -45,8 +49,10 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 app.getOfflineManager(),
                 app.getAppCacheRoot(),
                 app.getAppOfflineRoot(),
+                (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
                 this);
         presenter.getDocuments();
+        presenter.getUserInfo();
     }
 
     protected DocFilter getFilter(int section, VkDocument.ExtType extType) {
@@ -117,5 +123,14 @@ public abstract class PresenterActivity extends BaseActivity implements Document
             //TODO do something
             //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onUserInfoLoaded(VKApiUser userInfo) {
+        ProfileDrawerItem account = new ProfileDrawerItem()
+                .withName(userInfo.first_name + " " + userInfo.last_name)
+                .withIcon(userInfo.photo_100);
+        accountHeader.clear();
+        accountHeader.addProfile(account, 0);
     }
 }
