@@ -50,7 +50,7 @@ public class FileFormatter {
 
         if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
             return archive;
-        
+
         return file;
     }
 
