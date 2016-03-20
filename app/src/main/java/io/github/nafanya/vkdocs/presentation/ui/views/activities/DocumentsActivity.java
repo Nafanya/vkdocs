@@ -143,6 +143,7 @@ public class DocumentsActivity extends PresenterActivity implements
         if (isMakeOffline) {
             presenter.makeOffline(document);
         }
+        Timber.d("ON CLICK MAKE OFFLINE");
         adapter.notifyItemChanged(position);
     }
 

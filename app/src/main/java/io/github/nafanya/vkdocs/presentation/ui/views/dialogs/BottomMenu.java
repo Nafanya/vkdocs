@@ -51,10 +51,8 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         ButterKnife.bind(this);
         documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
         title.setText(doc.title);
+        offlineSwitch.setChecked(doc.isOffline() || doc.isOfflineInProgress());
         offlineSwitch.setOnCheckedChangeListener(this);
-        offlineSwitch.setChecked(doc.isOffline());
-        //renameButton.setOnClickListener(this);
-        //deleteButton.setOnClickListener(this);
     }
 
     @Override

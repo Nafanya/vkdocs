@@ -214,28 +214,33 @@ public class InterruptableDownloadManager implements DownloadManager {
 
 
     private void runTask(DownloadTask task) {
-        final DownloadRequest request = task.getRequest();
-
         Observable.create(task).
                 subscribeOn(workerScheduler).
                 observeOn(AndroidSchedulers.mainThread()).
-                subscribe(new Subscriber<Integer>   () {
-                    @Override
-                    public void onCompleted() {
-                        request.publishComplete();
-                    }
+                subscribe(new TaskSubscriber(task.getRequest()));
+    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.d("exc = " + e.getMessage());
-                        request.publishError((Exception)e);
-                    }
+    private class TaskSubscriber extends Subscriber<Integer> {
+        private DownloadRequest request;
+        public TaskSubscriber(DownloadRequest request) {
+            this.request = request;
+        }
 
-                    @Override
-                    public void onNext(Integer progress) {
-                        request.publishProgress(progress);
-                    }
-                });
+        @Override
+        public void onCompleted() {
+            request.publishComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Timber.d("exc = " + e.getMessage());
+            request.publishError((Exception)e);
+        }
+
+        @Override
+        public void onNext(Integer progress) {
+            request.publishProgress(progress);
+        }
     }
 
     @Override

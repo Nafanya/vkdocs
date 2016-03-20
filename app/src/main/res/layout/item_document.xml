@@ -114,7 +114,7 @@
             android:orientation="horizontal">
 
             <!-- Modified: / Size: / etc.
-            TODO: extract tring resources-->
+            TODO: extract string resources-->
             <TextView
                 android:id="@+id/sortLabel"
                 android:text="Size: "

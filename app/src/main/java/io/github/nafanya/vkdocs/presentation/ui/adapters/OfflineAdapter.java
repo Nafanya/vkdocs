@@ -91,29 +91,32 @@ public class OfflineAdapter extends BaseSortedAdapter {
         ImageView documentTypeIcon;
 
         @Nullable
+        @Bind(R.id.ic_document_offline)
+        ImageView documentOfflineIcon;
+
+        @Nullable
+        @Bind(R.id.ic_document_offline_progress)
+        ImageView documentOfflineInProgressIcon;
+
+        @Nullable
         @Bind(R.id.text_document_title)
         TextView title;
-
         @Nullable
         @Bind(R.id.statusLabels)
         TextView size;
-
-        @Bind(R.id.sortLabel) TextView sortLabel;
-
+        @Bind(R.id.sortLabel)
+        TextView sortLabel;
         @Nullable
         @Bind(R.id.progress)
         ProgressBar downloadProgress;
-
         @Nullable
         @Bind(R.id.buttonContextMenu)
         ImageButton buttonContext;
-
         @Nullable
         @Bind(R.id.buttonCancel)
         ImageButton buttonCancel;
 
         private Subscription prevSubscription = Subscriptions.empty();
-
         private ItemEventListener listener;
 
         public DownloadingDocViewHolder(View view, ItemEventListener listener) {
@@ -122,6 +125,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             ButterKnife.bind(this, view);
 
+            documentOfflineIcon.setVisibility(View.GONE);
+            documentOfflineInProgressIcon.setVisibility(View.GONE);
 
             downloadProgress.setVisibility(View.VISIBLE);
             sortLabel.setVisibility(View.GONE);
@@ -131,11 +136,39 @@ public class OfflineAdapter extends BaseSortedAdapter {
             buttonCancel.setOnClickListener(this);
         }
 
+        private class ProgressListener implements DownloadRequest.RequestListener {
+            private VkDocument doc;
+            public ProgressListener(VkDocument doc) {
+                this.doc = doc;
+            }
+
+            @Override
+            public void onProgress(int percentage) {
+                Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
+                size.setText(fileFormatter.formatFrom(doc.getRequest()));
+                downloadProgress.setProgress(percentage);
+            }
+
+            @Override
+            public void onComplete() {
+                Timber.d("doc = " + doc + ", request = " + doc.getRequest());
+                doc.setPath(doc.getRequest().getDest());
+                Timber.d("path doc = " + doc.getPath());
+                doc.resetRequest();
+                listener.onCompleteDownloading(getAdapterPosition(), doc);
+                Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        }
+
         //TODO maybe add downloaded bytes and full size in progress callbacks
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
         public void setup(VkDocument doc) {
-            //documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
-
+            documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
             title.setText(doc.title);
             prevSubscription.unsubscribe();
             downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
@@ -148,30 +181,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
                 buttonCancel.setVisibility(View.GONE);
             }
 
-            prevSubscription = doc.getRequest().addListener(new DownloadRequest.RequestListener() {
-                @Override
-                public void onProgress(int percentage) {
-                    Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
-                    //.getString(R.string.from)
-                    size.setText(fileFormatter.formatFrom(doc.getRequest()));
-                    downloadProgress.setProgress(percentage);
-                }
-
-                @Override
-                public void onComplete() {
-                    doc.setPath(doc.getRequest().getDest());
-                    Timber.d("path doc = " + doc.getPath());
-                    doc.resetRequest();
-                    listener.onCompleteDownloading(getAdapterPosition(), doc);
-                    Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
-                    notifyDataSetChanged();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    //TODO write here. snackbar?
-                }
-            });
+            prevSubscription = doc.getRequest().addListener(new ProgressListener(doc));
         }
 
         @Override

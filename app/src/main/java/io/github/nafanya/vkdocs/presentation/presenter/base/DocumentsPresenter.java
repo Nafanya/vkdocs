@@ -1,15 +1,11 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.nafanya.vkdocs.net.base.OfflineManager;
-import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
@@ -22,7 +18,9 @@ import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.net.base.InternetService;
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import rx.Scheduler;
 import rx.Subscriber;
