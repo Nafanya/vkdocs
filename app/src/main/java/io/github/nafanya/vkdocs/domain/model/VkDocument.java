@@ -38,12 +38,14 @@ public class VkDocument extends VKApiDocument {
     public VkDocument(Parcel in) {
         super(in);
         offlineType = in.readInt();
+        path = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(offlineType);
+        dest.writeString(path);
     }
 
     public DownloadRequest getRequest() {

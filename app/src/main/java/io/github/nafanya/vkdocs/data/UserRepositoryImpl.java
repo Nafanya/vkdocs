@@ -30,6 +30,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void synchronize() {
-
+        //TODO write here caching
     }
 }
