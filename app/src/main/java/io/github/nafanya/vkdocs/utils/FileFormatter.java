@@ -9,8 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 
 public class FileFormatter {
     private String from;
@@ -20,6 +20,7 @@ public class FileFormatter {
     private Drawable filePdfBox;
     private Drawable image;
     private Drawable file;
+    private Drawable archive;
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
@@ -32,6 +33,7 @@ public class FileFormatter {
             filePdfBox = ContextCompat.getDrawable(context, R.drawable.file_pdf_box);
             image = ContextCompat.getDrawable(context, R.drawable.image);
             file = ContextCompat.getDrawable(context, R.drawable.file);
+            archive = ContextCompat.getDrawable(context, R.drawable.zip_box);
         }
 
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
@@ -45,6 +47,10 @@ public class FileFormatter {
 
         if (doc.getExtType() == VkDocument.ExtType.IMAGE)
             return image;
+
+        if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
+            return archive;
+        
         return file;
     }
 
