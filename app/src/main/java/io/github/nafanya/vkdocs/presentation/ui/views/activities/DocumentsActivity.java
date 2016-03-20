@@ -164,6 +164,13 @@ public class DocumentsActivity extends PresenterActivity implements
         dismissContextMenu();
     }
 
+    @Override
+    public void onClickDownload(int position, VkDocument document) {
+        if (isStoragePermissionGranted()) {
+            presenter.downloadDocumentToDownloads(document);
+        }
+    }
+
     public void dismissContextMenu() {
         dialog.dismiss();
         dialog = null;

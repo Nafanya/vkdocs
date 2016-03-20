@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
+    android:background="?selectableItemBackground"
     android:minHeight="@dimen/doclist_entry_height"
     android:maxHeight="@dimen/doclist_entry_height">
 
@@ -50,6 +51,7 @@
     <!-- TODO: make dots button clickable zone larger -->
 
     <LinearLayout
+        style="?selectableItemBackground"
         android:id="@+id/buttons"
         android:layout_width="@dimen/doclist_button_width"
         android:layout_height="@dimen/doclist_entry_height"

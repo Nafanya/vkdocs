@@ -1,12 +1,20 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+
+import com.vk.sdk.api.model.VKApiUser;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.data.UserRepositoryImpl;
+import io.github.nafanya.vkdocs.domain.interactor.GetUserInfo;
+import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
@@ -41,6 +49,8 @@ public class DocumentsPresenter extends BasePresenter {
 
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
+
+        void onUserInfoLoaded(VKApiUser userInfo);
     }
 
     private String OFFLINE_PATH;
@@ -49,13 +59,16 @@ public class DocumentsPresenter extends BasePresenter {
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
+    protected Subscriber<VKApiUser> userSubscriber = Subscribers.empty();
 
     protected DocFilter filter;
     protected InterruptableDownloadManager downloadManager;
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
+    protected UserRepository userRepository = new UserRepositoryImpl();
     protected OfflineManager offlineManager;
+    protected DownloadManager systermDownloadManager;
 
     protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
     protected final Scheduler SUBSCRIBER = Schedulers.io();
@@ -65,6 +78,7 @@ public class DocumentsPresenter extends BasePresenter {
                               InterruptableDownloadManager downloadManager,
                               OfflineManager offlineManager,
                               File offlineRoot, File cacheRoot,
+                              DownloadManager systermDownloadManager,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
@@ -73,6 +87,7 @@ public class DocumentsPresenter extends BasePresenter {
         this.repository = repository;
         this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
         this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
+        this.systermDownloadManager = systermDownloadManager;
         this.offlineManager = offlineManager;
     }
 
@@ -82,6 +97,31 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void updateDocument(VkDocument document) {
         new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+    }
+
+    public void downloadDocumentToDownloads(VkDocument document) {
+        Uri uri = null;
+        Timber.d("[download document] %s", document);
+        Timber.d("[download document] cached(%s), offline(%s)", document.isCached(), document.isOffline());
+        try {
+            if (document.isCached() || document.isOffline()) {
+                Timber.d("[download document] already downloaded as local file");
+                uri = Uri.parse(document.getPath());
+            } else {
+                Timber.d("[download document] not downloaded");
+                uri = Uri.parse(document.url);
+            }
+        } catch (NullPointerException ignored) {
+            return;
+            // TODO: tell about invalid Uri back to UI
+        }
+        Timber.d("[download document] download Uri: %s", uri);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(document.title);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, document.title);
+        request.setVisibleInDownloadsUi(true);
+        Timber.d("[download document] enqueue request: %s", request);
+        systermDownloadManager.enqueue(request);
     }
 
     //TODO when caching is finished, remove GetDocuments from EventBus?
@@ -107,6 +147,16 @@ public class DocumentsPresenter extends BasePresenter {
                 }
             }
         }
+    }
+
+    public void getUserInfo() {
+        userSubscriber = new GetUserInfoSubscriber();
+        new GetUserInfo(
+                OBSERVER,
+                SUBSCRIBER,
+                eventBus,
+                userRepository
+        ).execute(userSubscriber);
     }
 
     public void makeOffline(VkDocument document) {
@@ -185,6 +235,7 @@ public class DocumentsPresenter extends BasePresenter {
         unsubscribeIfNot(documentsSubscriber);
         unsubscribeIfNot(networkSubscriber);
         unsubscribeIfNot(cacheSubscriber);
+        unsubscribeIfNot(userSubscriber);
     }
 
     private void unsubscribeIfNot(Subscriber<?> subscriber) {
@@ -200,6 +251,13 @@ public class DocumentsPresenter extends BasePresenter {
                     d.setRequest(req);
                     break;
                 }
+    }
+
+    public class GetUserInfoSubscriber extends DefaultSubscriber<VKApiUser> {
+        @Override
+        public void onNext(VKApiUser user) {
+            callback.onUserInfoLoaded(user);
+        }
     }
 
     public class GetDocumentsSubscriber extends DefaultSubscriber<List<VkDocument>> {

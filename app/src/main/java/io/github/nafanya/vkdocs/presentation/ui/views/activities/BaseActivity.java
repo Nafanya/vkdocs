@@ -1,6 +1,13 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,18 +16,26 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     SwipeRefreshLayout swipeRefreshLayout;
 
     private Drawer drawer;
+    protected AccountHeader accountHeader;
 
     private String SORT_MODE_KEY = "sort_mode_arg";
     private String EXT_TYPE_KEY = "ext_type_key";
@@ -66,6 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     protected String searchFilter = "";
     protected int navDrawerPos = 1;//TODO make enum Section
     private boolean isRefreshing;
+    private boolean storagePermissionGranted = Build.VERSION.SDK_INT < 23;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -127,8 +144,25 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     }
 
     private void initNavigationDrawer() {
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+            }
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.with(imageView.getContext()).cancelRequest(imageView);
+            }
+        });
+
+        accountHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header)
+                .build();
+
         drawer = new DrawerBuilder()
                 .withActivity(this)
+                .withAccountHeader(accountHeader)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
                 .withHeader(R.layout.drawer_header)
@@ -169,9 +203,10 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
             case 2: newExtType = VkDocument.ExtType.BOOK; break;
             case 3: newExtType = VkDocument.ExtType.ARCHIVE; break;
             case 4: newExtType = VkDocument.ExtType.GIF; break;
-            case 5: newExtType = VkDocument.ExtType.AUDIO; break;
-            case 6: newExtType = VkDocument.ExtType.VIDEO; break;
-            case 7: newExtType = VkDocument.ExtType.UNKNOWN; break;
+            case 5: newExtType = VkDocument.ExtType.IMAGE; break;
+            case 6: newExtType = VkDocument.ExtType.AUDIO; break;
+            case 7: newExtType = VkDocument.ExtType.VIDEO; break;
+            case 8: newExtType = VkDocument.ExtType.UNKNOWN; break;
             default: newExtType = null;
         }
         if (newExtType != extType)
@@ -236,6 +271,31 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     public boolean onQueryTextChange(String newText) {
         searchFilter = newText;
         return true;
+    }
+
+    /*** Permissions check ***/
+    public boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else {
+//            permission is automatically granted on sdk<23 upon installation
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            storagePermissionGranted = true;
+        }
     }
 }
 

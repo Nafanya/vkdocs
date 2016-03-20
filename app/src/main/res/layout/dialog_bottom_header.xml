@@ -52,6 +52,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Headline"
+            android:singleLine="true"
             android:text="Archive.zip" />
     </LinearLayout>
 </RelativeLayout>

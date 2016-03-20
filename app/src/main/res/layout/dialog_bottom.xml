@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_dialog_body"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:minHeight="@dimen/bottom_dialog_min_height">
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/m_grid_1x"
         android:orientation="vertical">
 
         <include layout="@layout/dialog_bottom_header"/>
