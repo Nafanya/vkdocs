@@ -60,6 +60,7 @@
         <item name="android:textSize">@dimen/m_entry_text_size_primary</item>
         <item name="android:textColor">@color/m_entry_text_primary</item>
     </style>
+
     <style name="TextAppearanceSecondary">
         <item name="android:textSize">@dimen/m_entry_text_size_secondary</item>
         <item name="android:textStyle">normal</item>
@@ -97,15 +98,18 @@
         <item name="android:scrollHorizontally">true</item>
         <item name="android:singleLine">true</item>
     </style>
+
     <style name="ListEntryTitle.DocList" parent="@style/ListEntryTitle">
         <item name="android:textSize">@dimen/m_entry_text_size_primary</item>
         <item name="android:textColor">@color/m_entry_text_primary</item>
         <item name="android:layout_marginLeft">@dimen/m_grid_2x</item>
         <item name="android:layout_marginTop">@dimen/m_grid_2x</item>
     </style>
+
     <style name="ListEntryTitle.DocList.Relative" parent="@style/ListEntryTitle.DocList">
         <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
     </style>
+
     <style name="ListEntryTitle.BottomList" parent="@style/ListEntryTitle">
         <item name="android:textSize">@dimen/m_entry_text_size_primary</item>
         <item name="android:textColor">@color/m_entry_text_primary</item>
@@ -113,6 +117,7 @@
         <item name="android:layout_marginTop">@dimen/m_grid_2x</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
+
     <style name="ListEntryTitle.BottomList.Relative" parent="@style/ListEntryTitle.BottomList">
         <item name="android:layout_marginLeft">@dimen/m_grid_9x</item>
     </style>

@@ -12,30 +12,30 @@
     <dimen name="m_text_size_subhead">16sp</dimen>
     <dimen name="m_text_size_title">20sp</dimen>
 
-    <item type="dimen" name="m_recyclerview_bottom_padding">@dimen/m_grid_6x</item>
+    <item name="m_recyclerview_bottom_padding" type="dimen">@dimen/m_grid_6x</item>
     <dimen name="recyclerview_bottom_padding">@dimen/m_recyclerview_bottom_padding</dimen>
 
     <dimen name="m_entry_icon_padding">0dp</dimen>
-    <item type="dimen" name="m_entry_icon_size">@dimen/m_grid_5x</item>
-    <item type="dimen" name="m_entry_icon_type_size">@dimen/m_grid_2.5x</item>
+    <item name="m_entry_icon_size" type="dimen">@dimen/m_grid_5x</item>
+    <item name="m_entry_icon_type_size" type="dimen">@dimen/m_grid_2.5x</item>
 
-    <item type="dimen" name="m_entry_text_size_primary">@dimen/m_text_size_subhead</item>
-    <item type="dimen" name="m_entry_text_size_secondary">@dimen/m_text_size_body</item>
+    <item name="m_entry_text_size_primary" type="dimen">@dimen/m_text_size_subhead</item>
+    <item name="m_entry_text_size_secondary" type="dimen">@dimen/m_text_size_body</item>
 
-    <item type="dimen" name="m_entry_height_one_line">@dimen/m_grid_6x</item>
-    <item type="dimen" name="m_entry_height_two_line">@dimen/m_grid_9x</item>
+    <item name="m_entry_height_one_line" type="dimen">@dimen/m_grid_6x</item>
+    <item name="m_entry_height_two_line" type="dimen">@dimen/m_grid_9x</item>
 
-    <item type="dimen" name="m_bottom_dialog_min_height">500dp</item>
+    <item name="m_bottom_dialog_min_height" type="dimen">500dp</item>
 
-    <item type="dimen" name="spinner_dropdown_item_width">200dp</item>
+    <item name="spinner_dropdown_item_width" type="dimen">200dp</item>
 
 
-    <item type="dimen" name="doclist_entry_height">@dimen/m_entry_height_two_line</item>
-    <item type="dimen" name="doclist_button_width">@dimen/m_grid_5x</item>
+    <item name="doclist_entry_height" type="dimen">@dimen/m_entry_height_two_line</item>
+    <item name="doclist_button_width" type="dimen">@dimen/m_grid_5x</item>
 
-    <item type="dimen" name="bottom_dialog_min_height">@dimen/m_bottom_dialog_min_height</item>
-    <item type="dimen" name="bottom_dialog_header_height">@dimen/m_entry_height_two_line</item>
-    <item type="dimen" name="bottom_dialog_item_height">@dimen/m_entry_height_one_line</item>
+    <item name="bottom_dialog_min_height" type="dimen">@dimen/m_bottom_dialog_min_height</item>
+    <item name="bottom_dialog_header_height" type="dimen">@dimen/m_entry_height_two_line</item>
+    <item name="bottom_dialog_item_height" type="dimen">@dimen/m_entry_height_one_line</item>
 
 
     <!-- 8dp grid -->
@@ -65,4 +65,6 @@
     <dimen name="m_grid_7x">56dp</dimen>
     <dimen name="m_grid_8x">64dp</dimen>
     <dimen name="m_grid_9x">72dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 </resources>
