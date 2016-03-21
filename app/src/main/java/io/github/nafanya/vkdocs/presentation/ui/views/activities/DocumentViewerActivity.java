@@ -1,63 +1,98 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
+import timber.log.Timber;
 
-public class DocumentViewerActivity extends AppCompatActivity {
+public class DocumentViewerActivity extends AppCompatActivity implements MusicPlayFragment.Player {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
 
     private DocumentsPagerAdapter documentsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager viewPager;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Bind(R.id.container)
+    ViewPager viewPager;
+
+    private AudioPlayerService player;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Timber.d("on service connected");
+            player = ((AudioPlayerService.AudioPlayerBinder) service).service();
+            viewPager.setAdapter(documentsPagerAdapter);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            player = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_document_viewer);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent intent = new Intent(this, AudioPlayerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Timber.d("bind service");
 
         if (state == null)
             state = getIntent().getExtras();
-
         int position = state.getInt(POSITION_KEY);
         List<VkDocument> documents = state.getParcelableArrayList(DOCUMENTS_KEY);
+        Timber.d("pos = " + position);
+        Timber.d("docs = " + documents.get(0).title + " " + documents.get(1).title);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
 
-        // Set up the ViewPager with the sections adapter.
-        viewPager = (ViewPager) findViewById(R.id.container);
-        viewPager.setAdapter(documentsPagerAdapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                player.stop();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         viewPager.setCurrentItem(position);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,9 +103,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -81,48 +113,15 @@ public class DocumentViewerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
-        private List<VkDocument> documents;
+    @Override
+    public AudioPlayerService player() {
+        return player;
+    }
 
-        public DocumentsPagerAdapter(FragmentManager fm, List<VkDocument> docs) {
-            super(fm);
-            this.documents = docs;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            VkDocument document = documents.get(position);
-            VkDocument.ExtType extType = documents.get(position).getExtType();
-            Fragment ret = null;
-            /*if (extType == VkDocument.ExtType.AUDIO) {
-                ret = MusicPlayFragment.newInstance(document);
-            } else if (extType == VkDocument.ExtType.VIDEO) {
-
-            } else if (extType == VkDocument.ExtType.IMAGE) {
-
-            } else if (extType == VkDocument.ExtType.GIF) {
-
-            } else {
-
-            }*/
-            ret = MusicPlayFragment.newInstance(document);
-            return ret;
-        }
-
-        @Override
-        public int getCount() {
-            return documents.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return documents.get(position).title;
-        }
+    @Override
+    protected void onDestroy() {
+        player.stop();
+        unbindService(serviceConnection);
+        super.onDestroy();
     }
 }

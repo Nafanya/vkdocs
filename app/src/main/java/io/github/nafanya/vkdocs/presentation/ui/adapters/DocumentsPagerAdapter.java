@@ -1,0 +1,60 @@
+package io.github.nafanya.vkdocs.presentation.ui.adapters;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+
+import java.util.List;
+
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
+import timber.log.Timber;
+
+/**
+ * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+ * one of the sections/tabs/pages.
+ */
+public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
+    private List<VkDocument> documents;
+
+    public DocumentsPagerAdapter(FragmentManager fm, List<VkDocument> docs) {
+        super(fm);
+        this.documents = docs;
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        Timber.d("position = " + position);
+        // getItem is called to instantiate the fragment for the given page.
+        // Return a PlaceholderFragment (defined as a static inner class below).
+        VkDocument document = documents.get(position);
+        VkDocument.ExtType extType = documents.get(position).getExtType();
+        Fragment ret = null;
+            if (extType == VkDocument.ExtType.AUDIO) {
+                ret = MusicPlayFragment.newInstance(document);
+            } else if (extType == VkDocument.ExtType.VIDEO) {
+
+            } else if (extType == VkDocument.ExtType.IMAGE) {
+
+            } else if (extType == VkDocument.ExtType.GIF) {
+
+            } else {
+                ret = new Fragment();
+                //ret = OpenProgressDialog.newInstance(document, false);
+            }
+        //ret = MusicPlayFragment.newInstance(document);
+        return ret;
+    }
+
+    @Override
+    public int getCount() {
+        return documents.size();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return documents.get(position).title;
+    }
+}

@@ -3,7 +3,6 @@ package io.github.nafanya.vkdocs;
 import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Environment;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
@@ -30,6 +29,7 @@ import io.github.nafanya.vkdocs.domain.events.LruEventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.base.InternetService;
 import io.github.nafanya.vkdocs.net.impl.InternetServiceImpl;
+import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import rx.schedulers.Schedulers;
@@ -83,6 +83,7 @@ public class App extends Application {
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
+        startService(new Intent(this, AudioPlayerService.class));
 
         createIfNotExist(getAppCacheRoot());
         createIfNotExist(getAppOfflineRoot());

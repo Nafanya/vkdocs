@@ -39,6 +39,10 @@
             android:name=".presentation.ui.views.activities.DocumentViewerActivity"
             android:label="@string/title_activity_document_viewer"
             android:theme="@style/AppTheme"></activity>
+
+        <service
+            android:name=".presentation.services.AudioPlayerService">
+        </service>
     </application>
 
 </manifest>
