@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
 import timber.log.Timber;
 
@@ -39,7 +39,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
             } else if (extType == VkDocument.ExtType.IMAGE) {
 
             } else if (extType == VkDocument.ExtType.GIF) {
-
+                ret = GifImageFragment.newInstance(document);
             } else {
                 ret = new Fragment();
                 //ret = OpenProgressDialog.newInstance(document, false);
