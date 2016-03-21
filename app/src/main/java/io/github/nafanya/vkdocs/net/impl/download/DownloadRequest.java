@@ -5,12 +5,13 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.net.base.download.BaseDownloadRequest;
 import rx.Subscription;
+import timber.log.Timber;
 
 public class DownloadRequest extends BaseDownloadRequest {
     private volatile boolean isCanceled;
     private volatile boolean isActive;
-    private List<RequestListener> listeners = new ArrayList<>();
-    private List<Subscription> subscriptions = new ArrayList<>();
+    public List<RequestListener> listeners = new ArrayList<>();
+    //private List<Subscription> subscriptions = new ArrayList<>();
 
     public DownloadRequest() {
         super(null, null);
@@ -20,26 +21,9 @@ public class DownloadRequest extends BaseDownloadRequest {
         super(url, destination);
     }
 
-    public Subscription addListener(RequestListener listener) {
-        Subscription subscription = new Subscription() {
-            private boolean isUnsub = false;
-
-            @Override
-            public void unsubscribe() {
-                isUnsub = true;
-                int ind = listeners.indexOf(listener);
-                listeners.remove(ind);
-                subscriptions.remove(ind);
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return isUnsub;
-            }
-        };
-
+    public void addListener(RequestListener listener) {
+        Timber.d("ADD LISTENER " + listener + " request = " + this);
         listeners.add(listener);
-        subscriptions.add(subscription);
 
         if (isCompleted)
             listener.onComplete();
@@ -47,12 +31,10 @@ public class DownloadRequest extends BaseDownloadRequest {
             listener.onProgress(lastPer);
         else if (lastEx != null)
             listener.onError(lastEx);
-        return subscription;
     }
 
     public void removeListener(RequestListener listener) {
-        int ind = listeners.indexOf(listener);
-        subscriptions.get(ind).unsubscribe();
+        listeners.remove(listener);
     }
 
     public void cancel() {

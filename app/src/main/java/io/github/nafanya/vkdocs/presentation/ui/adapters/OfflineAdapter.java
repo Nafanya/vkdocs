@@ -32,10 +32,29 @@ public class OfflineAdapter extends BaseSortedAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
     private ItemEventListener listener;
+    private DownloadRequest[] requests;
+    private DownloadRequest.RequestListener[] listeners;
+
+    private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            if (listeners != null) {
+                for (int i = 0; i < requests.length; ++i)
+                    if (requests[i] != null)
+                        requests[i].removeListener(listeners[i]);
+            }
+
+            listeners = new DownloadRequest.RequestListener[documents.size()];
+            requests = new DownloadRequest[documents.size()];
+            for (int i = 0; i < documents.size(); ++i)
+                requests[i] = documents.get(i).getRequest();
+        }
+    };
 
     public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
         super(context, fileFormatter, sortMode);
         this.listener = listener;
+        registerAdapterDataObserver(dataObserver);
     }
 
     public void setData(List<VkDocument> documents) {
@@ -77,11 +96,10 @@ public class OfflineAdapter extends BaseSortedAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof DownloadingDocViewHolder) {
-            ((DownloadingDocViewHolder) holder).setup(documents.get(position));
+            listeners[position] = ((DownloadingDocViewHolder) holder).setup(documents.get(position));
         } else {
             ((DocumentViewHolder) holder).setup(documents.get(position));
         }
-
     }
 
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -116,7 +134,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
         @Bind(R.id.buttonCancel)
         ImageButton buttonCancel;
 
-        private Subscription prevSubscription = Subscriptions.empty();
+        private DownloadRequest.RequestListener prevListener;
         private ItemEventListener listener;
 
         public DownloadingDocViewHolder(View view, ItemEventListener listener) {
@@ -144,7 +162,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onProgress(int percentage) {
-                Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
+                //Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
                 size.setText(fileFormatter.formatFrom(doc.getRequest()));
                 downloadProgress.setProgress(percentage);
             }
@@ -156,8 +174,9 @@ public class OfflineAdapter extends BaseSortedAdapter {
                 Timber.d("path doc = " + doc.getPath());
                 doc.resetRequest();
                 listener.onCompleteDownloading(getAdapterPosition(), doc);
-                Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
-                notifyDataSetChanged();
+                //TODO fix it
+                //Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+                //notifyDataSetChanged();
             }
 
             @Override
@@ -167,12 +186,17 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
         //TODO maybe add downloaded bytes and full size in progress callbacks
         //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
-        public void setup(VkDocument doc) {
+        public DownloadRequest.RequestListener setup(VkDocument doc) {
+            Timber.d("setup = " + doc.title + ", request = " + doc.getRequest());
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
             title.setText(doc.title);
-            prevSubscription.unsubscribe();
+            if (prevListener != null)
+                doc.getRequest().removeListener(prevListener);
+
+            Timber.d("LIST SIZE0 = " + doc.getRequest().listeners.size());
             downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
             size.setText(fileFormatter.formatFrom(doc.getRequest()));
+            Timber.d("LIST SIZE1 = " + doc.getRequest().listeners.size());
             if (doc.isDownloading()) {
                 buttonContext.setVisibility(View.GONE);
                 buttonCancel.setVisibility(View.VISIBLE);
@@ -180,8 +204,11 @@ public class OfflineAdapter extends BaseSortedAdapter {
                 buttonContext.setVisibility(View.VISIBLE);
                 buttonCancel.setVisibility(View.GONE);
             }
-
-            prevSubscription = doc.getRequest().addListener(new ProgressListener(doc));
+            Timber.d("LIST SIZE2 = " + doc.getRequest().listeners.size());
+            Timber.d("request prev = " + doc.getRequest());
+            prevListener = new ProgressListener(doc);
+            doc.getRequest().addListener(prevListener);
+            return prevListener;
         }
 
         @Override

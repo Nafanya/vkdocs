@@ -19,11 +19,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import rx.Subscription;
 import timber.log.Timber;
 
 
@@ -103,8 +102,6 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
         }
     }
 
-    private Subscription subscription;
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -132,13 +129,13 @@ public class OpenProgressDialog extends AppCompatDialogFragment implements Downl
     public void onStart() {
         super.onStart();
         if (request != null)
-            subscription = request.addListener(this);
+            request.addListener(this);
     }
 
     @Override
     public void onStop() {
-        if (subscription != null)
-            subscription.unsubscribe();
+        if (request != null)
+            request.removeListener(this);
         super.onStop();
     }
 
