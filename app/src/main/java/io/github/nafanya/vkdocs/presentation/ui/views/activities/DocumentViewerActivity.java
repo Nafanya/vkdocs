@@ -36,19 +36,7 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
     ViewPager viewPager;
 
     private AudioPlayerService playerService;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Timber.d("on service connected");
-            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            viewPager.setAdapter(documentsPagerAdapter);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            playerService = null;
-        }
-    };
+    private ServiceConnection serviceConnection;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -57,10 +45,6 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-
-        Intent intent = new Intent(this, AudioPlayerService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        Timber.d("bind service");
 
         if (state == null)
             state = getIntent().getExtras();
@@ -71,6 +55,22 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
 
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
 
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Timber.d("on service connected");
+                playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
+                viewPager.setAdapter(documentsPagerAdapter);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                playerService = null;
+            }
+        };
+        Intent intent = new Intent(this, AudioPlayerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Timber.d("bind service");
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
