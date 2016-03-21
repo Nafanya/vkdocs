@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.ImageFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
 import timber.log.Timber;
 
@@ -26,25 +27,23 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Timber.d("position = " + position);
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
         VkDocument document = documents.get(position);
         VkDocument.ExtType extType = documents.get(position).getExtType();
+        Timber.d("[DocumentPagerAdapter] getItem: %d, docType: %s", position, extType);
         Fragment ret = null;
-            if (extType == VkDocument.ExtType.AUDIO) {
-                ret = MusicPlayFragment.newInstance(document);
-            } else if (extType == VkDocument.ExtType.VIDEO) {
+        if (extType == VkDocument.ExtType.AUDIO) {
+            ret = MusicPlayFragment.newInstance(document);
+        } else if (extType == VkDocument.ExtType.VIDEO) {
 
-            } else if (extType == VkDocument.ExtType.IMAGE) {
-
-            } else if (extType == VkDocument.ExtType.GIF) {
-                ret = GifImageFragment.newInstance(document);
-            } else {
-                ret = new Fragment();
-                //ret = OpenProgressDialog.newInstance(document, false);
-            }
-        //ret = MusicPlayFragment.newInstance(document);
+        } else if (extType == VkDocument.ExtType.IMAGE) {
+            ret = ImageFragment.newInstance(document);
+        } else if (extType == VkDocument.ExtType.GIF) {
+            ret = GifImageFragment.newInstance(document);
+        } else {
+            ret = new Fragment();
+        }
         return ret;
     }
 
