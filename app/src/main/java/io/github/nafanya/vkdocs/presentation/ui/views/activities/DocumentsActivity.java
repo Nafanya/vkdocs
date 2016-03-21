@@ -1,11 +1,16 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -166,6 +171,33 @@ public class DocumentsActivity extends PresenterActivity implements
         dismissContextMenu();
         DialogFragment fragment = DeleteDialog.newInstance(position, document);
         fragment.show(getSupportFragmentManager(), "delete");
+    }
+
+    @Override
+    public void onClickShare(VkDocument document) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        Uri uri;
+        if (document.isCached() || document.isOffline()) {
+            uri = Uri.fromFile(new File(document.getPath()));
+        } else {
+            uri = Uri.parse(document.url);
+        }
+        Timber.d("[share] uri: %s", uri);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType("*/*");
+
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
+        for (ResolveInfo info : resInfo) {
+            // Extract the label, append it, and repackage it in a LabeledIntent
+            String packageName = info.activityInfo.packageName;
+            if (packageName.contains("com.vkontakte.android")) {
+                Timber.d("[share] uri: found VK app, using it");
+                intent.setPackage(packageName);
+                break;
+            }
+        }
+        startActivity(intent);
     }
 
     @Override
