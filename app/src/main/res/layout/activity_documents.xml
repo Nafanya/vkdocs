@@ -22,18 +22,22 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/view_empty_list" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
+        <io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView
             android:id="@+id/list_documents"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+
 
 </LinearLayout>

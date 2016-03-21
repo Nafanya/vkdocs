@@ -87,6 +87,16 @@
         <item name="overlapAnchor">true</item>
     </style>
 
+    <style name="EmptyTitle" parent="Base.TextAppearance.AppCompat.Body1">
+        <item name="android:enabled">false</item>
+        <item name="android:textSize">@dimen/m_text_size_title</item>
+        <item name="android:textColor">@color/m_emptyview</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ListEntryTitle">
         <item name="android:enabled">false</item>
         <item name="android:textSize">@dimen/m_entry_text_size_secondary</item>

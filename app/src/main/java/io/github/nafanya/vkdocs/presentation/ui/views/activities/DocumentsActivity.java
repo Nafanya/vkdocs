@@ -6,7 +6,6 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -143,6 +142,7 @@ public class DocumentsActivity extends PresenterActivity implements
     @Override
     public void onCompleteDownloading(int position, VkDocument document) {
         presenter.updateDocument(document);
+        adapter.notifyItemChanged(position);
     }
 
     /***BottomMenu callbacks***/
