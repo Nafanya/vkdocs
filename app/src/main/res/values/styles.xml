@@ -6,11 +6,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="colorSecondary">@color/colorSecondary</item>-->
     </style>
 
     <style name="AppTheme.Splash">
         <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
+
+    <style name="AppTheme.MusicPlayer">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <!---#965181b8-->
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

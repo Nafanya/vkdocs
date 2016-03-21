@@ -8,9 +8,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
-import timber.log.Timber;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -32,7 +31,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         VkDocument.ExtType extType = documents.get(position).getExtType();
         Fragment ret = null;
             if (extType == VkDocument.ExtType.AUDIO) {
-                ret = MusicPlayFragment.newInstance(document);
+                ret = AudioPlayerFragment.newInstance(document);
             } else if (extType == VkDocument.ExtType.VIDEO) {
 
             } else if (extType == VkDocument.ExtType.IMAGE) {
@@ -43,7 +42,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
                 ret = new Fragment();
                 //ret = OpenProgressDialog.newInstance(document, false);
             }
-        //ret = MusicPlayFragment.newInstance(document);
+        //ret = AudioPlayerFragment.newInstance(document);
         return ret;
     }
 

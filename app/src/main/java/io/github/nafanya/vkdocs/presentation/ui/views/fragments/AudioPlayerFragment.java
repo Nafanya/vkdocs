@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.MediaControlImpl;
 import timber.log.Timber;
 
-public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPreparedListener {
+public class AudioPlayerFragment extends Fragment implements MediaPlayer.OnPreparedListener {
     public static String MUSIC_KEY = "music_key";
 
     private VkDocument audioDocument;
@@ -32,8 +31,8 @@ public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPrepare
         AudioPlayerService playerService();
     }
 
-    public static MusicPlayFragment newInstance(VkDocument document) {
-        MusicPlayFragment fragment = new MusicPlayFragment();
+    public static AudioPlayerFragment newInstance(VkDocument document) {
+        AudioPlayerFragment fragment = new AudioPlayerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(MUSIC_KEY, document);
         fragment.setArguments(bundle);
@@ -79,6 +78,7 @@ public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPrepare
             mediaController.setEnabled(true);
             mediaController.show(0);
         });
+
     }
 
     @Nullable
@@ -87,7 +87,7 @@ public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPrepare
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.music_play_fragment, null);
+        View rootView = inflater.inflate(R.layout.audio_player_fragment, null);
 
         mediaController = new MediaController(getActivity());
         mediaController.setAnchorView(rootView);

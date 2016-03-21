@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,10 +20,10 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.MusicPlayFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import timber.log.Timber;
 
-public class DocumentViewerActivity extends AppCompatActivity implements MusicPlayFragment.Player {
+public class DocumentViewerActivity extends AppCompatActivity implements AudioPlayerFragment.Player {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
 
@@ -82,6 +81,7 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
 
             @Override
             public void onPageSelected(int position) {
+                setTitle(documentsPagerAdapter.getPageTitle(position));
                 playerService.stop();
             }
 
