@@ -80,6 +80,8 @@ dependencies {
         transitive = true
     }
 
+    compile 'com.felipecsl:gifimageview:2.0.0'
+
     //compile project(':android-pdfview')
     //apt "com.googlecode.androidannotations:androidannotations:${AAVersion}"
     //compile "com.googlecode.androidannotations:androidannotations-api:${AAVersion}"
