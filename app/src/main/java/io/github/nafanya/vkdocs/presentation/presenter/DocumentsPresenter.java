@@ -48,6 +48,7 @@ public class DocumentsPresenter extends BasePresenter {
 
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
+        void onTriggeredOffline(VkDocument document);
 
         void onUserInfoLoaded(VKApiUser userInfo);
     }
@@ -55,6 +56,7 @@ public class DocumentsPresenter extends BasePresenter {
     private String OFFLINE_PATH;
     private String CACHE_PATH;
 
+    //protected Subscriber<VkDocument> offlineSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
@@ -67,7 +69,7 @@ public class DocumentsPresenter extends BasePresenter {
     protected DocumentRepository repository;
     protected UserRepository userRepository = new UserRepositoryImpl();
     protected OfflineManager offlineManager;
-    protected DownloadManager systermDownloadManager;
+    protected DownloadManager systemDownloadManager;
 
     protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
     protected final Scheduler SUBSCRIBER = Schedulers.io();
@@ -77,7 +79,7 @@ public class DocumentsPresenter extends BasePresenter {
                               InterruptableDownloadManager downloadManager,
                               OfflineManager offlineManager,
                               File offlineRoot, File cacheRoot,
-                              DownloadManager systermDownloadManager,
+                              DownloadManager systemDownloadManager,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
@@ -86,7 +88,7 @@ public class DocumentsPresenter extends BasePresenter {
         this.repository = repository;
         this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
         this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
-        this.systermDownloadManager = systermDownloadManager;
+        this.systemDownloadManager = systemDownloadManager;
         this.offlineManager = offlineManager;
     }
 
@@ -120,7 +122,7 @@ public class DocumentsPresenter extends BasePresenter {
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, document.title);
         request.setVisibleInDownloadsUi(true);
         Timber.d("[download document] enqueue request: %s", request);
-        systermDownloadManager.enqueue(request);
+        systemDownloadManager.enqueue(request);
     }
 
     //TODO when caching is finished, remove GetDocuments from EventBus?
@@ -165,7 +167,7 @@ public class DocumentsPresenter extends BasePresenter {
                 eventBus,
                 offlineManager,
                 document,
-                OFFLINE_PATH + document.title).execute();
+                OFFLINE_PATH + document.title).execute(new OfflineSubscriber());
     }
 
     public void cancelDownloading(VkDocument document) {
@@ -219,15 +221,13 @@ public class DocumentsPresenter extends BasePresenter {
             cacheSubscriber = new CacheSubscriber();
             eventBus.getEvent(CacheDocument.class).execute(cacheSubscriber);
         }
+
+        if (eventBus.contains(GetUserInfo.class) && userSubscriber.isUnsubscribed()) {
+            userSubscriber = new GetUserInfoSubscriber();
+            eventBus.getEvent(GetUserInfo.class).execute(userSubscriber);
+        }
     }
 
-/*    @Override
-    public void onResume() {
-        if (eventBus.contains(GetDocuments.class) && documentsSubscriber.isUnsubscribed()) {
-            documentsSubscriber = new GetDocumentsSubscriber();
-            eventBus.getEvent(GetDocuments.class).execute(documentsSubscriber);
-        }
-    }*/
 
     @Override
     public void onStop() {
@@ -302,6 +302,14 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(VkDocument document) {
             callback.onAlreadyDownloading(document, false);
+        }
+    }
+
+    public class OfflineSubscriber extends DefaultSubscriber<VkDocument> {
+        @Override
+        public void onNext(VkDocument document) {
+            callback.onTriggeredOffline(document);
+            eventBus.removeEvent(document.getId());//holy shit7 remove MakeOffline with this hash
         }
     }
 

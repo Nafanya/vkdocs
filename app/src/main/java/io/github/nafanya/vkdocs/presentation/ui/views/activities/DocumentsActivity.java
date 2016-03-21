@@ -83,7 +83,11 @@ public class DocumentsActivity extends PresenterActivity implements
     @Override
     public void onSectionChanged(int newSection) {
         presenter.setFilter(getFilter(newSection, extType));
+        if (adapter != null)
+            adapter.removeData();
         adapter = null;
+        if (recyclerView != null)
+            recyclerView.scrollToPosition(0);
         presenter.getDocuments();
     }
 
@@ -148,8 +152,6 @@ public class DocumentsActivity extends PresenterActivity implements
         if (isMakeOffline) {
             presenter.makeOffline(document);
         }
-        Timber.d("ON CLICK MAKE OFFLINE");
-        adapter.notifyItemChanged(position);
     }
 
     @Override
@@ -200,6 +202,11 @@ public class DocumentsActivity extends PresenterActivity implements
 
         DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
         fragment.show(getSupportFragmentManager(), "progress_open");
+    }
+
+    @Override
+    public void onTriggeredOffline(VkDocument document) {
+        adapter.notifyItemChanged(adapter.getData().indexOf(document));
     }
 
     /***OpenProgressDialog callbacks***/

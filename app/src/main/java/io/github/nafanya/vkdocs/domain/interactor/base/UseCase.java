@@ -35,6 +35,7 @@ public abstract class UseCase<T> {
 
     public abstract Observable<T> buildUseCase();
 
+    @Override
     public int hashCode() {
         return this.getClass().hashCode();
     }
@@ -56,7 +57,7 @@ public abstract class UseCase<T> {
 
     @SuppressWarnings("unchecked")
     private UseCase<T> getUseCase() {
-        UseCase<T> useCase = eventBus.getEvent(this.hashCode());
+        UseCase<T> useCase = eventBus.getEvent(hashCode());
         if (useCase == null) {
             if (isCached)
                 eventBus.putEvent(this);

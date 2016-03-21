@@ -17,6 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
@@ -29,10 +30,64 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
     protected String searchFilter;
     protected Context context;
 
+    private List<DownloadRequest> requests;
+    private List<DownloadRequest.RequestListener> listeners;
+
+    private void initializeRequestsAndListeners() {
+        requests = new ArrayList<>(documents.size());
+        listeners = new ArrayList<>(documents.size());
+        for (int i = 0; i < documents.size(); ++i) {
+            requests.add(documents.get(i).getRequest());
+            listeners.add(null);
+        }
+    }
+
+    private void resetRequestsAndListeners() {
+        if (listeners != null) {
+            for (int i = 0; i < requests.size(); ++i) {
+                if (requests.get(i) != null)
+                    requests.get(i).removeListener(listeners.get(i));
+                }
+        }
+    }
+
+    private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            resetRequestsAndListeners();
+            initializeRequestsAndListeners();
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            if (itemCount != 1)
+                throw new IllegalStateException("itemCount != 1");
+            if (requests.get(positionStart) != null)
+                requests.get(positionStart).removeListener(listeners.get(positionStart));
+            requests.remove(positionStart);
+            listeners.remove(positionStart);
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            if (itemCount != 1)
+                throw new IllegalStateException("itemCount != 1");
+            if (fromPosition == toPosition)
+                return;
+            DownloadRequest req = requests.get(fromPosition);
+            DownloadRequest.RequestListener lis = listeners.get(fromPosition);
+            requests.remove(fromPosition);
+            listeners.remove(fromPosition);
+            requests.add(toPosition, req);
+            listeners.add(toPosition, lis);
+        }
+    };
+
     public BaseSortedAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode) {
         this.context = context;
         this.fileFormatter = fileFormatter;
         this.sortMode = sortMode;
+        registerAdapterDataObserver(dataObserver);
     }
 
     @Override
@@ -43,6 +98,25 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public int getItemCount() {
         return documents.size();
+    }
+
+    protected void setListener(int position, DownloadRequest.RequestListener listener) {
+        if (listener == null)
+            return;
+        if (listeners.get(position) != null)
+            requests.get(position).removeListener(listeners.get(position));
+        requests.get(position).addListener(listener);
+        listeners.set(position, listener);
+    }
+
+    protected void setRequest(int position, DownloadRequest request) {
+        if (listeners.get(position) != null)
+            requests.get(position).removeListener(listeners.get(position));
+        requests.set(position, request);
+    }
+
+    protected void removeListener(int position) {
+        setListener(position, null);
     }
 
     public class DocumentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -72,15 +146,16 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
             contextMenu.setOnClickListener(this);
         }
 
-        public void setup(VkDocument doc) {
+        public DownloadRequest.RequestListener setup(int position, VkDocument doc) {
+            setRequest(position, doc.getRequest());
+
             contextMenu.setOnClickListener(this);
-
             title.setText(doc.title);
-
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             documentOfflineIcon.setVisibility(View.GONE);
             documentOfflineInProgressIcon.setVisibility(View.GONE);
+
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
             } else if (doc.isOfflineInProgress()) {
@@ -105,6 +180,11 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             sortLabel.setText(sortLabelText);
             statusLables.setText(statusLabelText);
+
+            if (doc.isOfflineInProgress()) {
+                return new OnCompleteOfflineListener(position, doc);
+            }
+            return null;
         }
 
         @Override
@@ -121,6 +201,32 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
                 Timber.d("Clicked item #%d, %s" , pos, documents.get(pos).title);
             }
         }
+
+        private class OnCompleteOfflineListener implements DownloadRequest.RequestListener {
+            private int position;
+            private VkDocument document;
+            public OnCompleteOfflineListener(int position, VkDocument document) {
+                this.position = position;
+                this.document = document;
+            }
+
+            @Override
+            public void onProgress(int percentage) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                document.resetRequest();
+                removeListener(position);
+                notifyItemChanged(position);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        };
     }
 
     public void setSearchFilter(String filter) {
@@ -145,12 +251,20 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
     public void setData(List<VkDocument> documents) {
         this.documentsOriginal = documents;
         this.documents = new ArrayList<>(documentsOriginal);
+        resetRequestsAndListeners();
+        initializeRequestsAndListeners();
+    }
+
+    public void removeData() {
+        documents.clear();
+        resetRequestsAndListeners();
     }
 
     public abstract void setSortMode(SortMode sortMode);
+
     public void removeIndex(int position) {
         documents.remove(position);
-        notifyDataSetChanged();
+        notifyItemRemoved(position);
     }
     public List<VkDocument> getData() {
         return documents;

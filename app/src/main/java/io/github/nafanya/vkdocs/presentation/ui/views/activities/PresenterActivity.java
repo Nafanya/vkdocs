@@ -80,7 +80,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
 
     @Override
     public void onGetDocuments(List<VkDocument> documents) {
-        Timber.d("ON GET DOCUMENTS");
+        Timber.d("ON GET DOCUMENTS " + documents.size());
         updateData(documents);
     }
 

@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.net.impl;
 
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -65,17 +66,19 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         }
     }
 
+
     @Override
-    public void makeOffline(VkDocument document, String toPath) {
+    public void makeOffline(VkDocument document, String toPath, OnPreparedCallback callback) {
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);
-
-        request.addListener(new CompleteDownloadingListener(document, request));
-        downloadManager.enqueue(request);
-
         document.setOfflineType(VkDocument.OFFLINE);
         document.setRequest(request);
+        callback.onPrepared(document);
+
+        request.addListener(new CompleteDownloadingListener(document, request));
+        //database operation
+        downloadManager.enqueue(request);
         repository.update(document);
     }
 
@@ -97,6 +100,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         @Override
         public void onComplete() {
             document.setPath(request.getDest());
+            document.resetRequest();
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
             //request.removeListener(this);TODO fix it
         }

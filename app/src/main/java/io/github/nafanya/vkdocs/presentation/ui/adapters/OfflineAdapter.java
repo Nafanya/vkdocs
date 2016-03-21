@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -32,29 +33,11 @@ public class OfflineAdapter extends BaseSortedAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
     private static final int DOCUMENT_STATE_DOWNLOADING = 1;
     private ItemEventListener listener;
-    private DownloadRequest[] requests;
-    private DownloadRequest.RequestListener[] listeners;
-
-    private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            if (listeners != null) {
-                for (int i = 0; i < requests.length; ++i)
-                    if (requests[i] != null)
-                        requests[i].removeListener(listeners[i]);
-            }
-
-            listeners = new DownloadRequest.RequestListener[documents.size()];
-            requests = new DownloadRequest[documents.size()];
-            for (int i = 0; i < documents.size(); ++i)
-                requests[i] = documents.get(i).getRequest();
-        }
-    };
 
     public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
         super(context, fileFormatter, sortMode);
         this.listener = listener;
-        registerAdapterDataObserver(dataObserver);
+
     }
 
     public void setData(List<VkDocument> documents) {
@@ -96,45 +79,47 @@ public class OfflineAdapter extends BaseSortedAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof DownloadingDocViewHolder) {
-            listeners[position] = ((DownloadingDocViewHolder) holder).setup(documents.get(position));
+            setListener(position, ((DownloadingDocViewHolder) holder).setup(position, documents.get(position)));
         } else {
-            ((DocumentViewHolder) holder).setup(documents.get(position));
+            ((DocumentViewHolder) holder).setup(position, documents.get(position));
         }
+    }
+
+    private void moveItem(int fromPosition, int toPosition) {
+        VkDocument model = documents.remove(fromPosition);
+        documents.add(toPosition, model);
+        notifyItemMoved(fromPosition, toPosition);
     }
 
     public class DownloadingDocViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @Nullable
         @Bind(R.id.ic_document_type)
         ImageView documentTypeIcon;
 
-        @Nullable
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
 
-        @Nullable
         @Bind(R.id.ic_document_offline_progress)
         ImageView documentOfflineInProgressIcon;
 
-        @Nullable
         @Bind(R.id.text_document_title)
         TextView title;
-        @Nullable
+
         @Bind(R.id.statusLabels)
         TextView size;
+
         @Bind(R.id.sortLabel)
         TextView sortLabel;
-        @Nullable
+
         @Bind(R.id.progress)
         ProgressBar downloadProgress;
-        @Nullable
+
         @Bind(R.id.buttonContextMenu)
         ImageButton buttonContext;
-        @Nullable
+
         @Bind(R.id.buttonCancel)
         ImageButton buttonCancel;
 
-        private DownloadRequest.RequestListener prevListener;
         private ItemEventListener listener;
 
         public DownloadingDocViewHolder(View view, ItemEventListener listener) {
@@ -155,8 +140,10 @@ public class OfflineAdapter extends BaseSortedAdapter {
         }
 
         private class ProgressListener implements DownloadRequest.RequestListener {
+            private int position;
             private VkDocument doc;
-            public ProgressListener(VkDocument doc) {
+            public ProgressListener(int position, VkDocument doc) {
+                this.position = position;
                 this.doc = doc;
             }
 
@@ -169,14 +156,22 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onComplete() {
-                Timber.d("doc = " + doc + ", request = " + doc.getRequest());
+                Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
                 doc.setPath(doc.getRequest().getDest());
-                Timber.d("path doc = " + doc.getPath());
                 doc.resetRequest();
                 listener.onCompleteDownloading(getAdapterPosition(), doc);
-                //TODO fix it
-                //Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
-                //notifyDataSetChanged();
+                notifyItemChanged(position);
+                Comparator<VkDocument> comparator = DocumentComparator.offlineComparator(sortMode);
+                int toPosition = documents.size() - 1;
+                for (int i = position; i < documents.size(); ++i)
+                    if (comparator.compare(doc, documents.get(i)) < 0) {
+                        toPosition = i - 1;
+                        break;
+                    }
+                removeListener(position);
+                if (position != toPosition)
+                    moveItem(position, toPosition);
+
             }
 
             @Override
@@ -184,19 +179,12 @@ public class OfflineAdapter extends BaseSortedAdapter {
             }
         }
 
-        //TODO maybe add downloaded bytes and full size in progress callbacks
-        //TODO remove indefinite progress, we always know size of file from VkApiDocument. pass it in download manager?
-        public DownloadRequest.RequestListener setup(VkDocument doc) {
-            Timber.d("setup = " + doc.title + ", request = " + doc.getRequest());
+        public DownloadRequest.RequestListener setup(int position, VkDocument doc) {
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
             title.setText(doc.title);
-            if (prevListener != null)
-                doc.getRequest().removeListener(prevListener);
 
-            Timber.d("LIST SIZE0 = " + doc.getRequest().listeners.size());
             downloadProgress.setProgress(fileFormatter.getProgress(doc.getRequest()));
             size.setText(fileFormatter.formatFrom(doc.getRequest()));
-            Timber.d("LIST SIZE1 = " + doc.getRequest().listeners.size());
             if (doc.isDownloading()) {
                 buttonContext.setVisibility(View.GONE);
                 buttonCancel.setVisibility(View.VISIBLE);
@@ -204,11 +192,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
                 buttonContext.setVisibility(View.VISIBLE);
                 buttonCancel.setVisibility(View.GONE);
             }
-            Timber.d("LIST SIZE2 = " + doc.getRequest().listeners.size());
-            Timber.d("request prev = " + doc.getRequest());
-            prevListener = new ProgressListener(doc);
-            doc.getRequest().addListener(prevListener);
-            return prevListener;
+            return new ProgressListener(position, doc);
         }
 
         @Override

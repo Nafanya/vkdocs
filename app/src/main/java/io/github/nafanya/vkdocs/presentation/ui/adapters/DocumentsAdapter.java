@@ -38,7 +38,7 @@ public class DocumentsAdapter extends BaseSortedAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder hold, int position) {
         DocumentViewHolder holder = (DocumentViewHolder)hold;
-        holder.setup(documents.get(position));
+        setListener(position, holder.setup(position, documents.get(position)));
     }
 
     public void setSortMode(SortMode sortMode) {

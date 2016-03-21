@@ -26,6 +26,9 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     @Bind(R.id.ic_document_type)
     ImageView documentTypeIcon;
 
+    @Bind(R.id.body_available_offline)
+    RelativeLayout offlineLayout;
+
     @Bind(R.id.switch1)
     Switch offlineSwitch;
 
@@ -61,6 +64,11 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         listener.onClickMakeOffline(position, doc, isChecked);
+    }
+
+    @OnClick(R.id.body_available_offline)
+    public void onClickOffline(View v) {
+        offlineSwitch.setChecked(!offlineSwitch.isChecked());
     }
 
     @OnClick(R.id.bottom_download)

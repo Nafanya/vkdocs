@@ -10,7 +10,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
 
-public class MakeOfflineDocument extends UseCase<Void> {
+public class MakeOfflineDocument extends UseCase<VkDocument> {
     private VkDocument document;
     private String toPath;
     private OfflineManager offlineManager;
@@ -19,22 +19,27 @@ public class MakeOfflineDocument extends UseCase<Void> {
                                OfflineManager offlineManager,
                                VkDocument document,
                                String toPath) {
-        super(observerScheduler, subscriberScheduler, eventBus, false);
+        super(observerScheduler, subscriberScheduler, eventBus, true);
         this.offlineManager = offlineManager;
         this.document = document;
         this.toPath = toPath;
     }
 
     @Override
-    public Observable<Void> buildUseCase() {
+    public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
                 eventBus.removeEvent(GetDocuments.class);
-                offlineManager.makeOffline(document, toPath);
+                offlineManager.makeOffline(document, toPath, subscriber::onNext);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
             }
         });
+    }
+
+    @Override
+    public int hashCode() {
+        return document.getId();
     }
 }
