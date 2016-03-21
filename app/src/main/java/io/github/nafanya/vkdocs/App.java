@@ -10,9 +10,11 @@ import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
+import io.github.nafanya.vkdocs.data.UserRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
 import io.github.nafanya.vkdocs.data.database.mapper.DbMapper;
 import io.github.nafanya.vkdocs.data.database.mapper.DownloadRequestMapper;
@@ -21,6 +23,7 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.mapper.NetMapper;
+import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
@@ -43,6 +46,7 @@ public class App extends Application {
     private FileFormatter fileFormatter;
     private InternetServiceImpl internetService;
     private OfflineManager offlineManager;
+    private UserRepository userRepository;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -84,6 +88,12 @@ public class App extends Application {
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
         startService(new Intent(this, AudioPlayerService.class));
+
+        try {
+            userRepository = new UserRepositoryImpl(this, getAppCacheRoot().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         createIfNotExist(getAppCacheRoot());
         createIfNotExist(getAppOfflineRoot());
@@ -127,5 +137,9 @@ public class App extends Application {
 
     public OfflineManager getOfflineManager() {
         return offlineManager;
+    }
+
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 }

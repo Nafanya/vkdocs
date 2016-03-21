@@ -50,6 +50,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 app.getAppCacheRoot(),
                 app.getAppOfflineRoot(),
                 (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+                app.getUserRepository(),
                 this);
         presenter.getDocuments();
         presenter.getUserInfo();
@@ -127,8 +128,19 @@ public abstract class PresenterActivity extends BaseActivity implements Document
 
     @Override
     public void onUserInfoLoaded(VKApiUser userInfo) {
+        Timber.d("info " + userInfo.first_name + " " + userInfo.last_name);
+        String fullName;
+        if (userInfo.first_name == null && userInfo.last_name == null)
+            fullName = "Unknown";
+        else if (userInfo.first_name == null)
+            fullName = userInfo.last_name;
+        else if (userInfo.last_name == null)
+            fullName = userInfo.first_name;
+        else
+            fullName = userInfo.first_name + " " + userInfo.last_name;
+
         ProfileDrawerItem account = new ProfileDrawerItem()
-                .withName(userInfo.first_name + " " + userInfo.last_name)
+                .withName(fullName)
                 .withIcon(userInfo.photo_100);
         accountHeader.clear();
         accountHeader.addProfile(account, 0);

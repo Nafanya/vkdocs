@@ -8,6 +8,6 @@ import io.github.nafanya.vkdocs.data.exceptions.VKException;
  * Created by nafanya on 3/20/16.
  */
 public interface UserRepository {
-    VKApiUser getUserInfo() throws VKException;
-    void synchronize();
+    VKApiUser getUserInfo();
+    void synchronize() throws VKException;
 }

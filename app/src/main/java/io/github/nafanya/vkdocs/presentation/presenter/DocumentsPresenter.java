@@ -67,7 +67,7 @@ public class DocumentsPresenter extends BasePresenter {
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
-    protected UserRepository userRepository = new UserRepositoryImpl();
+    protected UserRepository userRepository;
     protected OfflineManager offlineManager;
     protected DownloadManager systemDownloadManager;
 
@@ -80,12 +80,14 @@ public class DocumentsPresenter extends BasePresenter {
                               OfflineManager offlineManager,
                               File offlineRoot, File cacheRoot,
                               DownloadManager systemDownloadManager,
+                              UserRepository userRepository,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
+        this.userRepository = userRepository;
         this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
         this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
         this.systemDownloadManager = systemDownloadManager;
