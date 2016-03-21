@@ -52,8 +52,20 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
                 app.getUserRepository(),
                 this);
-        presenter.getDocuments();
         presenter.getUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onStart();
+        presenter.getDocuments();
+    }
+
+    @Override
+    protected void onStop() {
+        presenter.onStop();
+        super.onStop();
     }
 
     protected DocFilter getFilter(int section, VkDocument.ExtType extType) {

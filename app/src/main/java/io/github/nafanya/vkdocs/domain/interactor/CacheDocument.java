@@ -8,6 +8,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
 public class CacheDocument extends UseCase<VkDocument> {
     private VkDocument document;
@@ -42,6 +43,7 @@ public class CacheDocument extends UseCase<VkDocument> {
 
                     @Override
                     public void onComplete() {
+                        Timber.d("ON COMPL CACHE");
                         document.setPath(request.getDest());
                         document.resetRequest();
                         new UpdateDocument(subscriberScheduler, eventBus, repository, document).execute();
@@ -57,6 +59,7 @@ public class CacheDocument extends UseCase<VkDocument> {
                 document.setOfflineType(VkDocument.CACHE);
                 document.setRequest(request);
                 repository.update(document);
+                eventBus.removeEvent(GetDocuments.class);
 
                 subscriber.onNext(document);
                 subscriber.onCompleted();

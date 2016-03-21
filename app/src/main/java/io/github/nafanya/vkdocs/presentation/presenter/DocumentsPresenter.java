@@ -213,6 +213,12 @@ public class DocumentsPresenter extends BasePresenter {
 
     @Override
     public void onStart() {
+
+        if (eventBus.contains(GetDocuments.class) && documentsSubscriber.isUnsubscribed()) {
+            documentsSubscriber = new GetDocumentsSubscriber();
+            eventBus.getEvent(GetDocuments.class).execute(documentsSubscriber);
+        }
+
         if (eventBus.contains(NetworkDocuments.class) && networkSubscriber.isUnsubscribed()) {
             networkSubscriber = new NetworkSubscriber();
             eventBus.getEvent(NetworkDocuments.class).execute(networkSubscriber);
