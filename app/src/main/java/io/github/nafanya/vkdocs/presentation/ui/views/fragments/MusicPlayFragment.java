@@ -1,26 +1,34 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.MediaController;
 
 import java.io.IOException;
 
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
+import io.github.nafanya.vkdocs.presentation.ui.MediaControlImpl;
 
-public class MusicPlayFragment extends Fragment {
+public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPreparedListener {
     public static String MUSIC_KEY = "music_key";
 
     private VkDocument audioDocument;
-    private Player callback;
+    private AudioPlayerService playerService;
+    private MediaController mediaController;
+    private Handler handler = new Handler();
 
     public interface Player {
-        AudioPlayerService player();
+        AudioPlayerService playerService();
     }
 
     public static MusicPlayFragment newInstance(VkDocument document) {
@@ -35,7 +43,7 @@ public class MusicPlayFragment extends Fragment {
     public void onAttach(Context activity) {
         super.onAttach(activity);
         try {
-            callback = (Player) activity;//get player for pause, resume
+            playerService = ((Player) activity).playerService();//get playerService for pause, resume
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement Callback");
@@ -48,16 +56,27 @@ public class MusicPlayFragment extends Fragment {
         audioDocument = getArguments().getParcelable(MUSIC_KEY);
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
-        if (!callback.player().isNowPlaying(audioDocument)) {
+        if (!playerService.isNowPlaying(audioDocument)) {
             try {
-                callback.player().play(audioDocument);
+                playerService.play(audioDocument, this);
             } catch (IOException ignore) {
                 //TODO wtf7
             }
         }
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mediaController.setMediaPlayer(new MediaControlImpl(mp));
+
+        handler.post(() -> {
+            mediaController.setEnabled(true);
+            mediaController.show(0);
+        });
     }
 
     @Nullable
@@ -66,6 +85,11 @@ public class MusicPlayFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.music_play_fragment, null);
+
+        mediaController = new MediaController(getActivity());
+        mediaController.setAnchorView(rootView);
+
+        return rootView;
     }
 }

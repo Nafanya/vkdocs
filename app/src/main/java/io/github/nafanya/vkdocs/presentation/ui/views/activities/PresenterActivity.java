@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.base.DocumentsPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;

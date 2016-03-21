@@ -6,10 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,18 +35,18 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
     @Bind(R.id.container)
     ViewPager viewPager;
 
-    private AudioPlayerService player;
+    private AudioPlayerService playerService;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Timber.d("on service connected");
-            player = ((AudioPlayerService.AudioPlayerBinder) service).service();
+            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
             viewPager.setAdapter(documentsPagerAdapter);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            player = null;
+            playerService = null;
         }
     };
 
@@ -70,8 +66,8 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
             state = getIntent().getExtras();
         int position = state.getInt(POSITION_KEY);
         List<VkDocument> documents = state.getParcelableArrayList(DOCUMENTS_KEY);
-        Timber.d("pos = " + position);
-        Timber.d("docs = " + documents.get(0).title + " " + documents.get(1).title);
+        //Timber.d("pos = " + position);
+        //Timber.d("docs = " + documents.get(0).title + " " + documents.get(1).title);
 
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
 
@@ -83,7 +79,7 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
 
             @Override
             public void onPageSelected(int position) {
-                player.stop();
+                playerService.stop();
             }
 
             @Override
@@ -114,13 +110,13 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
     }
 
     @Override
-    public AudioPlayerService player() {
-        return player;
+    public AudioPlayerService playerService() {
+        return playerService;
     }
 
     @Override
     protected void onDestroy() {
-        player.stop();
+        playerService.stop();
         unbindService(serviceConnection);
         super.onDestroy();
     }

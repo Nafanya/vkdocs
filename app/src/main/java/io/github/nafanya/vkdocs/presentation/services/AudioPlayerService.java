@@ -21,6 +21,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private MediaPlayer mediaPlayer;
     private Uri playingUri;
+    private MediaPlayer.OnPreparedListener listener;
 
     public class AudioPlayerBinder extends Binder {
         public io.github.nafanya.vkdocs.presentation.services.AudioPlayerService service() {
@@ -37,7 +38,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     private Uri getUri(VkDocument document) {
         if (document.getPath() != null)
             return Uri.parse(document.getPath());
-        Timber.d("play url = " + document.url);
         return Uri.parse(document.url);
     }
 
@@ -46,6 +46,11 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public void play(VkDocument document) throws IOException {
+        play(document, null);
+    }
+
+    public void play(VkDocument document, MediaPlayer.OnPreparedListener listener) throws IOException {
+        this.listener = listener;
         playingUri = getUri(document);
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
@@ -69,11 +74,14 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public void stop() {
-        onDestroy();//holy7 release media player
+        onDestroy();//holy7 release media playerService
     }
+
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        if (listener != null)
+            listener.onPrepared(mp);
         if (mediaPlayer != null)
             mediaPlayer.start();
     }

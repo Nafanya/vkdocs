@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.presenter.base;
+package io.github.nafanya.vkdocs.presentation.presenter;
 
 import android.app.DownloadManager;
 import android.net.Uri;
@@ -29,6 +29,7 @@ import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
+import io.github.nafanya.vkdocs.presentation.presenter.base.BasePresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import rx.Scheduler;
 import rx.Subscriber;
