@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
+import android.app.DownloadManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +17,19 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
+import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
 import timber.log.Timber;
 
-public class DocumentViewerActivity extends AppCompatActivity implements AudioPlayerFragment.Player {
+public class DocumentViewerActivity extends AppCompatActivity
+        implements AudioPlayerFragment.Player {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
 
@@ -39,6 +45,7 @@ public class DocumentViewerActivity extends AppCompatActivity implements AudioPl
 
     private int position;
     private ArrayList<VkDocument> documents;
+    private DocumentViewerPresenter presenter;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override

@@ -43,6 +43,7 @@ public class CacheDocument extends UseCase<VkDocument> {
                     @Override
                     public void onComplete() {
                         document.setPath(request.getDest());
+                        document.resetRequest();
                         new UpdateDocument(subscriberScheduler, eventBus, repository, document).execute();
                     }
 
@@ -58,7 +59,6 @@ public class CacheDocument extends UseCase<VkDocument> {
                 repository.update(document);
 
                 subscriber.onNext(document);
-                eventBus.removeEvent(CacheDocument.class);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

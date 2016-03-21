@@ -1,5 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.presenter.base;
 
+import rx.Subscriber;
+
 public abstract class BasePresenter {
     /**
      * Method that control the lifecycle of the view. It should be called in the view's
@@ -26,4 +28,9 @@ public abstract class BasePresenter {
     public void onDestroy() {}
 
     public void onStart() {}
+
+    protected void unsubscribeIfNot(Subscriber<?> subscriber) {
+        if (!subscriber.isUnsubscribed())
+            subscriber.unsubscribe();
+    }
 }

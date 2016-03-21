@@ -56,7 +56,6 @@ public class DocumentsPresenter extends BasePresenter {
     private String OFFLINE_PATH;
     private String CACHE_PATH;
 
-    //protected Subscriber<VkDocument> offlineSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
@@ -239,11 +238,6 @@ public class DocumentsPresenter extends BasePresenter {
         unsubscribeIfNot(userSubscriber);
     }
 
-    private void unsubscribeIfNot(Subscriber<?> subscriber) {
-        if (!subscriber.isUnsubscribed())
-            subscriber.unsubscribe();
-    }
-
     private void findDownloadRequests(List<VkDocument> documents) {
         List<DownloadRequest> requests = downloadManager.getQueue();
         for (VkDocument d: documents)
@@ -304,6 +298,7 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(VkDocument document) {
             callback.onAlreadyDownloading(document, false);
+            eventBus.removeEvent(CacheDocument.class);
         }
     }
 

@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,14 +18,18 @@ import java.io.RandomAccessFile;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
+import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/21/16.
  */
-public class GifImageFragment extends Fragment {
+public class GifImageFragment extends Fragment implements DocumentViewerPresenter.Callback {
     public static final String GIF_KEY = "gif_key";
 
     private VkDocument document;
@@ -35,6 +40,8 @@ public class GifImageFragment extends Fragment {
     @Bind(R.id.gif_play)
     ImageButton playButton;
 
+    private DocumentViewerPresenter presenter;
+
     public static GifImageFragment newInstance(VkDocument document) {
         GifImageFragment fragment = new GifImageFragment();
         Bundle args = new Bundle();
@@ -42,6 +49,7 @@ public class GifImageFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @OnClick(R.id.gif_play)
     public void onClickPlay(View v) {
@@ -54,6 +62,13 @@ public class GifImageFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         document = getArguments().getParcelable(GIF_KEY);
+
+        App app = (App)getActivity().getApplication();
+        presenter = new DocumentViewerPresenter(
+                app.getEventBus(),
+                app.getRepository(),
+                app.getDownloadManager(),
+                app.getAppCacheRoot(), this);
     }
 
     @Override
@@ -68,17 +83,20 @@ public class GifImageFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        presenter.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        presenter.onStop();
+        super.onStop();
+    }
+
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Timber.d("PATH = " + document.getPath());
-        if (document.isOffline() || document.isCached()) {
-            final byte[] gif;
-            try {
-                gif = readFile(document.getPath());
-            } catch (IOException ignored) {
-                return;
-            }
-            gifImageView.setBytes(gif);
-        }
+        presenter.openDocument(document);
     }
 
     private byte[] readFile(String file) throws IOException {
@@ -100,5 +118,37 @@ public class GifImageFragment extends Fragment {
         } finally {
             f.close();
         }
+    }
+
+    @Override
+    public void onOpenDocument(VkDocument document) {
+        Timber.d("cache = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
+        final byte[] gif;
+        try {
+            gif = readFile(document.getPath());
+        } catch (IOException ignored) {
+            return;
+        }
+        gifImageView.setBytes(gif);
+    }
+
+    @Override
+    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
+        document.getRequest().addListener(new DownloadRequest.RequestListener() {
+            @Override
+            public void onProgress(int percentage) {
+                Timber.d("PROGRESS = " + percentage);
+            }
+
+            @Override
+            public void onComplete() {
+                onOpenDocument(document);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 }
