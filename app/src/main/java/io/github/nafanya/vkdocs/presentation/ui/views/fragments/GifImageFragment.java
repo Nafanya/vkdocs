@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/21/16.
@@ -68,6 +69,7 @@ public class GifImageFragment extends Fragment {
     }
 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Timber.d("PATH = " + document.getPath());
         if (document.isOffline() || document.isCached()) {
             final byte[] gif;
             try {

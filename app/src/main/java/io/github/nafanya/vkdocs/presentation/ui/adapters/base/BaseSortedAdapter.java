@@ -217,6 +217,7 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             @Override
             public void onComplete() {
+                Timber.d("doc on compl base = " + document);
                 document.resetRequest();
                 removeListener(position);
                 notifyItemChanged(position);

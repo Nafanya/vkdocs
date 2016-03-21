@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -36,12 +37,17 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
     ViewPager viewPager;
 
     private AudioPlayerService playerService;
+
+    private int position;
+    private ArrayList<VkDocument> documents;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Timber.d("on service connected");
             playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
             viewPager.setAdapter(documentsPagerAdapter);
+            viewPager.setCurrentItem(position);
         }
 
         @Override
@@ -64,13 +70,10 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
 
         if (state == null)
             state = getIntent().getExtras();
-        int position = state.getInt(POSITION_KEY);
-        List<VkDocument> documents = state.getParcelableArrayList(DOCUMENTS_KEY);
-        //Timber.d("pos = " + position);
-        //Timber.d("docs = " + documents.get(0).title + " " + documents.get(1).title);
+        position = state.getInt(POSITION_KEY);
+        documents = state.getParcelableArrayList(DOCUMENTS_KEY);
 
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
-
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -86,8 +89,13 @@ public class DocumentViewerActivity extends AppCompatActivity implements MusicPl
             public void onPageScrollStateChanged(int state) {
             }
         });
+    }
 
-        viewPager.setCurrentItem(position);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(DOCUMENTS_KEY, documents);
+        outState.putInt(POSITION_KEY, viewPager.getCurrentItem());
     }
 
     @Override

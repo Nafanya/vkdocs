@@ -18,6 +18,7 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.MediaControlImpl;
+import timber.log.Timber;
 
 public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPreparedListener {
     public static String MUSIC_KEY = "music_key";
@@ -42,6 +43,7 @@ public class MusicPlayFragment extends Fragment implements MediaPlayer.OnPrepare
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
+        Timber.d("ON ATTACH");
         try {
             playerService = ((Player) activity).playerService();//get playerService for pause, resume
         } catch (ClassCastException e) {

@@ -1,6 +1,5 @@
 package io.github.nafanya.vkdocs.net.impl;
 
-import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -101,6 +100,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         public void onComplete() {
             document.setPath(request.getDest());
             document.resetRequest();
+            Timber.d("doc = " + document);
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
             //request.removeListener(this);TODO fix it
         }
