@@ -13,10 +13,8 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -32,7 +31,6 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
@@ -46,6 +44,7 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
@@ -63,10 +62,13 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     Spinner spinner;
 
     @Bind(R.id.list_documents)
-    RecyclerView recyclerView;
+    EmptyRecyclerView recyclerView;
 
     @Bind(R.id.swipe_container)
     SwipeRefreshLayout swipeRefreshLayout;
+
+    @Bind(R.id.empty_view)
+    RelativeLayout emptyView;
 
     private Drawer drawer;
     protected AccountHeader accountHeader;
@@ -127,6 +129,7 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new SimpleDivierItermDecorator(this));
+        recyclerView.setEmptyView(emptyView);
         // Convert dp to px
         final int px = (int) (this.getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getResources().getDisplayMetrics().density);
         recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));

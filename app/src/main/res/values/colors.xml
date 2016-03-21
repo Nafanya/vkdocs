@@ -19,6 +19,8 @@
 
     <color name="m_icon_grey">@color/md_grey_600</color>
 
+    <color name="m_emptyview">@color/md_grey_500</color>
+
     <!-- Colors for icons in document list -->
     <color name="m_icon_video">@color/md_red_A700</color>
     <color name="m_icon_music">@color/md_green_A700</color>
