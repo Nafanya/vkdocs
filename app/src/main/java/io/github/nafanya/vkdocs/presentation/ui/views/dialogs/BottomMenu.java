@@ -16,7 +16,6 @@ import butterknife.OnClick;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import timber.log.Timber;
 
 public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCheckedChangeListener {
 
@@ -78,12 +77,16 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         listener.onClickDelete(position, doc);
     }
 
+    @OnClick(R.id.bottom_share)
+    public void onClickShare(View v) { listener.onClickShare(doc); }
+
     public interface MenuEventListener {
         void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline);
         void onClickRename(int position, VkDocument document);
         void onClickDelete(int position, VkDocument document);
         void onCloseContextMenu();
         void onClickDownload(int position, VkDocument document);
+        void onClickShare(VkDocument document);
     }
 
     @Override
