@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
 
@@ -19,6 +22,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.glide.listener.GlideProgressListener;
+import io.github.nafanya.vkdocs.presentation.glide.listener.ProgressListener;
+import timber.log.Timber;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -29,12 +35,33 @@ public class ImageFragment extends Fragment {
 
     private VkDocument document;
     private PhotoViewAttacher attacher;
+    private SimpleTarget target = new SimpleTarget<GlideBitmapDrawable>() {
+        @Override
+        public void onResourceReady(GlideBitmapDrawable bitmap, GlideAnimation glideAnimation) {
+            GlideProgressListener.removeGlideProgressListener(listener);
+            imageView.setImageBitmap(bitmap.getBitmap());
+            if (attacher != null) {
+                attacher.update();
+            }
+            progressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+            GlideProgressListener.removeGlideProgressListener(listener);
+        }
+    };
 
     @Bind(R.id.imageView)
     ImageView imageView;
 
-    @Bind(R.id.progress)
+    @Bind(R.id.progressBar)
     ProgressBar progressBar;
+
+    private ProgressListener listener = (bytesRead, contentLength, done) -> {
+        progressBar.setProgress((int) (100 * bytesRead / contentLength));
+        Timber.d("Image load] %d/%d b; %d/%d kb", bytesRead, contentLength, bytesRead/1024, contentLength/1024);
+    };
 
     public static ImageFragment newInstance(VkDocument document) {
         ImageFragment fragment = new ImageFragment();
@@ -59,29 +86,55 @@ public class ImageFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_image, container, false);
 
         ButterKnife.bind(this, rootView);
-        attacher = new PhotoViewAttacher(imageView);
 
         return rootView;
     }
 
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        if (document.isOffline() || document.isCached()) {
-            File file = new File(document.getPath());
-            imageView.setImageURI(Uri.fromFile(file));
-            progressBar.setVisibility(View.GONE);
-        } else {
-            Picasso.with(getActivity()).load(document.url).into(imageView, new Callback() {
-                @Override
-                public void onSuccess() {
-                    progressBar.setVisibility(View.GONE);
-                    attacher.update();
-                }
+    @Override
+    public void onResume() {
+        super.onResume();
+        attacher = new PhotoViewAttacher(imageView);
+    }
 
-                @Override
-                public void onError() {
+    @Override
+    public void onPause() {
+        super.onPause();
+        release();
+    }
 
-                }
-            });
+    @Override
+    public void onStop() {
+        super.onStop();
+        release();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        release();
+    }
+
+    private void release() {
+        GlideProgressListener.removeGlideProgressListener(listener);
+        if (attacher != null) {
+            attacher.cleanup();
+            attacher = null;
         }
     }
+
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        GlideProgressListener.addGlideProgressListener(listener);
+        if (document.isCached() || document.isOffline()) {
+            Glide
+                    .with(this)
+                    .load(Uri.fromFile(new File(document.getPath())))
+                    .into(target);
+        } else {
+            Glide
+                    .with(this)
+                    .load(document.url)
+                    .into(target);
+        }
+    }
+
 }

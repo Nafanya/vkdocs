@@ -3,13 +3,20 @@ package io.github.nafanya.vkdocs;
 import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.concurrent.Executors;
 
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
@@ -21,14 +28,15 @@ import io.github.nafanya.vkdocs.data.database.repository.DatabaseRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.mapper.NetMapper;
-import io.github.nafanya.vkdocs.net.base.OfflineManager;
-import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
-import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.events.LruEventBus;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.base.InternetService;
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.InternetServiceImpl;
+import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
+import io.github.nafanya.vkdocs.presentation.glide.listener.GlideProgressListener;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.views.LoginActivity;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
@@ -88,6 +96,22 @@ public class App extends Application {
         createIfNotExist(getAppCacheRoot());
         createIfNotExist(getAppOfflineRoot());
 
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            if(bundle.getString("ru.futurobot.glidedownloadintercenptor.MyGlideModule") == null) {
+                installDownloadInterceptor();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            installDownloadInterceptor();
+        }
+
+    }
+
+
+    private void installDownloadInterceptor(){
+        Glide.get(this)
+                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(GlideProgressListener.getGlideOkHttpClient()));
     }
 
     public File getAppCacheRoot() {

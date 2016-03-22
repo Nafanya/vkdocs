@@ -23,28 +23,32 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
     public DocumentsPagerAdapter(FragmentManager fm, List<VkDocument> docs) {
         super(fm);
         this.documents = docs;
+
     }
 
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
+
+        Fragment fragment = null;
+
         VkDocument document = documents.get(position);
         VkDocument.ExtType extType = documents.get(position).getExtType();
         Timber.d("[DocumentPagerAdapter] getItem: %d, docType: %s", position, extType);
-        Fragment ret = null;
+
         if (extType == VkDocument.ExtType.AUDIO) {
-            ret = MusicPlayFragment.newInstance(document);
+            fragment = MusicPlayFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.VIDEO) {
 
         } else if (extType == VkDocument.ExtType.IMAGE) {
-            ret = ImageFragment.newInstance(document);
+            fragment = ImageFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.GIF) {
-            ret = GifImageFragment.newInstance(document);
+            fragment = GifImageFragment.newInstance(document);
         } else {
-            ret = new Fragment();
+            fragment = new Fragment();
         }
-        return ret;
+        return fragment;
     }
 
     @Override
