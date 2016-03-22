@@ -104,7 +104,7 @@ public class DocumentsPresenter extends BasePresenter {
     public void downloadDocumentToDownloads(VkDocument document) {
         Uri uri = null;
         Timber.d("[download document] %s", document);
-        Timber.d("[download document] cached(%s), offline(%s)", document.isCached(), document.isOffline());
+        Timber.d("[download document] ic_cached_green(%s), offline(%s)", document.isCached(), document.isOffline());
         try {
             if (document.isCached() || document.isOffline()) {
                 Timber.d("[download document] already downloaded as local file");

@@ -98,9 +98,13 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-
         @Bind(R.id.ic_document_offline_progress)
         ImageView documentOfflineInProgressIcon;
+
+        @Bind(R.id.ic_document_cached)
+        ImageView documentCachedIcon;
+        @Bind(R.id.ic_document_cache_progress)
+        ImageView documentCacheInProgressIcon;
 
         @Bind(R.id.text_document_title)
         TextView title;
@@ -130,6 +134,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             documentOfflineIcon.setVisibility(View.GONE);
             documentOfflineInProgressIcon.setVisibility(View.GONE);
+            documentCachedIcon.setVisibility(View.GONE);
+            documentCacheInProgressIcon.setVisibility(View.GONE);
 
             downloadProgress.setVisibility(View.VISIBLE);
             sortLabel.setVisibility(View.GONE);

@@ -118,7 +118,7 @@ public class DocumentsActivity extends PresenterActivity implements
                 document.getExtType() != VkDocument.ExtType.IMAGE &&
                 document.getExtType() != VkDocument.ExtType.GIF) {
             Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
-            Timber.d("is off %b, is cached %b", document.isOffline(), document.isCached());
+            Timber.d("is off %b, is ic_cached_green %b", document.isOffline(), document.isCached());
             presenter.openDocument(document);
         } else {
             Intent intent = new Intent(this, DocumentViewerActivity.class);

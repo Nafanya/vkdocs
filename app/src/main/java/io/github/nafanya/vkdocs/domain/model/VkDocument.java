@@ -59,7 +59,11 @@ public class VkDocument extends VKApiDocument {
     public boolean isCached() {
         return offlineType == CACHE && downloadRequest == null;
     }
-    
+
+    public boolean isCacheInProgress() {
+        return offlineType == CACHE && downloadRequest != null;
+    }
+
     public boolean isOffline() {
         return offlineType == OFFLINE && downloadRequest == null;
     }
