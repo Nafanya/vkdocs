@@ -3,6 +3,8 @@
     <color name="colorPrimary">#5181b8</color>
     <color name="colorPlaceholder">#99b2d1</color>
     <color name="colorPrimaryDark">#38618d</color>
+    <color name="colorPlayerButton">@color/colorPlaceholder</color>
+
     <!--<color name="colorAccent">@color/md_white_1000</color>FF86A9D1-->
     <color name="colorAccent">#FF4081</color>
 

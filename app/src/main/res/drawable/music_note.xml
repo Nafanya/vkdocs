@@ -1,7 +1,7 @@
 <!-- drawable/music_note.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="500dp"
-    android:width="500dp"
+    android:height="@dimen/audio_player_placeholder"
+    android:width="@dimen/audio_player_placeholder"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path android:fillColor="@color/colorPlaceholder"

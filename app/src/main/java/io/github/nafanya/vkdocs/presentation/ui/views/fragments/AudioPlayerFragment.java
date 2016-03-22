@@ -10,16 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
+import android.widget.SeekBar;
 
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.MediaControlImpl;
+import rx.Subscription;
 import timber.log.Timber;
 
-public class AudioPlayerFragment extends Fragment implements MediaPlayer.OnPreparedListener {
+public class AudioPlayerFragment extends Fragment
+        implements MediaPlayer.OnPreparedListener {
     public static String MUSIC_KEY = "music_key";
 
     private VkDocument audioDocument;
@@ -58,6 +63,8 @@ public class AudioPlayerFragment extends Fragment implements MediaPlayer.OnPrepa
     }
 
 
+    private Subscription subscription;
+
     @Override
     public void onStart() {
         super.onStart();
@@ -68,18 +75,27 @@ public class AudioPlayerFragment extends Fragment implements MediaPlayer.OnPrepa
                 //TODO wtf7
             }
         }
+
+        subscription = playerService.subscribe(new SeekBarUpdater());
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        mediaController.setMediaPlayer(new MediaControlImpl(mp));
-
-        handler.post(() -> {
-            mediaController.setEnabled(true);
-            mediaController.show(0);
-        });
-
+    public void onStop() {
+        subscription.unsubscribe();
+        super.onStop();
     }
+
+    private MediaPlayer player;
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        player = mp;
+        player.setOnSeekCompleteListener(mp1 ->
+                playerService.setFuckingMediaPlayerPosition(player.getCurrentPosition()));
+    }
+
+    @Bind(R.id.seek_bar)
+    SeekBar seekBar;
 
     @Nullable
     @Override
@@ -88,10 +104,52 @@ public class AudioPlayerFragment extends Fragment implements MediaPlayer.OnPrepa
                              @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.audio_player_fragment, null);
+        ButterKnife.bind(this, rootView);
+        seekBar.setMax(100);
 
-        mediaController = new MediaController(getActivity());
-        mediaController.setAnchorView(rootView);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (player != null && fromUser) {
+                    Timber.d("dur = " + player.getDuration());
+                    int toTime = (int) (player.getDuration() * progress / 100.0);
+                    Timber.d("TO TIME = " + toTime / 1000 + " WITH PERC = " + progress);
+                    Timber.d("CUR POS0 = " + player.getCurrentPosition());
+                    player.seekTo(toTime);
+                    playerService.setRealPosition(player.getCurrentPosition());
+                    Timber.d("CUR POS1 = " + player.getCurrentPosition());
+                }
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         return rootView;
+    }
+
+    private class SeekBarUpdater extends AudioPlayerService.PlayingListener {
+        /**Progress callback***/
+        @Override
+        public void onCompleted() {
+            Timber.d("on complete seek bar");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Integer integer) {
+            Timber.d("seek bar progress = " + integer);
+            seekBar.setProgress(integer);
+        }
     }
 }

@@ -17,7 +17,7 @@ public abstract class BasePresenter {
 
     /**
      * Method that controls the lifecycle of the view. It should be called in the view's
-     * (Activity or Fragment) onStop() method.
+     * (Activity or Fragment) onStopPlaying() method.
      */
     public void onStop() {}
 

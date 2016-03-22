@@ -1,8 +1,8 @@
-<!-- drawable/play.xml -->
+<!-- drawable/pause.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="@dimen/audio_player_button"
     android:width="@dimen/audio_player_button"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="@color/colorPlayerButton" android:pathData="M8,5.14V19.14L19,12.14L8,5.14Z" />
+    <path android:fillColor="@color/colorPlayerButton" android:pathData="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
 </vector>
