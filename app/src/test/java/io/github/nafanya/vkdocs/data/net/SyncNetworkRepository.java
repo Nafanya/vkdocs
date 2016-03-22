@@ -54,13 +54,14 @@ public class SyncNetworkRepository implements NetworkRepository, ServerSideNetwo
         return null;
     }
 
+    @Override
+    public void deleteAsync(VkDocument document) throws Exception {
+
+    }
 
     @Override
-    public void delete(VKApiDocument document) throws Exception {
-        if (internetService.hasInternetConnection())
-            server.remove(document);
-        else
-            throw new Exception("No internet connection!");
+    public void rename(VkDocument document) throws Exception {
+
     }
 
     @Override
