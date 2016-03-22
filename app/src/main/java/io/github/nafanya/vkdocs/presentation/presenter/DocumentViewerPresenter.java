@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.presenter;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
@@ -12,6 +13,7 @@ import io.github.nafanya.vkdocs.domain.interactor.NetworkDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.presentation.presenter.base.BasePresenter;
 import rx.Scheduler;
@@ -50,6 +52,10 @@ public class DocumentViewerPresenter extends BasePresenter {
 
     public void openDocument(VkDocument document) {
         Timber.d("[open document] %s: request %s", document.title, document.getRequest());
+        Timber.d("[open document] %s: cached = %b, offline = %b", document.title, document.isCached(), document.isOffline());
+        if (document.getRequest() == null)
+            document.setRequest(findDownloadRequest(document));
+
         if (document.isOffline() || document.isCached())
             callback.onOpenDocument(document);
         else {
@@ -70,6 +76,17 @@ public class DocumentViewerPresenter extends BasePresenter {
                 }
             }
         }
+    }
+
+    private DownloadRequest findDownloadRequest(VkDocument doc) {
+        DownloadRequest request = null;
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (DownloadRequest r : requests)
+            if (r.getDocId() == doc.getId()) {
+                request = r;
+                break;
+            }
+        return request;
     }
 
     public void cancelDownloading(VkDocument document) {

@@ -87,6 +87,7 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
     public void onStart() {
         super.onStart();
         presenter.onStart();
+        presenter.openDocument(document);
     }
 
     @Override
@@ -95,9 +96,9 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
         super.onStop();
     }
 
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+/*    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         presenter.openDocument(document);
-    }
+    }*/
 
     private byte[] readFile(String file) throws IOException {
         return readFile(new File(file));

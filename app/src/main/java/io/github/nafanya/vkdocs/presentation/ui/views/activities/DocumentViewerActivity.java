@@ -45,7 +45,6 @@ public class DocumentViewerActivity extends AppCompatActivity
 
     private int position;
     private ArrayList<VkDocument> documents;
-    private DocumentViewerPresenter presenter;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -96,6 +95,7 @@ public class DocumentViewerActivity extends AppCompatActivity
             public void onPageScrollStateChanged(int state) {
             }
         });
+        setTitle(documentsPagerAdapter.getPageTitle(position));
     }
 
     @Override
