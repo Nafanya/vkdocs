@@ -25,16 +25,27 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/prev_button"
                 app:srcCompat="@drawable/skip_previous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <ImageView
-                app:srcCompat="@drawable/play"
+                android:id="@+id/pause_button"
+                app:srcCompat="@drawable/pause"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="visible"/>
 
             <ImageView
+                android:id="@+id/play_button"
+                app:srcCompat="@drawable/play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/next_button"
                 app:srcCompat="@drawable/skip_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

@@ -11,12 +11,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.media.AudioPlayerService;
@@ -28,18 +30,49 @@ import timber.log.Timber;
 
 public class AudioPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
     public static String MUSIC_KEY = "music_key";
+    public static String FIRST_KEY = "first_key";
 
     @Bind(R.id.seek_bar)
     SeekBar seekBar;
 
+    @Bind(R.id.prev_button)
+    ImageView prevButton;
+
+    @Bind(R.id.play_button)
+    ImageView playButton;
+
+    @Bind(R.id.pause_button)
+    ImageView pauseButton;
+
+    @Bind(R.id.next_button)
+    ImageView nextButton;
+
+    @OnClick(R.id.play_button)
+    void onClickPlay(View v) {
+        if (isPlayerInitialized()) {
+            playButton.setVisibility(View.GONE);
+            pauseButton.setVisibility(View.VISIBLE);
+            playerService.resume();
+        }
+    }
+
+    @OnClick(R.id.pause_button)
+    void onClickPause(View v) {
+        if (isPlayerInitialized()) {
+            pauseButton.setVisibility(View.GONE);
+            playButton.setVisibility(View.VISIBLE);
+            playerService.pause();
+        }
+    }
+
     private VkDocument audioDocument;
+    private boolean isThisFirstFragment;
     private AudioPlayerService playerService;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            if (seekBar != null)
-                seekBar.setProgress(0);
             if (isGotOnCurrent)
                 startPlaying();
         }
@@ -50,10 +83,11 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         }
     };
 
-    public static AudioPlayerFragment newInstance(VkDocument document) {
+    public static AudioPlayerFragment newInstance(VkDocument document, boolean isThisFirst) {
         AudioPlayerFragment fragment = new AudioPlayerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(MUSIC_KEY, document);
+        bundle.putBoolean(FIRST_KEY, isThisFirst);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -76,6 +110,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         audioDocument = getArguments().getParcelable(MUSIC_KEY);
+        isThisFirstFragment = getArguments().getBoolean(FIRST_KEY);
     }
 
     private Subscription subscription = Subscriptions.empty();
@@ -83,6 +118,8 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     private void startPlaying() {
         Timber.d("ON START AUDIO " + audioDocument.title + " playerService = " + playerService);
         if (!playerService.isNowPlaying(audioDocument)) {
+            if (seekBar != null)
+                seekBar.setProgress(0);
             try {
                 playerService.play(audioDocument);
             } catch (IOException ignore) {
@@ -104,8 +141,14 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     public void onNotCurrent() {
         Timber.d("ON STOP AUDIO " + audioDocument.title);
         isGotOnCurrent = false;
-        playerService.stop();
+        if (isPlayerInitialized())
+            playerService.stop();
         subscription.unsubscribe();
+    }
+
+    @Override
+    public void onSetFirst(boolean isFirst) {
+        isThisFirstFragment = isFirst;
     }
 
     @Nullable
@@ -114,14 +157,16 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.audio_player_fragment, null);
+        View rootView = inflater.inflate(R.layout.fragment_audio_player, null);
         ButterKnife.bind(this, rootView);
         seekBar.setMax(100);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //Timber.d("progre = " + progress);
                 if (isPlayerInitialized() && playerService.isPrepared() && fromUser) {
+                    //Timber.d("in da house");
                     int toTime = (int) (playerService.getDuration() * progress / 100.0);
                     playerService.seekTo(toTime);
                 }
@@ -161,9 +206,14 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onResume() {
-        if (subscription != null && isPlayerInitialized())
-            subscription = playerService.setPlayingListener(new SeekBarUpdater());
         super.onResume();
+        if (subscription.isUnsubscribed() && isPlayerInitialized())
+            subscription = playerService.setPlayingListener(new SeekBarUpdater());
+
+        if (isThisFirstFragment) {//it is hack!!!
+            isThisFirstFragment = false;
+            onCurrent();
+        }
     }
 
     @Override
@@ -174,8 +224,8 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onDestroy() {
-        if (playerService.isNowPlaying(audioDocument))
-            playerService.stop();
+/*        if (playerService.isNowPlaying(audioDocument))
+            playerService.stop();*/
         getActivity().unbindService(serviceConnection);
         super.onDestroy();
     }

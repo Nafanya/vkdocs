@@ -4,5 +4,6 @@
     android:width="@dimen/audio_player_button"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="@color/colorPlayerButton" android:pathData="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
+    <path android:fillColor="@color/colorPlayerButton"
+        android:pathData="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
 </vector>

@@ -20,10 +20,12 @@ import timber.log.Timber;
 public class DocumentViewerActivity extends AppCompatActivity {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
+    //public static String NOT_FIRST_KEY = "not_first_key";
 
     public interface OnPageChanged {
         void onCurrent();
         void onNotCurrent();
+        void onSetFirst(boolean isFirst);
     }
     private DocumentsPagerAdapter documentsPagerAdapter;
 
@@ -37,7 +39,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
     private int position;
     private ArrayList<VkDocument> documents;
 
-
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -50,23 +51,25 @@ public class DocumentViewerActivity extends AppCompatActivity {
             state = getIntent().getExtras();
         position = state.getInt(POSITION_KEY);
         documents = state.getParcelableArrayList(DOCUMENTS_KEY);
-
-        documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
+        documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents, position);
 
         viewPager.addOnPageChangeListener(new OnPageChangeListener());
         viewPager.setAdapter(documentsPagerAdapter);
-        viewPager.setCurrentItem(position);
         setTitle(documentsPagerAdapter.getPageTitle(position));
+        viewPager.setCurrentItem(position);
+    }
 
-        //Fragment fragment = documentsPagerAdapter.getFragment(position);
-        //((OnPageChanged)fragment).onCurrent();
+    @Override
+    public void onBackPressed() {
+        makeNotCurrentFragment(position);
+        super.onBackPressed();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(DOCUMENTS_KEY, documents);
-        outState.putInt(POSITION_KEY, viewPager.getCurrentItem());
+        outState.putInt(POSITION_KEY, position);
     }
 
     @Override
@@ -90,7 +93,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
 
     private class OnPageChangeListener implements ViewPager.OnPageChangeListener {
-
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         }
@@ -100,16 +102,26 @@ public class DocumentViewerActivity extends AppCompatActivity {
             Timber.d("on page selected = " + position);
             setTitle(documentsPagerAdapter.getPageTitle(position));
             int prevPosition = DocumentViewerActivity.this.position;
-            Fragment fragment = documentsPagerAdapter.getFragment(prevPosition);
-            if (fragment != null)
-                ((OnPageChanged)fragment).onNotCurrent();
             DocumentViewerActivity.this.position = position;
-            fragment = documentsPagerAdapter.getFragment(position);
-            ((OnPageChanged)fragment).onCurrent();
+            makeNotCurrentFragment(prevPosition);
+            makeCurrentFragment(position);
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
         }
+    }
+
+    private void makeCurrentFragment(int pos) {
+        Fragment fragment = documentsPagerAdapter.getFragment(pos);
+        if (fragment != null)
+            ((OnPageChanged)fragment).onCurrent();
+    }
+
+    private void makeNotCurrentFragment(int pos) {
+        Fragment fragment = documentsPagerAdapter.getFragment(pos);
+        Timber.d("make not current fragment = " + fragment);
+        if (fragment != null)
+            ((OnPageChanged)fragment).onNotCurrent();
     }
 }

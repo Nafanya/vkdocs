@@ -73,10 +73,14 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public boolean isPrepared() {
+        if (mediaPlayer == null)
+            return false;
         return mediaPlayer.isPrepared();
     }
 
     public int getDuration() {
+        if (mediaPlayer == null)
+            return 0;
         return mediaPlayer.getDuration();
     }
 
