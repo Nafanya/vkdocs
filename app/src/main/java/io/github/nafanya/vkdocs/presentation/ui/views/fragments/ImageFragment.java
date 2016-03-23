@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
@@ -22,22 +22,24 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
- * Created by nafanya on 3/21/16.
+ * Created by nafanya on 3/22/16.
  */
-public class GifImageFragment extends Fragment {
-    public static final String GIF_KEY = "gif_key";
+public class ImageFragment extends Fragment {
+    public static final String IMAGE_KEY = "image_key";
 
     private VkDocument document;
-    private GifDrawable gif;
-
-    private SimpleTarget target = new SimpleTarget<GifDrawable>() {
+    private PhotoViewAttacher attacher;
+    private SimpleTarget target = new SimpleTarget<GlideBitmapDrawable>() {
         @Override
-        public void onResourceReady(GifDrawable gifDrawable, GlideAnimation glideAnimation) {
-            gif = gifDrawable;
-            imageView.setImageDrawable(gif.getCurrent());
-            gif.start();
+        public void onResourceReady(GlideBitmapDrawable bitmap, GlideAnimation glideAnimation) {
+//            GlideProgressListener.removeGlideProgressListener(listener);
+            imageView.setImageBitmap(bitmap.getBitmap());
+            if (attacher != null) {
+                attacher.update();
+            }
             progressBar.setVisibility(View.GONE);
         }
 
@@ -55,12 +57,13 @@ public class GifImageFragment extends Fragment {
 
 //    private ProgressListener listener = (bytesRead, contentLength, done) -> {
 //        progressBar.setProgress((int) (100 * bytesRead / contentLength));
+//        Timber.d("Image load] %d/%d b; %d/%d kb", bytesRead, contentLength, bytesRead/1024, contentLength/1024);
 //    };
 
-    public static GifImageFragment newInstance(VkDocument document) {
-        GifImageFragment fragment = new GifImageFragment();
+    public static ImageFragment newInstance(VkDocument document) {
+        ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelable(GIF_KEY, document);
+        args.putParcelable(IMAGE_KEY, document);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,7 +72,7 @@ public class GifImageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        document = getArguments().getParcelable(GIF_KEY);
+        document = getArguments().getParcelable(IMAGE_KEY);
     }
 
     @Override
@@ -87,17 +90,13 @@ public class GifImageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (gif != null) {
-            gif.start();
-        }
+        attacher = new PhotoViewAttacher(imageView);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (gif != null) {
-            gif.stop();
-        }
+        release();
     }
 
     @Override
@@ -114,8 +113,9 @@ public class GifImageFragment extends Fragment {
 
     private void release() {
 //        GlideProgressListener.removeGlideProgressListener(listener);
-        if (gif != null) {
-            gif = null;
+        if (attacher != null) {
+            attacher.cleanup();
+            attacher = null;
         }
     }
 
@@ -125,13 +125,11 @@ public class GifImageFragment extends Fragment {
             Glide
                     .with(this)
                     .load(Uri.fromFile(new File(document.getPath())))
-                    .asGif()
                     .into(target);
         } else {
             Glide
                     .with(this)
                     .load(document.url)
-                    .asGif()
                     .into(target);
         }
     }

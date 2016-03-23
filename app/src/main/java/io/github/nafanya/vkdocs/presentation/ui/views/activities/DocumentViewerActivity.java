@@ -1,6 +1,5 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
-import android.app.DownloadManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,15 +16,11 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
 import timber.log.Timber;
 
 public class DocumentViewerActivity extends AppCompatActivity
@@ -42,24 +37,9 @@ public class DocumentViewerActivity extends AppCompatActivity
     ViewPager viewPager;
 
     private AudioPlayerService playerService;
-
+    private ServiceConnection serviceConnection;
     private int position;
     private ArrayList<VkDocument> documents;
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Timber.d("on service connected");
-            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            viewPager.setAdapter(documentsPagerAdapter);
-            viewPager.setCurrentItem(position);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            playerService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle state) {
@@ -69,16 +49,29 @@ public class DocumentViewerActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
-        Intent intent = new Intent(this, AudioPlayerService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        Timber.d("bind service");
-
         if (state == null)
             state = getIntent().getExtras();
         position = state.getInt(POSITION_KEY);
         documents = state.getParcelableArrayList(DOCUMENTS_KEY);
 
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
+
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Timber.d("on service connected");
+                playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
+                viewPager.setAdapter(documentsPagerAdapter);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                playerService = null;
+            }
+        };
+        Intent intent = new Intent(this, AudioPlayerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Timber.d("bind service");
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

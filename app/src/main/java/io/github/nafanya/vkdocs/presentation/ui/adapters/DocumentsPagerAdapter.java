@@ -10,6 +10,8 @@ import java.util.List;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.ImageFragment;
+import timber.log.Timber;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -27,23 +29,25 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
+
+        Fragment fragment = null;
+
         VkDocument document = documents.get(position);
         VkDocument.ExtType extType = documents.get(position).getExtType();
-        Fragment ret = null;
-            if (extType == VkDocument.ExtType.AUDIO) {
-                ret = AudioPlayerFragment.newInstance(document);
-            } else if (extType == VkDocument.ExtType.VIDEO) {
+        Timber.d("[DocumentPagerAdapter] getItem: %d, docType: %s", position, extType);
 
-            } else if (extType == VkDocument.ExtType.IMAGE) {
+        if (extType == VkDocument.ExtType.AUDIO) {
+            fragment = AudioPlayerFragment.newInstance(document);
+        } else if (extType == VkDocument.ExtType.VIDEO) {
 
-            } else if (extType == VkDocument.ExtType.GIF) {
-                ret = GifImageFragment.newInstance(document);
-            } else {
-                ret = new Fragment();
-                //ret = OpenProgressDialog.newInstance(document, false);
-            }
-        //ret = AudioPlayerFragment.newInstance(document);
-        return ret;
+        } else if (extType == VkDocument.ExtType.IMAGE) {
+            fragment = ImageFragment.newInstance(document);
+        } else if (extType == VkDocument.ExtType.GIF) {
+            fragment = GifImageFragment.newInstance(document);
+        } else {
+            fragment = new Fragment();
+        }
+        return fragment;
     }
 
     @Override

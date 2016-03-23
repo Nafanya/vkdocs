@@ -12,4 +12,14 @@ public class RandomInternetService implements InternetService {
     public boolean hasInternetConnection() {
         return Utils.random.nextBoolean();
     }
+
+    @Override
+    public void addListener(InternetStateListener listener) {
+
+    }
+
+    @Override
+    public void removeListener(InternetStateListener listener) {
+
+    }
 }
