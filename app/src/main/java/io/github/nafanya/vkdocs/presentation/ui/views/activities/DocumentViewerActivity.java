@@ -1,12 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
-import android.app.DownloadManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,22 +12,19 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.services.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
 import timber.log.Timber;
 
-public class DocumentViewerActivity extends AppCompatActivity
-        implements AudioPlayerFragment.Player {
+public class DocumentViewerActivity extends AppCompatActivity {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
 
+    public interface OnPageChanged {
+        void onCurrent();
+        void onNotCurrent();
+    }
     private DocumentsPagerAdapter documentsPagerAdapter;
 
     @Bind(R.id.toolbar)
@@ -41,25 +33,10 @@ public class DocumentViewerActivity extends AppCompatActivity
     @Bind(R.id.container)
     ViewPager viewPager;
 
-    private AudioPlayerService playerService;
 
     private int position;
     private ArrayList<VkDocument> documents;
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Timber.d("on service connected");
-            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            viewPager.setAdapter(documentsPagerAdapter);
-            viewPager.setCurrentItem(position);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            playerService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle state) {
@@ -69,10 +46,6 @@ public class DocumentViewerActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
-        Intent intent = new Intent(this, AudioPlayerService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        Timber.d("bind service");
-
         if (state == null)
             state = getIntent().getExtras();
         position = state.getInt(POSITION_KEY);
@@ -80,22 +53,13 @@ public class DocumentViewerActivity extends AppCompatActivity
 
         documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                setTitle(documentsPagerAdapter.getPageTitle(position));
-                playerService.stop();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+        viewPager.addOnPageChangeListener(new OnPageChangeListener());
+        viewPager.setAdapter(documentsPagerAdapter);
+        viewPager.setCurrentItem(position);
         setTitle(documentsPagerAdapter.getPageTitle(position));
+
+        //Fragment fragment = documentsPagerAdapter.getFragment(position);
+        //((OnPageChanged)fragment).onCurrent();
     }
 
     @Override
@@ -124,15 +88,28 @@ public class DocumentViewerActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public AudioPlayerService playerService() {
-        return playerService;
-    }
 
-    @Override
-    protected void onDestroy() {
-        playerService.stop();
-        unbindService(serviceConnection);
-        super.onDestroy();
+    private class OnPageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            Timber.d("on page selected = " + position);
+            setTitle(documentsPagerAdapter.getPageTitle(position));
+            int prevPosition = DocumentViewerActivity.this.position;
+            Fragment fragment = documentsPagerAdapter.getFragment(prevPosition);
+            if (fragment != null)
+                ((OnPageChanged)fragment).onNotCurrent();
+            DocumentViewerActivity.this.position = position;
+            fragment = documentsPagerAdapter.getFragment(position);
+            ((OnPageChanged)fragment).onCurrent();
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
     }
 }

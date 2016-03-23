@@ -41,7 +41,7 @@
             android:theme="@style/AppTheme"></activity>
 
         <service
-            android:name=".presentation.services.AudioPlayerService">
+            android:name=".presentation.ui.media.AudioPlayerService">
         </service>
     </application>
 
