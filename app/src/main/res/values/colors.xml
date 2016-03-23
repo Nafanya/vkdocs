@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--color for Nav Drawer like GoogleMaps-->
+    <color name="selectedItem">@color/colorPrimary</color>
+    <color name="colorPressedText">#f2f2f2</color>
+
     <color name="colorPrimary">#5181b8</color>
     <color name="colorPlaceholder">#99b2d1</color>
     <color name="colorPrimaryDark">#38618d</color>

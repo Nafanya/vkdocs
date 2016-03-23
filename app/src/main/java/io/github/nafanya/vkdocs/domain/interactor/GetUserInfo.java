@@ -11,6 +11,7 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/20/16.
@@ -27,16 +28,13 @@ public class GetUserInfo extends UseCase<VKApiUser> {
     @Override
     public Observable<VKApiUser> buildUseCase() {
         return Observable.create(subscriber -> {
+            Timber.d("cur thread = " + Thread.currentThread().getId());
+            subscriber.onNext(repository.getUserInfo());
             try {
+                repository.synchronize();
                 subscriber.onNext(repository.getUserInfo());
-                try {
-                    repository.synchronize();
-                    subscriber.onNext(repository.getUserInfo());
-                } catch (Exception ignore) {}
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
+            } catch (Exception ignore) {}
+            subscriber.onCompleted();
         });
     }
 }

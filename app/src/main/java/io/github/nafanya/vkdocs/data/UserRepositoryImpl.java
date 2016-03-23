@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.httpClient.VKImageOperation;
 import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKApiUserFull;
 import com.vk.sdk.api.model.VKList;
@@ -23,7 +22,6 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.data.exceptions.VKException;
 import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.utils.Utils;
-import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/20/16.
@@ -32,19 +30,20 @@ public class UserRepositoryImpl implements UserRepository {
     private static String FIRST_NAME = "first_name";
     private static String LAST_NAME = "last_name";
 
-    private String avatarFile;
+    private String avatarPath;
+    private File avatarFile;
     private SharedPreferences sharedPreferences;
 
     public UserRepositoryImpl(Context context, String cacheRoot) throws IOException {
         sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preference_user_repository),
                 Context.MODE_PRIVATE);
-        avatarFile = cacheRoot + File.separator + "avatar";
-        File file = new File(avatarFile);
-        if (!file.exists()) {
-            file.createNewFile();
+        avatarPath = cacheRoot + File.separator + "avatar";
+        avatarFile = new File(avatarPath);
+        if (!avatarFile.exists()) {
+            avatarFile.createNewFile();
             InputStream raw = context.getResources().openRawResource(R.raw.camera);
-            copyBitmap(raw, avatarFile);
+            copyBitmap(raw, avatarPath);
         }
     }
 
@@ -53,7 +52,7 @@ public class UserRepositoryImpl implements UserRepository {
         VKApiUser user = new VKApiUser();
         user.first_name = sharedPreferences.getString("first_name", null);
         user.last_name = sharedPreferences.getString("last_name", null);
-        user.photo_100 = avatarFile;
+        user.photo_100 = avatarPath;
         return user;
     }
 
@@ -71,7 +70,9 @@ public class UserRepositoryImpl implements UserRepository {
         InputStream in = null;
         try {
             in = new URL(user.photo_100).openStream();
-            copyBitmap(in, avatarFile);
+            copyBitmap(in, avatarPath + "_tmp");
+            new File(avatarPath).delete();
+            new File(avatarPath + "_tmp").renameTo(avatarFile);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

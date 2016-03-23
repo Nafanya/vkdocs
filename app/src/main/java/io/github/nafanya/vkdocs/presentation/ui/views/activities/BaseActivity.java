@@ -2,6 +2,7 @@ package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -29,6 +30,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
@@ -145,6 +147,8 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         super.onSaveInstanceState(state);
     }
 
+    private PrimaryDrawerItem offlineItem;
+
     private void initNavigationDrawer() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
@@ -162,6 +166,9 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 .withHeaderBackground(R.drawable.header)
                 .build();
 
+        offlineItem = new PrimaryDrawerItem().withName(R.string.drawer_offline).withIcon(R.drawable.ic_offline).
+                withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_offline_selected);
+
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(accountHeader)
@@ -169,11 +176,12 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 .withActionBarDrawerToggle(true)
                 .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_my_documents).withIcon(R.drawable.ic_folder),
-                        new PrimaryDrawerItem().withName(R.string.drawer_offline).withIcon(R.drawable.ic_offline),
-                        new PrimaryDrawerItem().withName(R.string.drawer_uploads).withIcon(R.drawable.ic_upload),
+                        new PrimaryDrawerItem().withName(R.string.drawer_my_documents).withIcon(R.drawable.ic_folder).
+                                withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_folder_selected),
+                        offlineItem,
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings))
+                        new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings).
+                                withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_settings_selected))
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     Timber.d("[Documents activity] Nav drawer position: %d", position);
                     drawer.closeDrawer();
@@ -187,6 +195,15 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         drawer.setSelectionAtPosition(navDrawerPos);
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+
+        new PrimaryDrawerItem().withBadge((String)null);
+    }
+
+    protected void setNumOffline(int numOffline) {
+        if (numOffline == 0)
+            offlineItem.withBadge((String)null);
+        else
+            offlineItem.withBadge(numOffline + "").withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_red_500).withMinWidth(50).withCorners(20));
     }
 
     //TODO fix infinite refreshing
@@ -214,7 +231,6 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         if (newExtType != extType)
             onTypeFilterChanged(newExtType);
         extType = newExtType;
-
     }
 
     @Override
