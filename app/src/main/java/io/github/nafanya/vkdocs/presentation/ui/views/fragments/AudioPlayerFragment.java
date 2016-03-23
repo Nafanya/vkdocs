@@ -73,7 +73,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            if (isGotOnCurrent)
+            if (isBecameVisible)
                 startPlaying();
         }
 
@@ -96,7 +96,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         return playerService != null;
     }
 
-    private boolean isGotOnCurrent = false;
+    private boolean isBecameVisible = false;
 
     @Override
     public void onAttach(Context activity) {
@@ -131,16 +131,16 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     }
 
     @Override
-    public void onCurrent() {
-        isGotOnCurrent = true;
+    public void onBecameVisible() {
+        isBecameVisible = true;
         if (isPlayerInitialized())
             startPlaying();
     }
 
     @Override
-    public void onNotCurrent() {
+    public void onBecameInvisible() {
         Timber.d("ON STOP AUDIO " + audioDocument.title);
-        isGotOnCurrent = false;
+        isBecameVisible = false;
         if (isPlayerInitialized())
             playerService.stop();
         subscription.unsubscribe();
@@ -148,9 +148,11 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onSetFirst(boolean isFirst) {
+        Timber.d("on set first!!");
         isThisFirstFragment = isFirst;
     }
 
+    //TODO block seekbar until starting playing
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -164,9 +166,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //Timber.d("progre = " + progress);
                 if (isPlayerInitialized() && playerService.isPrepared() && fromUser) {
-                    //Timber.d("in da house");
                     int toTime = (int) (playerService.getDuration() * progress / 100.0);
                     playerService.seekTo(toTime);
                 }
@@ -206,13 +206,14 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onResume() {
+        Timber.d("on resume!!!");
         super.onResume();
         if (subscription.isUnsubscribed() && isPlayerInitialized())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
 
         if (isThisFirstFragment) {//it is hack!!!
             isThisFirstFragment = false;
-            onCurrent();
+            onBecameVisible();
         }
     }
 
@@ -224,8 +225,6 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onDestroy() {
-/*        if (playerService.isNowPlaying(audioDocument))
-            playerService.stop();*/
         getActivity().unbindService(serviceConnection);
         super.onDestroy();
     }

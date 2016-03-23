@@ -226,6 +226,7 @@ public class DocumentsPresenter extends BasePresenter {
     @Override
     public void onStart() {
 
+        Timber.d("on start get doc contains& " + eventBus.contains(GetDocuments.class));
         if (eventBus.contains(GetDocuments.class) && documentsSubscriber.isUnsubscribed()) {
             documentsSubscriber = new GetDocumentsSubscriber();
             eventBus.getEvent(GetDocuments.class).execute(documentsSubscriber);
@@ -279,7 +280,7 @@ public class DocumentsPresenter extends BasePresenter {
             List<VkDocument> documents = filterList(vkDocuments);
             findDownloadRequests(documents);
             callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));
-            eventBus.removeEvent(GetDocuments.class);
+            //eventBus.removeEvent(GetDocuments.class);
         }
 
         private List<VkDocument> copyVkDocumentsList(List<VkDocument> docs) {
@@ -303,6 +304,7 @@ public class DocumentsPresenter extends BasePresenter {
             findDownloadRequests(list);
             callback.onNetworkDocuments(list);
             eventBus.removeEvent(NetworkDocuments.class);
+            eventBus.removeEvent(GetDocuments.class);
         }
 
         @Override

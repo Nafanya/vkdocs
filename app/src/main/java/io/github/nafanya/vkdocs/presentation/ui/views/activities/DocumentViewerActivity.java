@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,8 +24,8 @@ public class DocumentViewerActivity extends AppCompatActivity {
     //public static String NOT_FIRST_KEY = "not_first_key";
 
     public interface OnPageChanged {
-        void onCurrent();
-        void onNotCurrent();
+        void onBecameVisible();
+        void onBecameInvisible();
         void onSetFirst(boolean isFirst);
     }
     private DocumentsPagerAdapter documentsPagerAdapter;
@@ -57,6 +58,18 @@ public class DocumentViewerActivity extends AppCompatActivity {
         viewPager.setAdapter(documentsPagerAdapter);
         setTitle(documentsPagerAdapter.getPageTitle(position));
         viewPager.setCurrentItem(position);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        Timber.d("fragments = " + fragments);
+        if (fragments != null)
+            for (Fragment f: fragments)
+                if (f.isVisible())
+                    Timber.d("visible = " + f);
+        Timber.d("ON RESUME ACTIVITY");//TODO check if fragment visible show
     }
 
     @Override
@@ -115,13 +128,13 @@ public class DocumentViewerActivity extends AppCompatActivity {
     private void makeCurrentFragment(int pos) {
         Fragment fragment = documentsPagerAdapter.getFragment(pos);
         if (fragment != null)
-            ((OnPageChanged)fragment).onCurrent();
+            ((OnPageChanged)fragment).onBecameVisible();
     }
 
     private void makeNotCurrentFragment(int pos) {
         Fragment fragment = documentsPagerAdapter.getFragment(pos);
         Timber.d("make not current fragment = " + fragment);
         if (fragment != null)
-            ((OnPageChanged)fragment).onNotCurrent();
+            ((OnPageChanged)fragment).onBecameInvisible();
     }
 }

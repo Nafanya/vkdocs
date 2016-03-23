@@ -25,8 +25,6 @@ public class NetworkDocuments extends UseCase<List<VkDocument>> {
     public Observable<List<VkDocument>> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
-                //Thread.sleep(5000);
-                //Timber.d("after sleep");
                 repository.synchronize();
                 subscriber.onNext(repository.getMyDocuments());
                 subscriber.onCompleted();

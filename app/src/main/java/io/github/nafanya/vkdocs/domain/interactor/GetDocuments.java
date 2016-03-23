@@ -28,7 +28,10 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
     public Observable<List<VkDocument>> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
+                Timber.d("GET FROM DB");
                 subscriber.onNext(repository.getMyDocuments());
+                Timber.d("GOT FROM DB");
+
                 try {
                     repository.synchronize();//Get data from network and synchronize it
                     subscriber.onNext(repository.getMyDocuments());

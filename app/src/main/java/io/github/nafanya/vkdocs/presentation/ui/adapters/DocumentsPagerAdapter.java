@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.VideoPlayerFragment;
 import timber.log.Timber;
 
 /**
@@ -49,7 +51,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         if (extType == VkDocument.ExtType.AUDIO) {
             ret = AudioPlayerFragment.newInstance(document, itFirst);
         } else if (extType == VkDocument.ExtType.VIDEO) {
-
+            ret = VideoPlayerFragment.newInstance(document, itFirst);
         } else if (extType == VkDocument.ExtType.IMAGE) {
 
         } else if (extType == VkDocument.ExtType.GIF) {
@@ -59,7 +61,6 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         }
         fragments[position] = ret;
         firstPosition = -1;
-        //ret = AudioPlayerFragment.newInstance(document);
         return ret;
     }
 

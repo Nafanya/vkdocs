@@ -34,6 +34,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private Uri getUri(VkDocument document) {
+        //return Uri.parse("https://cs1-42v4.vk-cdn.net/p18/94ef43debf3eb3.mp3?extra=GJ43jLk2T2mqYmXNyaaitYNDekXW9FMKJli4HEwQ7G5pNZfFeKZR0iboM6sLHtUspOW6vWKUV5snHZkrpFMZbAQSgL7u4-dpDIpGRxJmocNpgUUbggHHmzUhwnlqMQoH35Rs7ppU0T4");
         if (document.getPath() != null)
             return Uri.parse(document.getPath());
         return Uri.parse(document.url);
