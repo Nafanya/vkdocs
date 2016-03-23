@@ -154,9 +154,10 @@ public class DocumentsActivity extends PresenterActivity implements
     @Override
     public void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline) {
         Timber.d("[Bottom menu] clicked offline button for doc (title=%s, isMakeOffline=%s)", document.title, isMakeOffline);
-        if (isMakeOffline) {
+        if (isMakeOffline)
             presenter.makeOffline(document);
-        }
+        else
+            presenter.undoMakeOffline(document);
     }
 
     @Override
@@ -237,7 +238,7 @@ public class DocumentsActivity extends PresenterActivity implements
     }
 
     @Override
-    public void onTriggeredOffline(VkDocument document) {
+    public void onUpdatedDocument(VkDocument document) {
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
     }
 

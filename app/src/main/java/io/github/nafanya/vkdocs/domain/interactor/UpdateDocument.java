@@ -23,8 +23,8 @@ public class UpdateDocument extends UseCase<Void> {
     public Observable<Void> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
-                repository.update(document);
                 eventBus.removeEvent(GetDocuments.class);//TODO fix it
+                repository.update(document);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

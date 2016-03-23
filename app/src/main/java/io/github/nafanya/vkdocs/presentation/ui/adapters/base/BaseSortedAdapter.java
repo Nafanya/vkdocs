@@ -194,9 +194,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
             sortLabel.setText(sortLabelText);
             statusLables.setText(statusLabelText);
 
-            if (doc.isOfflineInProgress()) {
+            if (doc.isOfflineInProgress())
                 return new OnCompleteOfflineListener(position, doc);
-            }
             return null;
         }
 

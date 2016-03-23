@@ -120,10 +120,9 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-        Timber.d("in init swipe refresh layout = " + isRefreshing);
 
-        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
-        setRefresh(isRefreshing);
+        //swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
+        //setRefresh(isRefreshing);
     }
 
     private void initRecyclerView() {

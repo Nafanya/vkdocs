@@ -47,7 +47,7 @@ public class DocumentsPresenter extends BasePresenter {
 
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
-        void onTriggeredOffline(VkDocument document);
+        void onUpdatedDocument(VkDocument document);
 
         void onUserInfoLoaded(VKApiUser userInfo);
     }
@@ -161,13 +161,26 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public void makeOffline(VkDocument document) {
-        new MakeOfflineDocument(
-                OBSERVER,
-                SUBSCRIBER,
-                eventBus,
-                offlineManager,
-                document,
-                OFFLINE_PATH + document.title).execute(new OfflineSubscriber());
+        if (!document.isCached())
+            new MakeOfflineDocument(
+                    OBSERVER,
+                    SUBSCRIBER,
+                    eventBus,
+                    offlineManager,
+                    document,
+                    OFFLINE_PATH + document.title).execute(new OfflineSubscriber());
+        else {
+            document.setOfflineType(VkDocument.OFFLINE);//TODO remove from cache manager
+            new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+            callback.onUpdatedDocument(document);
+        }
+    }
+
+    public void undoMakeOffline(VkDocument document) {
+        //TODO call cache manager
+        document.setOfflineType(VkDocument.CACHE);
+        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+        callback.onUpdatedDocument(document);
     }
 
     public void cancelDownloading(VkDocument document) {
@@ -310,7 +323,7 @@ public class DocumentsPresenter extends BasePresenter {
     public class OfflineSubscriber extends DefaultSubscriber<VkDocument> {
         @Override
         public void onNext(VkDocument document) {
-            callback.onTriggeredOffline(document);
+            callback.onUpdatedDocument(document);
             eventBus.removeEvent(document.getId());//holy shit7 remove MakeOffline with this hash
         }
     }

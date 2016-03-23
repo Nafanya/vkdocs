@@ -108,6 +108,10 @@ public class VkDocument extends VKApiDocument {
         this.path = path;
     }
 
+    public boolean isDownloaded() {
+        return isCached() || isOffline();
+    }
+
     public static Creator<VkDocument> CREATOR = new Creator<VkDocument>() {
         public VkDocument createFromParcel(Parcel source) {
             return new VkDocument(source);
