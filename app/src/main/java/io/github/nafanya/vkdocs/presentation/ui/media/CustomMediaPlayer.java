@@ -11,19 +11,21 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class CustomMediaPlayer extends MediaPlayer implements
-        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener {
+        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private volatile int fuckingMediaPlayerPosition;
     private volatile int realPosition;
     private volatile boolean invalidState = false;
     private volatile int currentSessionId = -1;
     private volatile boolean isPrepared = false;
+    private volatile boolean isCompleted = false;
 
     private ConnectableObservable<Integer> progressObserver;
     private OnPreparedListener preparedListener;
 
     public CustomMediaPlayer() {
         setOnSeekCompleteListener(this);
+        setOnCompletionListener(this);
         super.setOnPreparedListener(this);
     }
 
@@ -32,6 +34,11 @@ public class CustomMediaPlayer extends MediaPlayer implements
 
     public Subscription setPlayingListener(PlayingListener s) {
         return progressObserver.subscribe(s);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        isCompleted = true;
     }
 
     @Override
@@ -51,6 +58,7 @@ public class CustomMediaPlayer extends MediaPlayer implements
     @Override
     public void seekTo(int msec) throws IllegalStateException {
         super.seekTo(msec);
+        isCompleted = false;
         realPosition = getCurrentPosition();
         invalidState = true;
     }
@@ -66,6 +74,7 @@ public class CustomMediaPlayer extends MediaPlayer implements
     }
 
     public void initAudioSession(int sessionId) {
+        isCompleted = false;
         currentSessionId = sessionId;
     }
 
@@ -83,6 +92,7 @@ public class CustomMediaPlayer extends MediaPlayer implements
         currentSessionId = -1;
         invalidState = false;
         isPrepared = false;
+        isCompleted = false;
         super.stop();
     }
 
@@ -91,6 +101,7 @@ public class CustomMediaPlayer extends MediaPlayer implements
         private PlayingThread(int sessionId) {
             this.sessionId = sessionId;
         }
+        private static final int PERCENTAGE = 100;
 
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
@@ -99,7 +110,10 @@ public class CustomMediaPlayer extends MediaPlayer implements
             while (sessionId == currentSessionId) {
                 if (!invalidState) {
                     int diff = getCurrentPosition() - fuckingMediaPlayerPosition;
-                    int perc = (int) (100 * ((realPosition + diff) * 1.0 / duration));
+                    int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
+                    if (isCompleted)
+                        perc = PERCENTAGE;
+
                     if (prevPerc != perc)
                         subscriber.onNext(perc);
                     prevPerc = perc;

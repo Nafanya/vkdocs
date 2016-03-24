@@ -161,7 +161,6 @@ public class GifImageFragment extends Fragment
         if (isAlreadyNotifiedAboutVisible)
             return;
         isAlreadyNotifiedAboutVisible = true;
-        document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
     }
 

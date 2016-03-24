@@ -21,7 +21,6 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.DeleteDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.RenameDialog;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
@@ -31,7 +30,6 @@ import timber.log.Timber;
  */
 public class DocumentsActivity extends PresenterActivity implements
         BottomMenu.MenuEventListener,
-        OpenProgressDialog.Callback,
         ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener,
         RenameDialog.Callback,
@@ -113,19 +111,12 @@ public class DocumentsActivity extends PresenterActivity implements
     /***Adapter callback***/
     @Override
     public void onClick(int position, VkDocument document) {
-        if (document.getExtType() != VkDocument.ExtType.AUDIO &&
-                document.getExtType() != VkDocument.ExtType.VIDEO &&
-                document.getExtType() != VkDocument.ExtType.IMAGE &&
-                document.getExtType() != VkDocument.ExtType.GIF) {
-            Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
-            Timber.d("is off %b, is ic_cached_green %b", document.isOffline(), document.isCached());
-            presenter.openDocument(document);
-        } else {
-            Intent intent = new Intent(this, DocumentViewerActivity.class);
-            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
-            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
-            startActivity(intent);
-        }
+        Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
+        Timber.d("is off %b, is ic_cached_green %b", document.isOffline(), document.isCached());
+        Intent intent = new Intent(this, DocumentViewerActivity.class);
+        intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
+        intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
+        startActivity(intent);
     }
 
     @Override
@@ -220,45 +211,11 @@ public class DocumentsActivity extends PresenterActivity implements
         restoreDocPosition = -1;
     }
 
-    /***Presenter callback for open document***/
-    @Override
-    public void onOpenDocument(VkDocument document) {
-        openDocument(document);
-    }
-
-    @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        if (isReallyAlreadyDownloading)
-            Timber.d("%s is already downloading now", document.title);
-        else
-            Timber.d("%s isn't downloading now yet", document.title);
-
-        DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "progress_open");
-    }
-
     @Override
     public void onUpdatedDocument(VkDocument document) {
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
     }
 
-    /***OpenProgressDialog callbacks***/
-    @Override
-    public void onCancelCaching(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading)
-            presenter.cancelDownloading(document);
-    }
-
-    @Override
-    public void onCompleteCaching(VkDocument document) {
-        openDocument(document);
-    }
-
-    @Override
-    public void onErrorCaching(Exception error, VkDocument document, boolean isAlreadyDownloading) {
-        DialogFragment fragment = ErrorOpenDialog.newInstance(document, isAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "error_open");
-    }
 
     /***ErrorOpen dialog callbacks***/
     @Override

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
-import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
@@ -45,8 +44,6 @@ public class DocumentsPresenter extends BasePresenter {
         void onNetworkError(Exception ex);
         void onDatabaseError(Exception ex);
 
-        void onOpenDocument(VkDocument document);
-        void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
         void onUpdatedDocument(VkDocument document);
 
         void onUserInfoLoaded(VKApiUser userInfo);
@@ -57,7 +54,6 @@ public class DocumentsPresenter extends BasePresenter {
 
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
-    protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
     protected Subscriber<VKApiUser> userSubscriber = Subscribers.empty();
 
     protected DocFilter filter;
@@ -125,31 +121,6 @@ public class DocumentsPresenter extends BasePresenter {
         systemDownloadManager.enqueue(request);
     }
 
-    //TODO when caching is finished, remove GetDocuments from EventBus?
-    public void openDocument(VkDocument document) {
-        /*Timber.d("[open document] %s: request %s", document.title, document.getRequest());
-        if (document.isOffline() || document.isCached())
-            callback.onOpenDocument(document);
-        else {
-            if (!document.isDownloading()) {
-                cacheSubscriber = new CacheSubscriber();
-                new CacheDocument(OBSERVER, SUBSCRIBER,
-                        eventBus,
-                        document,
-                        CACHE_PATH + document.title,
-                        repository,
-                        downloadManager).execute(cacheSubscriber);
-            } else {
-                if (document.getRequest().isActive())
-                    callback.onAlreadyDownloading(document, true);
-                else {
-                    downloadManager.retry(document.getRequest());
-                    callback.onAlreadyDownloading(document, true);
-                }
-            }
-        }*/
-    }
-
     public void getUserInfo() {
         userSubscriber = new GetUserInfoSubscriber();
         new GetUserInfo(
@@ -207,7 +178,7 @@ public class DocumentsPresenter extends BasePresenter {
                 req.resetError();//smth holy shit
                 break;
             }
-        openDocument(document);
+        //openDocument(document);
     }
 
     public void rename(VkDocument document, String newName) {
@@ -242,11 +213,6 @@ public class DocumentsPresenter extends BasePresenter {
             eventBus.getEvent(NetworkDocuments.class).execute(networkSubscriber);
         }
 
-        if (eventBus.contains(CacheDocument.class) && cacheSubscriber.isUnsubscribed()) {
-            cacheSubscriber = new CacheSubscriber();
-            eventBus.getEvent(CacheDocument.class).execute(cacheSubscriber);
-        }
-
         if (eventBus.contains(GetUserInfo.class) && userSubscriber.isUnsubscribed()) {
             userSubscriber = new GetUserInfoSubscriber();
             eventBus.getEvent(GetUserInfo.class).execute(userSubscriber);
@@ -258,7 +224,6 @@ public class DocumentsPresenter extends BasePresenter {
     public void onStop() {
         unsubscribeIfNot(documentsSubscriber);
         unsubscribeIfNot(networkSubscriber);
-        unsubscribeIfNot(cacheSubscriber);
         unsubscribeIfNot(userSubscriber);
     }
 
@@ -316,14 +281,6 @@ public class DocumentsPresenter extends BasePresenter {
         public void onError(Throwable e) {
             callback.onNetworkError((Exception) e);
             eventBus.removeEvent(NetworkDocuments.class);
-        }
-    }
-
-    public class CacheSubscriber extends DefaultSubscriber<VkDocument> {
-        @Override
-        public void onNext(VkDocument document) {
-            callback.onAlreadyDownloading(document, false);
-            eventBus.removeEvent(CacheDocument.class);
         }
     }
 

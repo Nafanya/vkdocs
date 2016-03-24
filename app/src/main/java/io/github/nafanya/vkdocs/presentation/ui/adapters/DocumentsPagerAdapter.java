@@ -17,6 +17,7 @@ import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerA
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.ImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.UnknownTypeDocFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.VideoPlayerFragment;
 import timber.log.Timber;
 
@@ -34,6 +35,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+
         //throw new RuntimeException("lil");
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
@@ -51,10 +53,15 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         } else if (extType == VkDocument.ExtType.GIF) {
             ret = GifImageFragment.newInstance(document);
         } else {
-            ret = new Fragment();
+            ret = UnknownTypeDocFragment.newInstance(document);
         }
         return ret;
     }
+
+    public Fragment getFragment(int position) {
+        return (Fragment)instantiateItem(null, position);
+    }
+
 
     @Override
     public int getCount() {

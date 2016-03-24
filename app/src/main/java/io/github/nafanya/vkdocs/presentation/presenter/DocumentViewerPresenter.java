@@ -67,7 +67,8 @@ public class DocumentViewerPresenter extends BasePresenter {
     }
 
     public void openDocument(VkDocument document) {
-        currentDocument = document;
+        currentDocument = GetDocuments.getDocument(document);
+        document.copyFrom(currentDocument);
         isAlreadyOfflineInProgress = document.isOfflineInProgress();
 
         Timber.d("[open document] %s: request %s", currentDocument.title, currentDocument.getRequest());

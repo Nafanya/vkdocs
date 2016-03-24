@@ -62,6 +62,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        ((OnPageChanged)documentsPagerAdapter.getFragment(position)).onBecameInvisible();
         super.onBackPressed();
     }
 
@@ -101,6 +102,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             Timber.d("on page selected = " + position);
             setTitle(documentsPagerAdapter.getPageTitle(position));
+            DocumentViewerActivity.this.position = position;
         }
 
         @Override

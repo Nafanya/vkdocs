@@ -124,19 +124,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
     }
 
     protected void openDocument(VkDocument document) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
-        Timber.d("[openDocument] path = %s", document.getPath());
-        File fileDoc = new File(document.getPath());
-        newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
-        try {
-            startActivity(newIntent);
-        } catch (ActivityNotFoundException e) {
-            //TODO do something
-            //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
-        }
+
     }
 
     @Override
