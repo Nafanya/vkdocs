@@ -89,8 +89,8 @@ public class App extends Application {
         repository = new DocumentRepositoryImpl(databaseRepository, networkRepository);
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
-        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot());
+        offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus, getAppCacheRoot());
+        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot(), 100);
         startService(new Intent(this, AudioPlayerService.class));
 
         try {

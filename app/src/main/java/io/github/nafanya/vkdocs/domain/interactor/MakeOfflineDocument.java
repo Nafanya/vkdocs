@@ -12,17 +12,14 @@ import rx.Scheduler;
 
 public class MakeOfflineDocument extends UseCase<VkDocument> {
     private VkDocument document;
-    private String toPath;
     private OfflineManager offlineManager;
 
     public MakeOfflineDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
                                OfflineManager offlineManager,
-                               VkDocument document,
-                               String toPath) {
+                               VkDocument document) {
         super(observerScheduler, subscriberScheduler, eventBus, true);
         this.offlineManager = offlineManager;
         this.document = document;
-        this.toPath = toPath;
     }
 
     @Override
@@ -30,7 +27,7 @@ public class MakeOfflineDocument extends UseCase<VkDocument> {
         return Observable.create(subscriber -> {
             try {
                 eventBus.removeEvent(GetDocuments.class);
-                offlineManager.makeOffline(document, toPath, subscriber::onNext);
+                offlineManager.makeOffline(document, subscriber::onNext);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

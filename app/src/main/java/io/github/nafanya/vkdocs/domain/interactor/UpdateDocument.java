@@ -21,9 +21,9 @@ public class UpdateDocument extends UseCase<Void> {
 
     @Override
     public Observable<Void> buildUseCase() {
+        GetDocuments.update(document);
         return Observable.create(subscriber -> {
             try {
-                GetDocuments.update(document);
                 repository.update(document);
                 subscriber.onCompleted();
             } catch (Exception e) {

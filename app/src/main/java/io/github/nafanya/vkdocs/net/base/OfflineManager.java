@@ -6,5 +6,5 @@ public interface OfflineManager {
     interface OnPreparedCallback {
         void onPrepared(VkDocument document);
     }
-    void makeOffline(VkDocument document, String toPath, OnPreparedCallback onPreparedListener);
+    void makeOffline(VkDocument document, OnPreparedCallback onPreparedListener);
 }

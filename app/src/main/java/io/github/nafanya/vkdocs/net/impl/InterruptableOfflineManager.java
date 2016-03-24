@@ -2,6 +2,7 @@ package io.github.nafanya.vkdocs.net.impl;
 
 import android.support.annotation.NonNull;
 
+import java.io.File;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -19,16 +20,19 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
     private InterruptableDownloadManager downloadManager;
     private DocumentRepository repository;
     private EventBus eventBus;
+    private String OFFLINE_ROOT;
 
     public InterruptableOfflineManager(
             InternetService internetService,
             InterruptableDownloadManager downloadManager,
             DocumentRepository repository,
-            EventBus eventBus) {
+            EventBus eventBus,
+            File offlineRoot) {
         internetService.addListener(this);
         this.downloadManager = downloadManager;
         this.repository = repository;
         this.eventBus = eventBus;
+        this.OFFLINE_ROOT = offlineRoot.getAbsolutePath() + File.separator;
 
         List<DownloadRequest> reqs = downloadManager.getQueue();
         List<VkDocument> docs = repository.getMyDocuments();//TODO make async or faster
@@ -66,7 +70,8 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
     }
 
     @Override
-    public void makeOffline(VkDocument document, String toPath, OnPreparedCallback callback) {
+    public void makeOffline(VkDocument document, OnPreparedCallback callback) {
+        String toPath = OFFLINE_ROOT + document.title + "_" + document.getId();
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);

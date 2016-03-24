@@ -7,4 +7,5 @@ public interface CacheManager {
     DownloadManager getDownloadManager();
     void cache(VkDocument document);
     void cacheFromOffline(VkDocument document);
+    void clear();
 }

@@ -24,6 +24,7 @@ import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.domain.repository.UserRepository;
+import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
@@ -49,9 +50,6 @@ public class DocumentsPresenter extends BasePresenter {
         void onUserInfoLoaded(VKApiUser userInfo);
     }
 
-    private String OFFLINE_PATH;
-    private String CACHE_PATH;
-
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected Subscriber<VKApiUser> userSubscriber = Subscribers.empty();
@@ -64,6 +62,7 @@ public class DocumentsPresenter extends BasePresenter {
     protected UserRepository userRepository;
     protected OfflineManager offlineManager;
     protected DownloadManager systemDownloadManager;
+    protected CacheManager cacheManager;
 
     protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
     protected final Scheduler SUBSCRIBER = Schedulers.io();
@@ -72,7 +71,7 @@ public class DocumentsPresenter extends BasePresenter {
                               DocumentRepository repository,
                               InterruptableDownloadManager downloadManager,
                               OfflineManager offlineManager,
-                              File offlineRoot, File cacheRoot,
+                              CacheManager cacheManager,
                               DownloadManager systemDownloadManager,
                               UserRepository userRepository,
                               @NonNull Callback callback) {
@@ -82,10 +81,9 @@ public class DocumentsPresenter extends BasePresenter {
         this.eventBus = eventBus;
         this.repository = repository;
         this.userRepository = userRepository;
-        this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
-        this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
         this.systemDownloadManager = systemDownloadManager;
         this.offlineManager = offlineManager;
+        this.cacheManager = cacheManager;
     }
 
     public void setFilter(DocFilter filter) {
@@ -138,10 +136,9 @@ public class DocumentsPresenter extends BasePresenter {
                     SUBSCRIBER,
                     eventBus,
                     offlineManager,
-                    document,
-                    OFFLINE_PATH + document.title).execute(new OfflineSubscriber());
+                    document).execute(new OfflineSubscriber());
         else {
-            document.setOfflineType(VkDocument.OFFLINE);//TODO remove from cache manager
+            document.setOfflineType(VkDocument.OFFLINE);
             new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
             callback.onUpdatedDocument(document);
         }
@@ -150,8 +147,7 @@ public class DocumentsPresenter extends BasePresenter {
     public void undoMakeOffline(VkDocument document) {
         //TODO call cache manager
         if (document.isOffline()) {
-            document.setOfflineType(VkDocument.CACHE);
-            new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+            cacheManager.cacheFromOffline(document);
             callback.onUpdatedDocument(document);
         } else {
             new CancelDownloadingDocument(OBSERVER, SUBSCRIBER, eventBus, repository, downloadManager, document).execute();
