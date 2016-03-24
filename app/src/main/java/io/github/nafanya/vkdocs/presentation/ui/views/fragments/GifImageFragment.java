@@ -148,8 +148,10 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     @Override
     public void onBecameInvisible() {
-        if (presenter.isDownloading())
-            presenter.cancelDownloading();//fix it7
+        if (presenter.isDownloading()) {
+            presenter.cancelDownloading();
+            progressBar.setProgress(0);
+        }
     }
 
     @Override
