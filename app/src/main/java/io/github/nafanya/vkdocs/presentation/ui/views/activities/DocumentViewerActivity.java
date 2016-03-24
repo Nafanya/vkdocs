@@ -62,18 +62,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        Timber.d("fragments = " + fragments);
-        if (fragments != null)
-            for (Fragment f: fragments)
-                if (f.isVisible())
-                    Timber.d("visible = " + f);
-        Timber.d("ON RESUME ACTIVITY");//TODO check if fragment visible show
-    }
-
-    @Override
     public void onBackPressed() {
         makeNotCurrentFragment(position);
         super.onBackPressed();

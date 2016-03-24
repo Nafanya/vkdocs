@@ -325,7 +325,7 @@ public class DocumentsPresenter extends BasePresenter {
         @Override
         public void onNext(VkDocument document) {
             callback.onUpdatedDocument(document);
-            eventBus.removeEvent(document.getId());//holy shit7 remove MakeOffline with this hash
+            eventBus.removeEvent(MakeOfflineDocument.hashByDoc(document));//holy shit7 remove MakeOffline with this hash
         }
     }
 

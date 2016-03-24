@@ -26,7 +26,9 @@ public class NetworkDocuments extends UseCase<List<VkDocument>> {
         return Observable.create(subscriber -> {
             try {
                 repository.synchronize();
-                subscriber.onNext(repository.getMyDocuments());
+                List<VkDocument> docs = repository.getMyDocuments();
+                GetDocuments.synchronizeWithHashMap(docs);
+                subscriber.onNext(docs);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

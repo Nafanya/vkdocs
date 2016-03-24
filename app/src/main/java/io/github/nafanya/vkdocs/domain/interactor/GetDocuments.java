@@ -27,7 +27,7 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
         this.repository = repository;
     }
 
-    protected void synchronizeWithHashMap(List<VkDocument> docs) {
+    public static void synchronizeWithHashMap(List<VkDocument> docs) {
         synchronized (lock) {
             documents = new ConcurrentHashMap<>();
             for (VkDocument d : docs)

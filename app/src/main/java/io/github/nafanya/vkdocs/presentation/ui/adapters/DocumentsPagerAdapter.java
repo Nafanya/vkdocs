@@ -16,6 +16,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.ImageFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.VideoPlayerFragment;
 import timber.log.Timber;
 
@@ -53,7 +54,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         } else if (extType == VkDocument.ExtType.VIDEO) {
             ret = VideoPlayerFragment.newInstance(document, itFirst);
         } else if (extType == VkDocument.ExtType.IMAGE) {
-
+            ret = ImageFragment.newInstance(document, itFirst);
         } else if (extType == VkDocument.ExtType.GIF) {
             ret = GifImageFragment.newInstance(document, itFirst);
         } else {
@@ -88,6 +89,12 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
                 }
             }
         }
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container, position, object);
+        fragments[position] = null;
     }
 
     public Fragment getFragment(int position) {

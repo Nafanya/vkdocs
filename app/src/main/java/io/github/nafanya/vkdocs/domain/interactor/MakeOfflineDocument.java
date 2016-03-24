@@ -44,7 +44,8 @@ public class MakeOfflineDocument extends UseCase<VkDocument> {
     }
 
     private static int P = 1777713;
+    private static int MOD = 193843729;
     public static int hashByDoc(VkDocument document) {
-        return document.getId() * P + 4382321;
+        return (int)((document.getId() * 1L * P + 4382321) % MOD);
     }
 }
