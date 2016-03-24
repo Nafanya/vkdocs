@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.io.File;
 
@@ -59,7 +60,7 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
     ImageView imageView;
 
     @Bind(R.id.progressBar)
-    ProgressBar progressBar;
+    CircularProgressBar progressBar;
 
     public static GifImageFragment newInstance(VkDocument document, boolean isFirst) {
         GifImageFragment fragment = new GifImageFragment();

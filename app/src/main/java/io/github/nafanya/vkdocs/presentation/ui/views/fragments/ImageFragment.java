@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.io.File;
 
@@ -48,7 +48,7 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
     ImageView imageView;
 
     @Bind(R.id.progressBar)
-    ProgressBar progressBar;
+    CircularProgressBar progressBar;
 
     public static ImageFragment newInstance(VkDocument document, boolean isFirst) {
         ImageFragment fragment = new ImageFragment();

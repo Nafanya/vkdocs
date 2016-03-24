@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:layout_width="match_parent"
@@ -9,13 +11,16 @@
         android:scaleType="fitCenter"
         android:background="@color/md_black_1000"/>
 
-    <ProgressBar
+
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
         android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_width="@dimen/circular_progress_diameter"
+        android:layout_height="@dimen/circular_progress_diameter"
         android:max="100"
-        android:indeterminate="false"
-        android:layout_centerInParent="true" />
+        app:cpb_background_progressbar_color="@color/md_grey_600"
+        app:cpb_background_progressbar_width="@dimen/circular_progress_thickness"
+        app:cpb_progressbar_color="@color/md_grey_100"
+        app:cpb_progressbar_width="@dimen/circular_progress_thickness" />
 
 </RelativeLayout>

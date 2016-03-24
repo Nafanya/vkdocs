@@ -45,6 +45,10 @@
     <item name="bottom_dialog_header_height" type="dimen">@dimen/m_entry_height_two_line</item>
     <item name="bottom_dialog_item_height" type="dimen">@dimen/m_entry_height_one_line</item>
 
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="circular_progress_diameter">@dimen/m_grid_6x</dimen>
+    <dimen name="circular_progress_thickness">3dp</dimen>
 
     <!-- 8dp grid -->
     <dimen name="m_grid_1.25x">10dp</dimen>
@@ -73,6 +77,5 @@
     <dimen name="m_grid_7x">56dp</dimen>
     <dimen name="m_grid_8x">64dp</dimen>
     <dimen name="m_grid_9x">72dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="appbar_padding_top">8dp</dimen>
+
 </resources>

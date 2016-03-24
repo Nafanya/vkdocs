@@ -86,6 +86,8 @@ dependencies {
 
     compile 'com.commit451:PhotoView:1.2.5'
 
+    compile 'com.mikhaellopez:circularprogressbar:1.1.1'
+
     //compile project(':android-pdfview')
     //apt "com.googlecode.androidannotations:androidannotations:${AAVersion}"
     //compile "com.googlecode.androidannotations:androidannotations-api:${AAVersion}"
