@@ -4,11 +4,7 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -21,16 +17,13 @@ import java.io.File;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
-import io.github.nafanya.vkdocs.utils.FastBlur;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import io.github.nafanya.vkdocs.utils.Utils;
 import timber.log.Timber;
 
 /**
@@ -65,6 +58,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
     @Override
     protected void onStart() {
         super.onStart();
+        Timber.d("ON START PRESENTER ACTIVITY");
         presenter.onStart();
         presenter.getDocuments();
     }
@@ -147,7 +141,6 @@ public abstract class PresenterActivity extends BaseActivity implements Document
 
     @Override
     public void onUserInfoLoaded(VKApiUser userInfo) {
-        Timber.d("info thread = " + Thread.currentThread().getId());
         Timber.d("info " + userInfo.first_name + " " + userInfo.last_name + " image = " + userInfo.photo_100);
         String fullName;
         if (userInfo.first_name == null && userInfo.last_name == null)

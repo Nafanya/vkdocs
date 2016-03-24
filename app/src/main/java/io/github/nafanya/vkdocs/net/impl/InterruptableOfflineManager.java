@@ -56,7 +56,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
     }
 
     @Override
-    public void onEnableNetwork() {
+    public void onEnableNetwork() {//TODO fix it
         Timber.d("on enable network");
         List<DownloadRequest> reqs = downloadManager.getQueue();
         for (DownloadRequest request : reqs) {
@@ -64,7 +64,6 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
             downloadManager.retry(request);
         }
     }
-
 
     @Override
     public void makeOffline(VkDocument document, String toPath, OnPreparedCallback callback) {
@@ -76,9 +75,10 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         callback.onPrepared(document);
 
         request.addListener(new CompleteDownloadingListener(document, request));
+
         //database operation
         downloadManager.enqueue(request);
-        repository.update(document);
+        new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
     }
 
     private class CompleteDownloadingListener implements DownloadRequest.RequestListener {
@@ -100,8 +100,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         public void onComplete() {
             document.setPath(request.getDest());
             document.resetRequest();
-            Timber.d("doc = " + document);
-            new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
+            new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
             //request.removeListener(this);TODO fix it
         }
 

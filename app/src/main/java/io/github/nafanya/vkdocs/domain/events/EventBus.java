@@ -10,5 +10,5 @@ public interface EventBus {
 
     void removeEvent(Class<? extends UseCase<?>> clazz);
     boolean contains(Class<? extends UseCase<?>> clazz);
-    <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz);
+    <T extends UseCase<?>> T getEvent(Class<T> clazz);
 }

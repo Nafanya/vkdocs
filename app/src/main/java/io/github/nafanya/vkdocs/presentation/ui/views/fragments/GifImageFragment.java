@@ -19,15 +19,17 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/21/16.
  */
-public class GifImageFragment extends Fragment implements DocumentViewerPresenter.Callback {
+public class GifImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
     public static final String GIF_KEY = "gif_key";
 
     private VkDocument document;
@@ -40,10 +42,11 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
 
     private DocumentViewerPresenter presenter;
 
-    public static GifImageFragment newInstance(VkDocument document) {
+    public static GifImageFragment newInstance(VkDocument document, boolean isFirst) {
         GifImageFragment fragment = new GifImageFragment();
         Bundle args = new Bundle();
         args.putParcelable(GIF_KEY, document);
+        args.putBoolean(FIRST_KEY, isFirst);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,13 +63,13 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
         super.onCreate(savedInstanceState);
 
         document = getArguments().getParcelable(GIF_KEY);
+        //Timber.d("IS CACHED %s: %b", document.title, document.isCached());
 
         App app = (App)getActivity().getApplication();
         presenter = new DocumentViewerPresenter(
                 app.getEventBus(),
                 app.getRepository(),
-                app.getDownloadManager(),
-                app.getAppCacheRoot(), this);
+                app.getCacheManager(), this);
     }
 
     @Override
@@ -85,7 +88,6 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
     public void onStart() {
         super.onStart();
         presenter.onStart();
-        presenter.openDocument(document);
     }
 
     @Override
@@ -94,9 +96,18 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
         super.onStop();
     }
 
-/*    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onBecameVisible() {
+        Timber.d("on became visible");
+        document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
-    }*/
+    }
+
+    @Override
+    public void onBecameInvisible() {
+        if (presenter.isDownloading())
+            presenter.cancelDownloading();//fix it7
+    }
 
     private byte[] readFile(String file) throws IOException {
         return readFile(new File(file));
@@ -120,8 +131,13 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
     }
 
     @Override
-    public void onOpenDocument(VkDocument document) {
-        Timber.d("cache = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
+    public void onCompleteCaching(VkDocument document) {
+        //EBANOE GAVNO, GOSPODIIII
+        /*Bundle bundle = new Bundle();
+        bundle.putParcelable(GIF_KEY, document);
+        setArguments(bundle);*/
+
+        Timber.d("cached = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
         final byte[] gif;
         try {
             gif = readFile(document.getPath());
@@ -132,22 +148,12 @@ public class GifImageFragment extends Fragment implements DocumentViewerPresente
     }
 
     @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        document.getRequest().addListener(new DownloadRequest.RequestListener() {
-            @Override
-            public void onProgress(int percentage) {
-                Timber.d("PROGRESS = " + percentage);
-            }
+    public void onProgress(int progress) {
+        Timber.d("on progress caching %s = %d", document.title, progress);
+    }
 
-            @Override
-            public void onComplete() {
-                onOpenDocument(document);
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        });
+    @Override
+    public void onError(Exception e) {
+        //TODO write here
     }
 }

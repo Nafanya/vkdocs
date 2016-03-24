@@ -21,18 +21,7 @@ public class VkDocument extends VKApiDocument {
     public VkDocument() {}
 
     public VkDocument(VKApiDocument doc) {
-        id = doc.id;
-        owner_id = doc.owner_id;
-        title = doc.title;
-        size = doc.size;
-        ext = doc.ext;
-        url = doc.url;
-        date = doc.date;
-        extType = doc.extType;
-        photo_100 = doc.photo_100;
-        photo_130 = doc.photo_130;
-        photo = doc.photo;
-        access_key = doc.access_key;
+        copyFrom(doc);
     }
 
     public VkDocument(Parcel in) {
@@ -128,6 +117,28 @@ public class VkDocument extends VKApiDocument {
         ret.setOfflineType(offlineType);
         ret.setRequest(downloadRequest);
         return ret;
+    }
+
+    public void copyFrom(VKApiDocument doc) {
+        id = doc.id;
+        owner_id = doc.owner_id;
+        title = doc.title;
+        size = doc.size;
+        ext = doc.ext;
+        url = doc.url;
+        date = doc.date;
+        extType = doc.extType;
+        photo_100 = doc.photo_100;
+        photo_130 = doc.photo_130;
+        photo = doc.photo;
+        access_key = doc.access_key;
+    }
+
+    public void copyFrom(VkDocument doc) {
+        copyFrom((VKApiDocument)doc);
+        setPath(doc.path);
+        setOfflineType(doc.offlineType);
+        setRequest(doc.downloadRequest);
     }
 
     /*

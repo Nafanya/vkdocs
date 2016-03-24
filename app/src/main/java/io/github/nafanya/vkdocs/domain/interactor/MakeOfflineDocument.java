@@ -40,6 +40,11 @@ public class MakeOfflineDocument extends UseCase<VkDocument> {
 
     @Override
     public int hashCode() {
-        return document.getId();
+        return hashByDoc(document);
+    }
+
+    private static int P = 1777713;
+    public static int hashByDoc(VkDocument document) {
+        return document.getId() * P + 4382321;
     }
 }

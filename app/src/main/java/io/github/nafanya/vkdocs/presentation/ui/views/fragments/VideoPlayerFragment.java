@@ -17,7 +17,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import timber.log.Timber;
 
-public class VideoPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
+public class VideoPlayerFragment extends AbstractViewerFragment {
 
     public static String VIDEO_KEY = "video_key";
     public static String FIRST_KEY = "first_key";
@@ -79,25 +79,13 @@ public class VideoPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onResume() {
-        super.onResume();
         videoControl.setAnchorView(videoView);
-
-        Timber.d("resume " + this);
-        if (isThisFirstFragment) {
-            Timber.d("is this first fr");
-            isThisFirstFragment = false;
-            onBecameVisible();
-        }
+        super.onResume();
     }
 
     @Override
     public void onPause() {
         videoView.pause();
         super.onPause();
-    }
-
-    @Override
-    public void onSetFirst(boolean isFirst) {
-        isThisFirstFragment = isFirst;
     }
 }

@@ -28,9 +28,8 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
-public class AudioPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
+public class AudioPlayerFragment extends AbstractViewerFragment {
     public static String MUSIC_KEY = "music_key";
-    public static String FIRST_KEY = "first_key";
 
     @Bind(R.id.seek_bar)
     SeekBar seekBar;
@@ -146,12 +145,6 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         subscription.unsubscribe();
     }
 
-    @Override
-    public void onSetFirst(boolean isFirst) {
-        Timber.d("on set first!!");
-        isThisFirstFragment = isFirst;
-    }
-
     //TODO block seekbar until starting playing
     @Nullable
     @Override
@@ -206,15 +199,9 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Override
     public void onResume() {
-        Timber.d("on resume!!!");
-        super.onResume();
         if (subscription.isUnsubscribed() && isPlayerInitialized())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
-
-        if (isThisFirstFragment) {//it is hack!!!
-            isThisFirstFragment = false;
-            onBecameVisible();
-        }
+        super.onResume();//IMPORTANT, must call in end
     }
 
     @Override

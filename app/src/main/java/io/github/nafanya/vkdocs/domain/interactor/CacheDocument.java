@@ -1,71 +1,80 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
+import java.util.List;
+
+import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
+import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import rx.Observable;
 import rx.Scheduler;
 import timber.log.Timber;
 
 public class CacheDocument extends UseCase<VkDocument> {
     private VkDocument document;
-    private String toPath;
-    private DocumentRepository repository;
-    private DownloadManager downloadManager;
+    private CacheManager cacheManager;
+    private InterruptableDownloadManager downloadManager;
+    //private volatile boolean isAlreadyOfflineInProgress;
 
     public CacheDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
-                               VkDocument document,
-                               String toPath,
-                               DocumentRepository repository,
-                               DownloadManager downloadManager) {
+                         CacheManager cacheManager, VkDocument document) {
         super(observerScheduler, subscriberScheduler, eventBus, true);
         this.document = document;
-        this.toPath = toPath;
-        this.repository = repository;
-        this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
+        this.downloadManager = (InterruptableDownloadManager) cacheManager.getDownloadManager();
+    }
+
+    private DownloadRequest findDownloadRequest(VkDocument doc) {
+        DownloadRequest request = null;
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (DownloadRequest r : requests)
+            if (r.getDocId() == doc.getId()) {
+                request = r;
+                break;
+            }
+        return request;
     }
 
     @Override
     public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
-            try {
-                DownloadRequest request = new DownloadRequest(document.url, toPath);
-                request.setDocId(document.getId());
-                request.setTotalBytes(document.size);
-                request.addListener(new DownloadRequest.RequestListener() {
-                    @Override
-                    public void onProgress(int percentage) {
+            if (document.getRequest() == null)
+                document.setRequest(findDownloadRequest(document));
 
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Timber.d("ON COMPL CACHE");
-                        document.setPath(request.getDest());
-                        document.resetRequest();
-                        new UpdateDocument(subscriberScheduler, eventBus, repository, document).execute();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
-                downloadManager.enqueue(request);
-
-                document.setOfflineType(VkDocument.CACHE);
-                document.setRequest(request);
-                repository.update(document);
-                eventBus.removeEvent(GetDocuments.class);
-
+            if (document.isDownloaded()) {
                 subscriber.onNext(document);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
+            } else if (document.isDownloading()) {
+                //isAlreadyOfflineInProgress = document.isOfflineInProgress();
+                //TODO save this already caching of offline
+                if (document.getRequest().isActive())
+                    subscriber.onNext(document);
+                else {
+                    downloadManager.retry(document.getRequest());
+                    subscriber.onNext(document);
+                }
+            } else {
+                cacheManager.cache(document);
+                subscriber.onNext(document);
             }
+            subscriber.onCompleted();
         });
+    }
+
+    private static int P = 17239;
+    private static int MOD = 1_000_000_000 + 9;
+    public static int hashByDoc(VkDocument document) {
+        if (document == null)
+            return -1;
+        return (int)((1L * document.getId() * P + 19381292) % MOD);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashByDoc(document);
     }
 }

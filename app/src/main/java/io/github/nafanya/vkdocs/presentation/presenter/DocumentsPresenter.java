@@ -127,7 +127,7 @@ public class DocumentsPresenter extends BasePresenter {
 
     //TODO when caching is finished, remove GetDocuments from EventBus?
     public void openDocument(VkDocument document) {
-        Timber.d("[open document] %s: request %s", document.title, document.getRequest());
+        /*Timber.d("[open document] %s: request %s", document.title, document.getRequest());
         if (document.isOffline() || document.isCached())
             callback.onOpenDocument(document);
         else {
@@ -147,7 +147,7 @@ public class DocumentsPresenter extends BasePresenter {
                     callback.onAlreadyDownloading(document, true);
                 }
             }
-        }
+        }*/
     }
 
     public void getUserInfo() {
@@ -225,12 +225,11 @@ public class DocumentsPresenter extends BasePresenter {
 
     @Override
     public void onStart() {
-
-        Timber.d("on start get doc contains& " + eventBus.contains(GetDocuments.class));
+        /*Timber.d("on start get doc contains: " + eventBus.contains(GetDocuments.class));
         if (eventBus.contains(GetDocuments.class) && documentsSubscriber.isUnsubscribed()) {
             documentsSubscriber = new GetDocumentsSubscriber();
             eventBus.getEvent(GetDocuments.class).execute(documentsSubscriber);
-        }
+        }*/
 
         if (eventBus.contains(NetworkDocuments.class) && networkSubscriber.isUnsubscribed()) {
             networkSubscriber = new NetworkSubscriber();

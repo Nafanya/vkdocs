@@ -28,6 +28,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
         void onBecameInvisible();
         void onSetFirst(boolean isFirst);
     }
+
     private DocumentsPagerAdapter documentsPagerAdapter;
 
     @Bind(R.id.toolbar)

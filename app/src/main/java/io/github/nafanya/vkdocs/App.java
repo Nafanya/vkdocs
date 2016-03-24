@@ -24,7 +24,9 @@ import io.github.nafanya.vkdocs.data.net.NetworkRepository;
 import io.github.nafanya.vkdocs.data.net.NetworkRepositoryImpl;
 import io.github.nafanya.vkdocs.data.net.mapper.NetMapper;
 import io.github.nafanya.vkdocs.domain.repository.UserRepository;
+import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
+import io.github.nafanya.vkdocs.net.impl.CacheManagerImpl;
 import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -47,6 +49,7 @@ public class App extends Application {
     private InternetServiceImpl internetService;
     private OfflineManager offlineManager;
     private UserRepository userRepository;
+    private CacheManager cacheManager;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -87,6 +90,7 @@ public class App extends Application {
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus);
+        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot());
         startService(new Intent(this, AudioPlayerService.class));
 
         try {
@@ -141,5 +145,9 @@ public class App extends Application {
 
     public UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    public CacheManager getCacheManager() {
+        return cacheManager;
     }
 }

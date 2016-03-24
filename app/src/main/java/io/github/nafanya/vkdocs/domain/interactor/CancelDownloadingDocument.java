@@ -14,10 +14,8 @@ public class CancelDownloadingDocument extends UseCase<Void> {
     private DownloadManager downloadManager;
 
     public CancelDownloadingDocument(Scheduler observerScheduler, Scheduler subscriberScheduler,
-                                     EventBus eventBus,
-                                     DocumentRepository repository,
-                                     DownloadManager downloadManager,
-                                     VkDocument document) {
+                                     EventBus eventBus, DocumentRepository repository,
+                                     DownloadManager downloadManager, VkDocument document) {
         super(observerScheduler, subscriberScheduler, eventBus, false);
         this.downloadManager = downloadManager;
         this.document = document;
@@ -28,11 +26,10 @@ public class CancelDownloadingDocument extends UseCase<Void> {
     public Observable<Void> buildUseCase() {
         return Observable.create(subscriber -> {
             document.setOfflineType(VkDocument.NONE);
-            repository.update(document);
+            new UpdateDocument(observerScheduler, eventBus, repository, document).execute();
             downloadManager.cancelRequest(document.getRequest());
             document.setRequest(null);
             subscriber.onCompleted();
-            eventBus.removeEvent(GetDocuments.class);//TODO replace removes to update cache
         });
     }
 }

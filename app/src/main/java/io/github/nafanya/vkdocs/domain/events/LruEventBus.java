@@ -43,7 +43,7 @@ public class LruEventBus implements EventBus {
     }
 
     @Override
-    public synchronized <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz) {
-        return getEvent(clazz.hashCode());
+    public synchronized <T extends UseCase<?>> T getEvent(Class<T> clazz) {
+        return (T)getEvent(clazz.hashCode());
     }
 }

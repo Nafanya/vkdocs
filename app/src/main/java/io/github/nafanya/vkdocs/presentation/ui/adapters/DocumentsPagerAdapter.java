@@ -55,7 +55,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         } else if (extType == VkDocument.ExtType.IMAGE) {
 
         } else if (extType == VkDocument.ExtType.GIF) {
-            ret = GifImageFragment.newInstance(document);
+            ret = GifImageFragment.newInstance(document, itFirst);
         } else {
             ret = new Fragment();
         }
