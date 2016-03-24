@@ -119,15 +119,14 @@
                 android:layout_toLeftOf="@+id/switch1"
                 android:layout_toStartOf="@+id/switch1" />
 
-            <Switch
+            <android.support.v7.widget.SwitchCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/m_grid_1x"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:id="@+id/switch1"
-                style="@style/Base.Widget.AppCompat.CompoundButton.Switch"/>
+                android:id="@+id/switch1"/>
         </RelativeLayout>
 
     </LinearLayout>

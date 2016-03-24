@@ -3,11 +3,11 @@ package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -29,7 +29,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     RelativeLayout offlineLayout;
 
     @Bind(R.id.switch1)
-    Switch offlineSwitch;
+    SwitchCompat offlineSwitch;
 
     @Bind(R.id.bottom_download)
     RelativeLayout downloadButton;
