@@ -127,7 +127,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:id="@+id/switch1"
-                style="?switchStyle"/>
+                style="@style/Base.Widget.AppCompat.CompoundButton.Switch"/>
         </RelativeLayout>
 
     </LinearLayout>
