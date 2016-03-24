@@ -63,12 +63,11 @@ public class DeleteDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         //LayoutInflater inflater = getActivity().getLayoutInflater();
         //View rootView = inflater.inflate(R.layout.rename_dialog, null);
-        builder.setTitle("Delete").
-                setMessage("Are you really want delete " + doc.title + "?").
+        builder.setMessage("Delete " + doc.title + "?").
                 setNegativeButton("Cancel", (dialog, which) -> {
                     callback.onCancelDelete(doc);
                     dismiss();
-            }).setPositiveButton("OK", (dialog, which) -> {
+            }).setPositiveButton("Delete", (dialog, which) -> {
                 callback.onDelete(position, doc);
                 dismiss();
             });

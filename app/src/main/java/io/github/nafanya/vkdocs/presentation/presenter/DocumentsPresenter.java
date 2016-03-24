@@ -178,9 +178,15 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void undoMakeOffline(VkDocument document) {
         //TODO call cache manager
-        document.setOfflineType(VkDocument.CACHE);
-        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
-        callback.onUpdatedDocument(document);
+        if (document.isOffline()) {
+            document.setOfflineType(VkDocument.CACHE);
+            new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+            callback.onUpdatedDocument(document);
+        } else {
+            new CancelDownloadingDocument(OBSERVER, SUBSCRIBER, eventBus, repository, downloadManager, document).execute();
+            eventBus.removeEvent(MakeOfflineDocument.hashByDoc(document));
+            callback.onUpdatedDocument(document);
+        }
     }
 
     public void cancelDownloading(VkDocument document) {
