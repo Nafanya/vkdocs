@@ -82,9 +82,10 @@ public class DocumentViewerPresenter extends BasePresenter {
     }
 
     public void cancelDownloading() {
-        if (!isAlreadyOfflineInProgress)
+        if (!isAlreadyOfflineInProgress) {
             new CancelDownloadingDocument(OBSERVER, SUBSCRIBER, eventBus, repository, cacheManager.getDownloadManager(), currentDocument).execute();
-        //TODO replace to interactor CancelCaching, because CacheManager managed caching documents
+            eventBus.removeEvent(CacheDocument.hashByDoc(currentDocument));
+        }//TODO replace to interactor CancelCaching, because CacheManager managed caching documents
     }
 
     @Override

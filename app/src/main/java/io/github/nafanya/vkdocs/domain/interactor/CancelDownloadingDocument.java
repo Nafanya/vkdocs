@@ -26,9 +26,9 @@ public class CancelDownloadingDocument extends UseCase<Void> {
     public Observable<Void> buildUseCase() {
         return Observable.create(subscriber -> {
             document.setOfflineType(VkDocument.NONE);
-            new UpdateDocument(observerScheduler, eventBus, repository, document).execute();
             downloadManager.cancelRequest(document.getRequest());
             document.setRequest(null);
+            new UpdateDocument(observerScheduler, eventBus, repository, document).execute();
             subscriber.onCompleted();
         });
     }

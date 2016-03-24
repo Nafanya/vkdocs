@@ -43,21 +43,27 @@ public class CacheDocument extends UseCase<VkDocument> {
     @Override
     public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
+            Timber.d("IN CACHING");
             if (document.getRequest() == null)
                 document.setRequest(findDownloadRequest(document));
+            Timber.d("AFTER FOUND REQUEST");
 
             if (document.isDownloaded()) {
+                Timber.d("DOWNLOADED %s", document.title);
                 subscriber.onNext(document);
             } else if (document.isDownloading()) {
                 //isAlreadyOfflineInProgress = document.isOfflineInProgress();
                 //TODO save this already caching of offline
-                if (document.getRequest().isActive())
+                if (document.getRequest().isActive()) {
+                    Timber.d("DOWNLOADING IS ACTIVE %s", document.title);
                     subscriber.onNext(document);
-                else {
+                } else {
+                    Timber.d("DOWNLOADING RETRY %s", document.title);
                     downloadManager.retry(document.getRequest());
                     subscriber.onNext(document);
                 }
             } else {
+                Timber.d("CACHE %s", document.title);
                 cacheManager.cache(document);
                 subscriber.onNext(document);
             }
