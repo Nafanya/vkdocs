@@ -100,9 +100,8 @@ public class CustomMediaPlayer extends MediaPlayer implements
                 if (!invalidState) {
                     int diff = getCurrentPosition() - fuckingMediaPlayerPosition;
                     int perc = (int) (100 * ((realPosition + diff) * 1.0 / duration));
-                    if (prevPerc != perc) {
+                    if (prevPerc != perc)
                         subscriber.onNext(perc);
-                    }
                     prevPerc = perc;
                 }
                 try {

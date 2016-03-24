@@ -34,7 +34,8 @@ import timber.log.Timber;
 /**
  * Created by nafanya on 3/21/16.
  */
-public class GifImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
+public class GifImageFragment extends Fragment
+        implements DocumentViewerPresenter.Callback, DocumentViewerActivity.OnPageChanged {
     public static final String GIF_KEY = "gif_key";
 
     private VkDocument document;
@@ -62,11 +63,10 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
     @Bind(R.id.progressBar)
     CircularProgressBar progressBar;
 
-    public static GifImageFragment newInstance(VkDocument document, boolean isFirst) {
+    public static GifImageFragment newInstance(VkDocument document) {
         GifImageFragment fragment = new GifImageFragment();
         Bundle args = new Bundle();
         args.putParcelable(GIF_KEY, document);
-        args.putBoolean(FIRST_KEY, isFirst);
         fragment.setArguments(args);
         return fragment;
     }
@@ -105,18 +105,19 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     @Override
     public void onResume() {
-        if (gif != null) {
-            gif.start();
-        }
         super.onResume();
+        if (gif != null)
+            gif.start();
+        if (isBecameVisible)
+            onBecameVisible();
     }
+
 
     @Override
     public void onPause() {
         super.onPause();
-        if (gif != null) {
+        if (gif != null)
             gif.stop();
-        }
     }
 
     @Override
@@ -139,15 +140,34 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
         }
     }
 
+    private boolean isBecameVisible = false;
+    private boolean isAlreadyNotifiedAboutVisible = false;
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser != isBecameVisible) {
+            isBecameVisible = isVisibleToUser;
+            if (isBecameVisible) {
+                if (isResumed())
+                    onBecameVisible();
+            } else
+                onBecameInvisible();
+        }
+    }
+
     @Override
     public void onBecameVisible() {
-        Timber.d("on became visible");
+        if (isAlreadyNotifiedAboutVisible)
+            return;
+        isAlreadyNotifiedAboutVisible = true;
         document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
     }
 
     @Override
     public void onBecameInvisible() {
+        isAlreadyNotifiedAboutVisible = false;
         if (presenter.isDownloading()) {
             presenter.cancelDownloading();
             progressBar.setProgress(0);

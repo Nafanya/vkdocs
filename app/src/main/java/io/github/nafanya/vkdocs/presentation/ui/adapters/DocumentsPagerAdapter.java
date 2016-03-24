@@ -26,16 +26,10 @@ import timber.log.Timber;
  */
 public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
     private List<VkDocument> documents;
-    private Fragment[] fragments;
-    private int firstPosition;
-    private FragmentManager fm;
 
-    public DocumentsPagerAdapter(FragmentManager fm, List<VkDocument> docs, int firstPosition) {
+    public DocumentsPagerAdapter(FragmentManager fm, List<VkDocument> docs) {
         super(fm);
-        this.fm = fm;
         this.documents = docs;
-        this.firstPosition = firstPosition;
-        fragments = new Fragment[documents.size()];
     }
 
     @Override
@@ -47,60 +41,20 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         VkDocument document = documents.get(position);
         VkDocument.ExtType extType = documents.get(position).getExtType();
         Fragment ret = null;
-        boolean itFirst = firstPosition == position;
 
         if (extType == VkDocument.ExtType.AUDIO) {
-            ret = AudioPlayerFragment.newInstance(document, itFirst);
+            ret = AudioPlayerFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.VIDEO) {
-            ret = VideoPlayerFragment.newInstance(document, itFirst);
+            ret = VideoPlayerFragment.newInstance(document, false);
         } else if (extType == VkDocument.ExtType.IMAGE) {
-            ret = ImageFragment.newInstance(document, itFirst);
+            ret = ImageFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.GIF) {
-            ret = GifImageFragment.newInstance(document, itFirst);
+            ret = GifImageFragment.newInstance(document);
         } else {
             ret = new Fragment();
         }
-        fragments[position] = ret;
-        firstPosition = -1;
         return ret;
     }
-
-    @Override
-    public void restoreState(Parcelable state, ClassLoader loader) {//POSHLI NAHUY VSE DO ODNOY, I ADAPTER SVOI ZABERITE
-        super.restoreState(state, loader);
-
-        if (state != null) {
-            Bundle bundle = (Bundle)state;
-            bundle.setClassLoader(loader);
-
-            Iterable<String> keys = bundle.keySet();
-            for (String key: keys) {
-                if (key.startsWith("f")) {
-                    int index = Integer.parseInt(key.substring(1));
-                    Fragment f = fm.getFragment(bundle, key);
-                    if (f.getArguments() != null && firstPosition != index) {
-                        f.getArguments().remove(AudioPlayerFragment.FIRST_KEY);
-                        ((DocumentViewerActivity.OnPageChanged)f).onSetFirst(false);
-                    } else if (f.getArguments() != null && firstPosition == index) {
-                        f.getArguments().putBoolean(AudioPlayerFragment.FIRST_KEY, true);
-                        ((DocumentViewerActivity.OnPageChanged)f).onSetFirst(true);
-                    }
-                    fragments[index] = f;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        super.destroyItem(container, position, object);
-        fragments[position] = null;
-    }
-
-    public Fragment getFragment(int position) {
-        return fragments[position];
-    }
-
 
     @Override
     public int getCount() {

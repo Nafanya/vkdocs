@@ -28,7 +28,7 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
-public class AudioPlayerFragment extends AbstractViewerFragment {
+public class AudioPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
     public static String MUSIC_KEY = "music_key";
 
     @Bind(R.id.seek_bar)
@@ -65,7 +65,6 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
     }
 
     private VkDocument audioDocument;
-    private boolean isThisFirstFragment;
     private AudioPlayerService playerService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -82,11 +81,10 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
         }
     };
 
-    public static AudioPlayerFragment newInstance(VkDocument document, boolean isThisFirst) {
+    public static AudioPlayerFragment newInstance(VkDocument document) {
         AudioPlayerFragment fragment = new AudioPlayerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(MUSIC_KEY, document);
-        bundle.putBoolean(FIRST_KEY, isThisFirst);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -96,6 +94,7 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
     }
 
     private boolean isBecameVisible = false;
+    private boolean isAlreadyNotifiedAboutVisible = false;
 
     @Override
     public void onAttach(Context activity) {
@@ -109,7 +108,6 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         audioDocument = getArguments().getParcelable(MUSIC_KEY);
-        isThisFirstFragment = getArguments().getBoolean(FIRST_KEY);
     }
 
     private Subscription subscription = Subscriptions.empty();
@@ -127,22 +125,6 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
         }
 
         subscription = playerService.setPlayingListener(new SeekBarUpdater());
-    }
-
-    @Override
-    public void onBecameVisible() {
-        isBecameVisible = true;
-        if (isPlayerInitialized())
-            startPlaying();
-    }
-
-    @Override
-    public void onBecameInvisible() {
-        Timber.d("ON STOP AUDIO " + audioDocument.title);
-        isBecameVisible = false;
-        if (isPlayerInitialized())
-            playerService.stop();
-        subscription.unsubscribe();
     }
 
     //TODO block seekbar until starting playing
@@ -198,10 +180,42 @@ public class AudioPlayerFragment extends AbstractViewerFragment {
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser != isBecameVisible) {
+            isBecameVisible = isVisibleToUser;
+            if (isBecameVisible) {
+                if (isResumed())
+                    onBecameVisible();
+            } else
+                onBecameInvisible();
+        }
+    }
+
+    @Override
+    public void onBecameVisible() {
+        if (isAlreadyNotifiedAboutVisible)
+            return;
+        isAlreadyNotifiedAboutVisible = true;
+        if (isPlayerInitialized())
+            startPlaying();
+    }
+
+    @Override
+    public void onBecameInvisible() {
+        isAlreadyNotifiedAboutVisible = false;
+        if (isPlayerInitialized())
+            playerService.stop();
+        subscription.unsubscribe();
+    }
+
+    @Override
     public void onResume() {
+        super.onResume();
         if (subscription.isUnsubscribed() && isPlayerInitialized())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
-        super.onResume();//IMPORTANT, must call in end
+        if (isBecameVisible)
+            onBecameVisible();
     }
 
     @Override

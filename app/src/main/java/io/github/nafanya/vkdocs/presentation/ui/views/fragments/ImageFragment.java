@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,12 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
-public class ImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
+public class ImageFragment extends Fragment
+        implements DocumentViewerPresenter.Callback, DocumentViewerActivity.OnPageChanged{
     public static final String IMAGE_KEY = "image_key";
     private DocumentViewerPresenter presenter;
 
@@ -50,11 +53,10 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
     @Bind(R.id.progressBar)
     CircularProgressBar progressBar;
 
-    public static ImageFragment newInstance(VkDocument document, boolean isFirst) {
+    public static ImageFragment newInstance(VkDocument document) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
         args.putParcelable(IMAGE_KEY, document);
-        args.putBoolean(FIRST_KEY, isFirst);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,6 +96,8 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
     public void onResume() {
         super.onResume();
         attacher = new PhotoViewAttacher(imageView);
+        if (isBecameVisible)
+            onBecameVisible();
     }
 
     @Override
@@ -123,17 +127,37 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
         }
     }
 
+    private boolean isBecameVisible = false;
+    private boolean isAlreadyNotifiedAboutVisible = false;
+
     @Override
     public void onBecameVisible() {
+        if (isAlreadyNotifiedAboutVisible)
+            return;
+        isAlreadyNotifiedAboutVisible = true;
         document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
     }
 
     @Override
     public void onBecameInvisible() {
+        isAlreadyNotifiedAboutVisible = false;
         if (presenter.isDownloading()) {
             presenter.cancelDownloading();
             progressBar.setProgress(0);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser != isBecameVisible) {
+            isBecameVisible = isVisibleToUser;
+            if (isBecameVisible) {
+                if (isResumed())
+                    onBecameVisible();
+            } else
+                onBecameInvisible();
         }
     }
 

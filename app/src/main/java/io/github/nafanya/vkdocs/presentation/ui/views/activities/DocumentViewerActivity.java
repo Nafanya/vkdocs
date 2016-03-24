@@ -26,7 +26,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
     public interface OnPageChanged {
         void onBecameVisible();
         void onBecameInvisible();
-        void onSetFirst(boolean isFirst);
     }
 
     private DocumentsPagerAdapter documentsPagerAdapter;
@@ -53,7 +52,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
             state = getIntent().getExtras();
         position = state.getInt(POSITION_KEY);
         documents = state.getParcelableArrayList(DOCUMENTS_KEY);
-        documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents, position);
+        documentsPagerAdapter = new DocumentsPagerAdapter(getSupportFragmentManager(), documents);
 
         viewPager.addOnPageChangeListener(new OnPageChangeListener());
         viewPager.setAdapter(documentsPagerAdapter);
@@ -63,7 +62,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        makeNotCurrentFragment(position);
         super.onBackPressed();
     }
 
@@ -103,27 +101,10 @@ public class DocumentViewerActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             Timber.d("on page selected = " + position);
             setTitle(documentsPagerAdapter.getPageTitle(position));
-            int prevPosition = DocumentViewerActivity.this.position;
-            DocumentViewerActivity.this.position = position;
-            makeNotCurrentFragment(prevPosition);
-            makeCurrentFragment(position);
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
         }
-    }
-
-    private void makeCurrentFragment(int pos) {
-        Fragment fragment = documentsPagerAdapter.getFragment(pos);
-        if (fragment != null)
-            ((OnPageChanged)fragment).onBecameVisible();
-    }
-
-    private void makeNotCurrentFragment(int pos) {
-        Fragment fragment = documentsPagerAdapter.getFragment(pos);
-        Timber.d("make not current fragment = " + fragment);
-        if (fragment != null)
-            ((OnPageChanged)fragment).onBecameInvisible();
     }
 }

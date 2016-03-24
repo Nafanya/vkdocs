@@ -17,7 +17,7 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import timber.log.Timber;
 
-public class VideoPlayerFragment extends AbstractViewerFragment {
+public class VideoPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
 
     public static String VIDEO_KEY = "video_key";
     public static String FIRST_KEY = "first_key";
@@ -33,7 +33,6 @@ public class VideoPlayerFragment extends AbstractViewerFragment {
         VideoPlayerFragment fragment = new VideoPlayerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(VIDEO_KEY, document);
-        bundle.putBoolean(FIRST_KEY, isThisFirst);
         fragment.setArguments(bundle);
         return fragment;
     }
