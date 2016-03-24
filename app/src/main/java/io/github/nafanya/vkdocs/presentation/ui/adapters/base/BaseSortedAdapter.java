@@ -126,13 +126,9 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_offline_progress)
-        ImageView documentOfflineInProgressIcon;
 
         @Bind(R.id.ic_document_cached)
         ImageView documentCachedIcon;
-        @Bind(R.id.ic_document_cache_progress)
-        ImageView documentCacheInProgressIcon;
 
         @Bind(R.id.buttonContextMenu)
         ImageButton contextMenu;
@@ -161,18 +157,14 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             documentOfflineIcon.setVisibility(View.GONE);
-            documentOfflineInProgressIcon.setVisibility(View.GONE);
             documentCachedIcon.setVisibility(View.GONE);
-            documentCacheInProgressIcon.setVisibility(View.GONE);
 
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
             } else if (doc.isOfflineInProgress()) {
-                documentOfflineInProgressIcon.setVisibility(View.VISIBLE);
             } else if (doc.isCached()) {
                 documentCachedIcon.setVisibility(View.VISIBLE);
             } else if (doc.isCacheInProgress()) {
-                documentCacheInProgressIcon.setVisibility(View.VISIBLE);
             }
 
             final int sortLabelText;
