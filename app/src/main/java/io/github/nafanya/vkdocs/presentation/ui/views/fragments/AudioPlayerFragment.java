@@ -23,12 +23,13 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.media.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.media.CustomMediaPlayer;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
-public class AudioPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
+public class AudioPlayerFragment extends Fragment
+        implements OnPageChanged, AudioPlayerService.OnPrepared {
     public static String MUSIC_KEY = "music_key";
 
     @Bind(R.id.seek_bar)
@@ -45,6 +46,21 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
 
     @Bind(R.id.next_button)
     ImageView nextButton;
+
+    public interface AudioPlayerControl {
+        void nextAudio();
+        void prevAudio();
+    }
+
+    @OnClick(R.id.next_button)
+    void onClickNext(View v) {
+        callback.nextAudio();
+    }
+
+    @OnClick(R.id.prev_button)
+    void onClickPrev(View v) {
+        callback.prevAudio();
+    }
 
     @OnClick(R.id.play_button)
     void onClickPlay(View v) {
@@ -70,7 +86,6 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Timber.d("GOT = " + service);
             playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
             if (isBecameVisible)
                 startPlaying();
@@ -90,6 +105,8 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         return fragment;
     }
 
+    private AudioPlayerControl callback;
+
     public boolean isPlayerInitialized() {
         return playerService != null;
     }
@@ -100,6 +117,13 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
+        try {
+            callback = (AudioPlayerControl) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement AudioPlayerControl");
+        }
+
         Intent intent = new Intent(activity, AudioPlayerService.class);
         activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -112,14 +136,11 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     }
 
     private Subscription subscription = Subscriptions.empty();
-
     private void startPlaying() {
-        Timber.d("ON START AUDIO " + audioDocument.title + " playerService = " + playerService);
+        Timber.d("ON START AUDIO " + audioDocument.title);
         if (!playerService.isNowPlaying(audioDocument)) {
-            if (seekBar != null)
-                seekBar.setProgress(0);
             try {
-                playerService.play(audioDocument);
+                playerService.play(audioDocument, this);
             } catch (IOException ignore) {
                 //TODO wtf7
             }
@@ -161,6 +182,19 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         return rootView;
     }
 
+    private void enableControlButton(boolean enable) {
+        seekBar.setEnabled(enable);
+        if (!enable)
+            seekBar.setProgress(0);
+        playButton.setEnabled(enable);
+        pauseButton.setEnabled(enable);
+    }
+
+    @Override
+    public void onPlayerPrepared() {
+        enableControlButton(true);
+    }
+
     private class SeekBarUpdater extends CustomMediaPlayer.PlayingListener {
         /**Progress callback***/
         @Override
@@ -197,6 +231,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
     public void onBecameVisible() {
         if (isAlreadyNotifiedAboutVisible)
             return;
+        enableControlButton(false);
         isAlreadyNotifiedAboutVisible = true;
         if (isPlayerInitialized())
             startPlaying();
@@ -207,6 +242,7 @@ public class AudioPlayerFragment extends Fragment implements DocumentViewerActiv
         isAlreadyNotifiedAboutVisible = false;
         if (isPlayerInitialized())
             playerService.stop();
+        enableControlButton(false);
         subscription.unsubscribe();
     }
 

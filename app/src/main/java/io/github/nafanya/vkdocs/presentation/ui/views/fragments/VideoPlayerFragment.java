@@ -14,10 +14,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import timber.log.Timber;
 
-public class VideoPlayerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged {
+public class VideoPlayerFragment extends Fragment implements OnPageChanged {
 
     public static String VIDEO_KEY = "video_key";
     public static String FIRST_KEY = "first_key";

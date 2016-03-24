@@ -21,15 +21,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class ImageFragment extends Fragment
-        implements DocumentViewerPresenter.Callback, DocumentViewerActivity.OnPageChanged{
+        implements DocumentViewerPresenter.Callback, OnPageChanged {
     public static final String IMAGE_KEY = "image_key";
     private DocumentViewerPresenter presenter;
 

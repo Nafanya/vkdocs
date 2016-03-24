@@ -23,14 +23,14 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 
 public class UnknownTypeDocFragment extends AppCompatDialogFragment
         implements DocumentViewerPresenter.Callback,
-        DocumentViewerActivity.OnPageChanged {
+        OnPageChanged {
 
     private static String DOC_KEY = "doc_key";
 

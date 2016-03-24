@@ -1,7 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,24 +8,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import timber.log.Timber;
 
-public class DocumentViewerActivity extends AppCompatActivity {
+public class DocumentViewerActivity extends AppCompatActivity implements AudioPlayerFragment.AudioPlayerControl {
     public static String POSITION_KEY = "position_key";
     public static String DOCUMENTS_KEY = "documents_key";
     //public static String NOT_FIRST_KEY = "not_first_key";
-
-    public interface OnPageChanged {
-        void onBecameVisible();
-        void onBecameInvisible();
-    }
 
     private DocumentsPagerAdapter documentsPagerAdapter;
 
@@ -90,6 +85,26 @@ public class DocumentViewerActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void nextAudio() {
+        int i;
+        int size = documents.size();
+        for (i = (position + 1) % size;
+             documents.get(i).getExtType() != VkDocument.ExtType.AUDIO && i != position;
+             i = (i + 1) % size);
+        viewPager.setCurrentItem(i, false);
+    }
+
+    @Override
+    public void prevAudio() {
+        int i;
+        int size = documents.size();
+        for (i = (position + size - 1) % size;
+             documents.get(i).getExtType() != VkDocument.ExtType.AUDIO && i != position;
+             i = (i + size - 1) % size);
+        viewPager.setCurrentItem(i, false);
     }
 
 

@@ -39,6 +39,7 @@
 
             <ImageView
                 android:id="@+id/play_button"
+                android:enabled="false"
                 app:srcCompat="@drawable/play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

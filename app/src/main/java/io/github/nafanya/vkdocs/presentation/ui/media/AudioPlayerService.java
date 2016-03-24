@@ -19,7 +19,11 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private CustomMediaPlayer mediaPlayer;
     private Uri playingUri;
-    private MediaPlayer.OnPreparedListener listener;
+    private OnPrepared listener;
+
+    public interface OnPrepared {
+        void onPlayerPrepared();
+    }
 
     public class AudioPlayerBinder extends Binder {
         public AudioPlayerService service() {
@@ -44,8 +48,8 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         return playingUri != null && playingUri.equals(getUri(document));
     }
 
-    public void play(VkDocument document) throws IOException {
-        //this.listener = listener;
+    public void play(VkDocument document, OnPrepared listener) throws IOException {
+        this.listener = listener;
         playingUri = getUri(document);
         if (mediaPlayer == null) {
             mediaPlayer = new CustomMediaPlayer();
@@ -74,9 +78,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public boolean isPrepared() {
-        if (mediaPlayer == null)
-            return false;
-        return mediaPlayer.isPrepared();
+        return mediaPlayer != null && mediaPlayer.isPrepared();
     }
 
     public int getDuration() {
@@ -86,19 +88,18 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public void stop() {
-        Timber.d("stooop = " + playingUri);
+        Timber.d("STOP = " + playingUri);
         onDestroy();//release media playerService
     }
 
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Timber.d("ON PREPARED!!");
         if (mediaPlayer != null)
             mediaPlayer.start();
 
         if (listener != null)
-            listener.onPrepared(mp);
+            listener.onPlayerPrepared();
     }
 
     @Nullable

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
@@ -21,21 +20,18 @@ import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/21/16.
  */
 public class GifImageFragment extends Fragment
-        implements DocumentViewerPresenter.Callback, DocumentViewerActivity.OnPageChanged {
+        implements DocumentViewerPresenter.Callback, OnPageChanged {
     public static final String GIF_KEY = "gif_key";
 
     private VkDocument document;
