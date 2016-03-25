@@ -47,14 +47,14 @@
     <color name="m_icon_video">@color/m_section_video</color>
     <color name="m_icon_other">@color/m_section_other</color>
 
-    <color name="m_selected_text_all">@color/m_section_all</color>
-    <color name="m_selected_text_text">@color/m_section_text</color>
-    <color name="m_selected_text_archive">@color/m_section_archive</color>
-    <color name="m_selected_text_gif">@color/m_section_gif</color>
-    <color name="m_selected_text_image">@color/m_section_image</color>
-    <color name="m_selected_text_music">@color/m_section_music</color>
-    <color name="m_selected_text_video">@color/m_section_video</color>
-    <color name="m_selected_text_other">@color/m_section_other</color>
+    <color name="m_selected_text_all">@color/m_app_primary_text</color>
+    <color name="m_selected_text_text">@color/m_app_primary_text</color>
+    <color name="m_selected_text_archive">@color/m_app_primary_text</color>
+    <color name="m_selected_text_gif">@color/m_app_primary_text</color>
+    <color name="m_selected_text_image">@color/m_app_primary_text</color>
+    <color name="m_selected_text_music">@color/m_app_primary_text</color>
+    <color name="m_selected_text_video">@color/m_app_primary_text</color>
+    <color name="m_selected_text_other">@color/m_app_primary_text</color>
 
     <!-- google's material design colours from
 http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->
