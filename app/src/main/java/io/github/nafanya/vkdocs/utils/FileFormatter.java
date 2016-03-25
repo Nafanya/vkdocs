@@ -2,6 +2,7 @@ package io.github.nafanya.vkdocs.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 
 import java.text.DateFormat;
@@ -21,6 +22,10 @@ public class FileFormatter {
     private Drawable image;
     private Drawable file;
     private Drawable archive;
+
+    private Drawable pdfUnknownType;
+    private Drawable zipUnknownType;
+    private Drawable fileUnknownType;
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
@@ -90,5 +95,21 @@ public class FileFormatter {
     private DateFormat df = new SimpleDateFormat();
     public String formatDate(Date date) {
         return df.format(date);
+    }
+
+    public Drawable getPlaceholder(VkDocument doc, Context context) {
+        if (fileUnknownType == null) {
+            fileUnknownType = ContextCompat.getDrawable(context, R.drawable.file_unknown_type);
+            zipUnknownType = ContextCompat.getDrawable(context, R.drawable.zip_unknown_type);
+            pdfUnknownType = ContextCompat.getDrawable(context, R.drawable.pdf_unknown_type);
+        }
+
+        if (doc.getExt().equals("pdf"))
+            return pdfUnknownType;
+
+        if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
+            return zipUnknownType;
+
+        return fileUnknownType;
     }
 }

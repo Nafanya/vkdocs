@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -192,7 +193,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     drawer.closeDrawer();
                     if (navDrawerPos != position) {
                         navDrawerPos = position;
-                        onSectionChanged(navDrawerPos);
+                        if (navDrawerPos == 4) {
+                            Intent intent = new Intent(this, SettingsActivity.class);
+                            startActivity(intent);
+                        }
+                        else
+                            onSectionChanged(navDrawerPos);
                     }
                     return true;
                 }).build();

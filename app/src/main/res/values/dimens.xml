@@ -1,9 +1,12 @@
 <resources>
 
     <!---override material draw item size, poh na guidelines-->
-
     <dimen name="material_drawer_item_primary_text">16sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <dimen name="settings_primary_label">18sp</dimen>
+    <dimen name="settings_secondary_label">16sp</dimen>
+
 
     <dimen name="unknown_file">200dp</dimen>
 

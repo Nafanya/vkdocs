@@ -2,15 +2,18 @@ package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
@@ -26,7 +29,6 @@ import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class UnknownTypeDocFragment extends Fragment
@@ -36,6 +38,9 @@ public class UnknownTypeDocFragment extends Fragment
 
     private VkDocument document;
     private FileFormatter fileFormatter;
+
+    @Bind(R.id.unknown_type_layout)
+    RelativeLayout relativeLayout;
 
     @Bind(R.id.file_type_icon)
     ImageView typeIcon;
@@ -79,11 +84,84 @@ public class UnknownTypeDocFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_unknown_type_document, container, false);
 
         ButterKnife.bind(this, rootView);
+        typeIcon.setImageDrawable(fileFormatter.getPlaceholder(document, getActivity()));
         fileName.setText(document.title);
+        typeIcon.setOnClickListener(v -> {
+            if (document.isDownloaded())
+                throwIntentToOpen();
+
+        });
 
         if (!document.isDownloaded())
             downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
+        else
+            whenDownloaded();
         return rootView;
+    }
+
+    protected void whenDownloaded() {
+        downloadedSize.setText(fileFormatter.formatSize(document.size));
+        downloadProgress.setVisibility(View.GONE);
+
+        /*Timber.d("rel layout = " + relativeLayout);
+        Snackbar snackbar = Snackbar
+                .make(relativeLayout, "Open in other app", Snackbar.LENGTH_INDEFINITE)
+                .setAction("OPEN", view -> {
+                    Timber.d("on click open");
+                });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();*/
+    }
+
+    protected void throwIntentToOpen() {
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
+        Timber.d("[openDocument] path = %s", document.getPath());
+        File fileDoc = new File(document.getPath());
+        newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
+        try {
+            startActivity(newIntent);
+        } catch (ActivityNotFoundException e) {
+            //TODO do something
+            //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /***Presenter callbacks**/
+    @Override
+    public void onProgress(int percentage) {
+        long downSize = document.size * percentage / 100;
+        downloadedSize.setText(fileFormatter.formatFrom(downSize, document.size));
+        downloadProgress.setProgress(percentage);
+    }
+
+    @Override
+    public void onCompleteCaching(VkDocument document) {
+        whenDownloaded();
+    }
+
+    @Override
+    public void onError(Exception e) {
+
+    }
+    /***End callbacks***/
+
+    private boolean isBecameVisible = false;
+    private boolean isAlreadyNotifiedAboutVisible = false;
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser != isBecameVisible) {
+            isBecameVisible = isVisibleToUser;
+            if (isBecameVisible) {
+                if (isResumed())
+                    onBecameVisible();
+            } else
+                onBecameInvisible();
+        }
     }
 
     @Override
@@ -105,58 +183,8 @@ public class UnknownTypeDocFragment extends Fragment
         super.onStop();
     }
 
-    /***Presenter callbacks**/
-    @Override
-    public void onProgress(int percentage) {
-        long downSize = document.size * percentage / 100;
-        downloadedSize.setText(fileFormatter.formatFrom(downSize, document.size));
-        downloadProgress.setProgress(percentage);
-    }
-
-    @Override
-    public void onCompleteCaching(VkDocument document) {
-        downloadedSize.setText(fileFormatter.formatSize(document.size));
-        downloadProgress.setVisibility(View.GONE);
-
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
-        Timber.d("[openDocument] path = %s", document.getPath());
-        File fileDoc = new File(document.getPath());
-        newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
-        try {
-            startActivity(newIntent);
-        } catch (ActivityNotFoundException e) {
-            //TODO do something
-            //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-
-    }
-
-    private boolean isBecameVisible = false;
-    private boolean isAlreadyNotifiedAboutVisible = false;
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser != isBecameVisible) {
-            isBecameVisible = isVisibleToUser;
-            if (isBecameVisible) {
-                if (isResumed())
-                    onBecameVisible();
-            } else
-                onBecameInvisible();
-        }
-    }
-
     @Override
     public void onBecameVisible() {
-        Timber.d("on became vis");
         if (isAlreadyNotifiedAboutVisible)
             return;
         isAlreadyNotifiedAboutVisible = true;
@@ -170,6 +198,5 @@ public class UnknownTypeDocFragment extends Fragment
             presenter.cancelDownloading();
             downloadProgress.setProgress(0);
         }
-        //dismiss();
     }
 }

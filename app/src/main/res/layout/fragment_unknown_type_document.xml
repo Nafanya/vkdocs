@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/unknown_type_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,7 +17,7 @@
         <ImageView
             android:id="@+id/file_type_icon"
             android:layout_centerInParent="true"
-            app:srcCompat="@drawable/zip_box_unknown_type"
+            android:src="@drawable/zip_unknown_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -30,6 +31,16 @@
             app:cpb_background_progressbar_width="@dimen/circular_progress_thickness"
             app:cpb_progressbar_color="@color/md_grey_100"
             app:cpb_progressbar_width="@dimen/circular_progress_thickness" />
+
+        <ImageView
+            android:id="@+id/notify_open"
+            android:layout_alignBottom="@id/file_type_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:src="@drawable/cursor_pointer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <TextView
