@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -47,11 +46,13 @@ import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
 
-public class DocumentsBaseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SortByDialog.Callback {
+public class DocumentsBaseActivity extends AppCompatActivity implements
+        SearchView.OnQueryTextListener,
+        SortByDialog.Callback,
+        DocumentsListFragment.Callbacks {
 
     @Bind(R.id.coordinator_layout) CoordinatorLayout cooridnatorLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.empty_view) RelativeLayout emptyView;
     @Bind(R.id.viewpager) ViewPager viewPager;
     @Bind(R.id.tab_layout) TabLayout tabLayout;
 
@@ -207,11 +208,11 @@ public class DocumentsBaseActivity extends AppCompatActivity implements SearchVi
         }
         adapter.notifySectionChanged(type);
     }
+
     private void notifySearchQueryChanged(String text) {
         Timber.d("[fragment] search query changed to %s", text);
         adapter.notifySearchQueryChanged(text);
     }
-
 
     private void notifySortModeChanged(SortMode sortMode) {
         Timber.d("[fragment] sort mode changed to %s", sortMode);

@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,11 +22,10 @@ import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDeco
  * Created by nafanya on 3/25/16.
  */
 public abstract class DocumentsListBaseFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener,
-        AdapterView.OnItemSelectedListener {
+        SwipeRefreshLayout.OnRefreshListener {
 
     public static final String OFFLNE_KEY = "offlne_key";
-    public static final String DOC_TYPE_KEY = "doc_type_key";
+//    public static final String DOC_TYPE_KEY = "doc_type_key";
     public static final String SORT_MODE_KEY = "sort_mode_key";
     public static final String SEARCH_QUERY_KEY = "search_query_key";
 

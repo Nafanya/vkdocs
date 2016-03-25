@@ -8,10 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.webkit.MimeTypeMap;
-
-import com.vk.sdk.api.model.VKApiUser;
 
 import java.io.File;
 import java.util.List;
@@ -92,7 +89,6 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
         if (recyclerView.getAdapter() != adapter) {
             recyclerView.setAdapter(adapter);
         }
-        emptyView.setVisibility(View.GONE);
     }
 
     @Override
@@ -135,28 +131,4 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
         }
     }
 
-    @Override
-    public void onDatabaseError(Exception ex) {
-
-    }
-
-    @Override
-    public void onOpenDocument(VkDocument document) {
-
-    }
-
-    @Override
-    public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-
-    }
-
-    @Override
-    public void onUpdatedDocument(VkDocument document) {
-
-    }
-
-    @Override
-    public void onUserInfoLoaded(VKApiUser userInfo) {
-
-    }
 }

@@ -1,5 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -7,8 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
-import android.view.View;
-import android.widget.AdapterView;
+
+import com.vk.sdk.api.model.VKApiUser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +40,11 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         OfflineAdapter.ItemEventListener,
         RenameDialog.Callback,
         DeleteDialog.Callback {
+
+    public interface Callbacks {
+        boolean isStoragePermissionGranted();
+    }
+    private Callbacks activity;
 
     public static final String CONTEXT_DOC_KEY = "context_doc_key";
     public static final String CONTEXT_POS_KEY = "context_pos_key";
@@ -72,6 +78,20 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         }
         if (restoreContextMenuDoc != null) {
             onClickContextMenu(restoreDocPosition, restoreContextMenuDoc);
+        }
+    }
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            this.activity = (Callbacks) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
         }
     }
 
@@ -162,12 +182,14 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 
     @Override
     public void onCloseContextMenu() {
-
+        dismissContextMenu();
     }
 
     @Override
     public void onClickDownload(int position, VkDocument document) {
-
+        if (activity.isStoragePermissionGranted()) {
+            presenter.downloadDocumentToDownloads(document);
+        }
     }
 
     // TODO: [fragment] fix share
@@ -205,6 +227,11 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         restoreDocPosition = -1;
     }
 
+    @Override
+    public void onDatabaseError(Exception ex) {
+
+    }
+
     /***Presenter callback for open document***/
     @Override
     public void onOpenDocument(VkDocument document) {
@@ -228,11 +255,17 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
     }
 
+    @Override
+    public void onUserInfoLoaded(VKApiUser userInfo) {
+
+    }
+
     /***OpenProgressDialog callbacks***/
     @Override
     public void onCancelCaching(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading)
+        if (!isAlreadyDownloading) {
             presenter.cancelDownloading(document);
+        }
     }
 
     @Override
@@ -254,8 +287,9 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 
     @Override
     public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading)
+        if (!isAlreadyDownloading) {
             presenter.cancelDownloading(document);
+        }
     }
 
     /***Rename dialog callbacks***/
@@ -274,7 +308,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     /***Delete dialog callbacks***/
     @Override
     public void onCancelDelete(VkDocument document) {
-
     }
 
     @Override
@@ -284,45 +317,19 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         adapter.removeIndex(position);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    public void onTypeFilterChanged(VkDocument.ExtType documentType) {
-        this.documentType = documentType;
+    public void changeDocumentType(VkDocument.ExtType type) {
+        documentType = type;
         presenter.setFilter(getFilter());
         presenter.getDocuments();
     }
 
-    public void onSortModeChanged(SortMode sortMode) {
-        adapter.setSortMode(sortMode);
-    }
-
-//    public void onSectionChanged(int newSection) {
-//        presenter.setFilter(getFilter(newSection, documentType));
-//        if (adapter != null)
-//            adapter.removeData();
-//        adapter = null;
-//        if (recyclerView != null)
-//            recyclerView.scrollToPosition(0);
-//        presenter.getDocuments();
-//    }
-
-    public void changeDocumentType(VkDocument.ExtType type) {
-        //TODO: fragment
-    }
-
-    public void changeSearchQuery(String text) {
-        //TODO: fragment
+    public void changeSearchQuery(String query) {
+        searchQuery = query;
+        adapter.setSearchFilter(query);
     }
 
     public void changeSortMode(SortMode sortMode) {
-        // TODO: fragment
+        this.sortMode = sortMode;
+        adapter.setSortMode(sortMode);
     }
 }

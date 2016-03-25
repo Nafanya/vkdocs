@@ -1,7 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,15 +17,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
 public class OfflineAdapter extends BaseSortedAdapter {
@@ -162,6 +159,9 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onComplete() {
+                if (listener == null) {
+                    return;
+                }
                 Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
                 doc.setPath(doc.getRequest().getDest());
                 doc.resetRequest();
