@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
+package io.github.nafanya.vkdocs.presentation.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;

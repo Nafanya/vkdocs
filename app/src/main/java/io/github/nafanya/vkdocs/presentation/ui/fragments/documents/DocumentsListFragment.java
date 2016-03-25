@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.documents;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,15 +18,15 @@ import java.util.List;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.activities.DocumentViewerActivity;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.DeleteDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.OpenProgressDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.RenameDialog;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.BottomMenu;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.DeleteDialog;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.ErrorOpenDialog;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.OpenProgressDialog;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.RenameDialog;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -43,6 +43,8 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 
     public interface Callbacks {
         boolean isStoragePermissionGranted();
+        void notifyOther();
+        void notifyOtherItem(VkDocument document);
     }
     private Callbacks activity;
 
@@ -58,8 +60,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         DocumentsListFragment fragment = new DocumentsListFragment();
         Bundle args = new Bundle();
         args.putBoolean(OFFLNE_KEY, isOffline);
-        //TODO: parcelable/serializable
-//        args.putParcelable(DOC_TYPE_KEY, type);
+        args.putSerializable(DOC_TYPE_KEY, type);
         args.putSerializable(SORT_MODE_KEY, sortMode);
         args.putString(SEARCH_QUERY_KEY, searchQuery);
         fragment.setArguments(args);
@@ -127,7 +128,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     @Override
     public void onCompleteDownloading(int position, VkDocument document) {
         presenter.updateDocument(document);
-        adapter.notifyItemChanged(position);
+//        adapter.notifyItemChanged(position);
     }
 
     @Override
@@ -170,6 +171,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     public void onClickRename(int position, VkDocument document) {
         dismissContextMenu();
         DialogFragment fragment = RenameDialog.newInstance(position, document);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getActivity().getSupportFragmentManager(), "rename");
     }
 
@@ -253,6 +255,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     @Override
     public void onUpdatedDocument(VkDocument document) {
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
+        activity.notifyOther();
     }
 
     @Override
@@ -303,6 +306,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         Timber.d("[On rename] %s newName %s", document.title, newName);
         presenter.rename(document, newName);
         adapter.notifyItemChanged(position);
+        activity.notifyOtherItem(document);
     }
 
     /***Delete dialog callbacks***/
@@ -331,5 +335,14 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     public void changeSortMode(SortMode sortMode) {
         this.sortMode = sortMode;
         adapter.setSortMode(sortMode);
+    }
+
+    public void updateDocumentList() {
+        presenter.getDocuments();
+        Timber.d("[fragment] calling getDocuments for %s", isOffline);
+    }
+
+    public void updateDocumentListItem(VkDocument document) {
+        adapter.notifyItemChanged(adapter.getData().indexOf(document));
     }
 }

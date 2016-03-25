@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.AudioPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.GifImageFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.ImageFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.VideoPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.activities.DocumentViewerActivity;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.AudioPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.ImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.VideoPlayerFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

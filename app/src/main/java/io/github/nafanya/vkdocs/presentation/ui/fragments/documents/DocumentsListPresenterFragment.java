@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.documents;
 
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;

@@ -99,7 +99,10 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         @Override
         public void onComplete() {
             document.setPath(request.getDest());
+            document.getRequest().resetError();
+            document.getRequest().resetComplete();
             document.resetRequest();
+            Timber.d("[offlinemanager] onComplete");
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
             //request.removeListener(this);TODO fix it
         }

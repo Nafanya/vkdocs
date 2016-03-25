@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities.documents;
+package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -42,8 +42,8 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents.DocumentsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
 
 public class DocumentsBaseActivity extends AppCompatActivity implements
@@ -59,6 +59,8 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
     private Drawer drawer;
     protected AccountHeader accountHeader;
 
+    private static final String CONTEXT_DOC_KEY = "context_doc_key";
+    private static final String CONTEXT_POS_KEY = "context_pos_key";
     private static final String SORT_MODE_KEY = "sort_mode_arg";
     private static final String EXT_TYPE_KEY = "ext_type_key";
     private static final String NAV_DRAW_POS = "nav_drawer_pos_key";
@@ -70,6 +72,8 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
     protected VkDocument.ExtType documentType;
     protected String searchQuery = "";
     protected int navDrawerPos = 1;//TODO make enum Section
+    private VkDocument restoreContextMenuDoc;
+    private int restoreDocPosition;
 
     private boolean storagePermissionGranted = Build.VERSION.SDK_INT < 23;
 
@@ -82,6 +86,8 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
             navDrawerPos = state.getInt(NAV_DRAW_POS);
 //            isRefreshing = state.getBoolean(IS_REFRESHING_KEY);
             searchQuery = state.getString(SEARCH_FILTER_KEY);
+            restoreContextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
+            restoreDocPosition = state.getInt(CONTEXT_POS_KEY);
         }
 
         setContentView(R.layout.activity_documents);
@@ -101,6 +107,10 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
         state.putInt(NAV_DRAW_POS, navDrawerPos);
 //        state.putBoolean(IS_REFRESHING_KEY, isRefreshing);
         state.putString(SEARCH_FILTER_KEY, searchQuery);
+
+        state.putParcelable(CONTEXT_DOC_KEY, restoreContextMenuDoc);
+        state.putInt(CONTEXT_POS_KEY, restoreDocPosition);
+        Timber.d("[Activity] saved state: %s", state);
         super.onSaveInstanceState(state);
     }
 
@@ -197,13 +207,13 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
 
         final VkDocument.ExtType type;
         switch (position) {
-            case 1: type = VkDocument.ExtType.TEXT; break;
-            case 2: type = VkDocument.ExtType.ARCHIVE; break;
-            case 3: type = VkDocument.ExtType.IMAGE; break;
-            case 4: type = VkDocument.ExtType.GIF; break;
-            case 5: type = VkDocument.ExtType.AUDIO; break;
-            case 6: type = VkDocument.ExtType.VIDEO; break;
-            case 7: type = VkDocument.ExtType.UNKNOWN; break;
+            case 2: type = VkDocument.ExtType.TEXT; break;
+            case 3: type = VkDocument.ExtType.ARCHIVE; break;
+            case 4: type = VkDocument.ExtType.IMAGE; break;
+            case 5: type = VkDocument.ExtType.GIF; break;
+            case 6: type = VkDocument.ExtType.AUDIO; break;
+            case 7: type = VkDocument.ExtType.VIDEO; break;
+            case 8: type = VkDocument.ExtType.UNKNOWN; break;
             default: type = null;
         }
         adapter.notifySectionChanged(type);
@@ -289,6 +299,23 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void notifyOther() {
+        adapter.notifyOther(getNotificationTarget());
+    }
+
+    @Override
+    public void notifyOtherItem(VkDocument document) {
+        adapter.notifyOtherItem(getNotificationTarget(), document);
+    }
+
+    private int getNotificationTarget() {
+        if (viewPager.getCurrentItem() == 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0]== PackageManager.PERMISSION_GRANTED){
@@ -298,15 +325,18 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
 
     static class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
         private final List<DocumentsListFragment> fragments = new ArrayList<>();
+        private FragmentManager manager;
 
         public DocumentListFragmentPagerAdapter(FragmentManager manager, VkDocument.ExtType documentType, SortMode sortMode, String searchQuery) {
             super(manager);
+            this.manager = manager;
             fragments.add(DocumentsListFragment.newInstance(false, documentType, sortMode, searchQuery));
             fragments.add(DocumentsListFragment.newInstance(true, documentType, sortMode, searchQuery));
         }
 
         @Override
         public Fragment getItem(int position) {
+            Timber.d("[ViewPager] ADAPTER GET ITEM %d", position);
             return fragments.get(position);
         }
 
@@ -325,23 +355,34 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
                     return "OFFLINE";
             }
         }
+        private DocumentsListFragment getFragment(int pos) {
+            return (DocumentsListFragment) manager.findFragmentByTag("android:switcher:" + R.id.viewpager + ":" + pos);
+        }
 
         public void notifySectionChanged(VkDocument.ExtType type) {
-            for (DocumentsListFragment fragment : fragments) {
-                fragment.changeDocumentType(type);
+            for (int i = 0; i < 2; i++) {
+                getFragment(i).changeDocumentType(type);
             }
         }
 
         public void notifySearchQueryChanged(String text) {
-            for (DocumentsListFragment fragment : fragments) {
-                fragment.changeSearchQuery(text);
+            for (int i = 0; i < 2; i++) {
+                getFragment(i).changeSearchQuery(text);
             }
         }
 
         public void notifySortModeChanged(SortMode sortMode) {
-            for (DocumentsListFragment fragment : fragments) {
-                fragment.changeSortMode(sortMode);
+            for (int i = 0; i < 2; i++) {
+                getFragment(i).changeSortMode(sortMode);
             }
+        }
+
+        public void notifyOtherItem(int target, VkDocument document) {
+            getFragment(target).updateDocumentListItem(document);
+        }
+
+        public void notifyOther(int target) {
+            getFragment(target).updateDocumentList();
         }
     }
 }

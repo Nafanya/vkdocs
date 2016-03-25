@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities.documents;
+package io.github.nafanya.vkdocs.presentation.ui.activities.documents;
 
 import android.support.v7.app.AppCompatActivity;
 

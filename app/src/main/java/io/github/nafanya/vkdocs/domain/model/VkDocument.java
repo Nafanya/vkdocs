@@ -141,6 +141,21 @@ public class VkDocument extends VKApiDocument {
         setRequest(doc.downloadRequest);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VkDocument that = (VkDocument) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     /*
 1 - текстовые документы
 2 - архивы

@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.documents;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,9 +14,11 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
+import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/25/16.
@@ -25,9 +27,11 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         SwipeRefreshLayout.OnRefreshListener {
 
     public static final String OFFLNE_KEY = "offlne_key";
-//    public static final String DOC_TYPE_KEY = "doc_type_key";
+    public static final String DOC_TYPE_KEY = "doc_type_key";
     public static final String SORT_MODE_KEY = "sort_mode_key";
     public static final String SEARCH_QUERY_KEY = "search_query_key";
+
+    protected BaseSortedAdapter adapter;
 
     protected boolean isOffline;
     protected VkDocument.ExtType documentType;
@@ -45,10 +49,19 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         super.onCreate(savedInstanceState);
 
         isOffline = getArguments().getBoolean(OFFLNE_KEY);
-        //TODO: parcelable/serializable
-//        documentType = getArguments().getParcelable(DOC_TYPE_KEY);
+        documentType = (VkDocument.ExtType) getArguments().getSerializable(DOC_TYPE_KEY);
         sortMode = (SortMode) getArguments().getSerializable(SORT_MODE_KEY);
         searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
+        Timber.d("[Fragment] restored doctype: %s", documentType);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putBoolean(OFFLNE_KEY, isOffline);
+        state.putSerializable(DOC_TYPE_KEY, documentType);
+        state.putSerializable(SORT_MODE_KEY, sortMode);
+        state.putString(SEARCH_QUERY_KEY, searchQuery);
+        super.onSaveInstanceState(state);
     }
 
     @Override

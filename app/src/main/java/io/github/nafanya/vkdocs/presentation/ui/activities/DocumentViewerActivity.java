@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
