@@ -48,6 +48,13 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getArguments() != null) {
+            isOffline = getArguments().getBoolean(OFFLNE_KEY);
+            documentType = (VkDocument.ExtType) getArguments().getSerializable(EXT_TYPE_KEY);
+            sortMode = (SortMode) getArguments().getSerializable(SORT_MODE_KEY);
+            searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
+        }
+
         if (savedInstanceState != null) {
             isOffline = savedInstanceState.getBoolean(OFFLNE_KEY);
             documentType = (VkDocument.ExtType) savedInstanceState.getSerializable(EXT_TYPE_KEY);

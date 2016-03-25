@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.base.download.RequestStorage;
 import rx.Observable;
 import rx.Scheduler;
@@ -59,7 +58,7 @@ public class InterruptableDownloadManager implements DownloadManager {
 
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
-            Timber.d("download task " + request.getUrl() + " " + request.getDocId() + " " + request.getDest());
+            Timber.d("download_grey task " + request.getUrl() + " " + request.getDocId() + " " + request.getDest());
             if (request.getTotalBytes() > 0)
                 fileLength = request.getTotalBytes();
 
@@ -104,14 +103,14 @@ public class InterruptableDownloadManager implements DownloadManager {
                     return;
                 }
 
-                // this will be useful to display download percentage
+                // this will be useful to display download_grey percentage
                 // might be -1: server did not report the length
                 if (fileLength == 0) {
                     fileLength = connection.getContentLength();
                     request.setTotalBytes(fileLength);
                 }
 
-                // download the file
+                // download_grey the file
                 InputStream input = connection.getInputStream();
                 try {
                     File destFile = new File(request.getDest());

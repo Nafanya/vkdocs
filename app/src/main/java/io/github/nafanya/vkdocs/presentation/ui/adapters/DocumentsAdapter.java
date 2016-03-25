@@ -31,7 +31,7 @@ public class DocumentsAdapter extends BaseSortedAdapter {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document, parent, false);
+        View view = inflater.inflate(R.layout.item_document2, parent, false);
         return new DocumentViewHolder(view, listener);
     }
 

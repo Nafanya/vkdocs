@@ -101,26 +101,26 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void downloadDocumentToDownloads(VkDocument document) {
         Uri uri = null;
-        Timber.d("[download document] %s", document);
-        Timber.d("[download document] ic_cached_green(%s), offline(%s)", document.isCached(), document.isOffline());
+        Timber.d("[download_grey document] %s", document);
+        Timber.d("[download_grey document] ic_cached_green(%s), offline(%s)", document.isCached(), document.isOffline());
         try {
             if (document.isCached() || document.isOffline()) {
-                Timber.d("[download document] already downloaded as local file");
+                Timber.d("[download_grey document] already downloaded as local file");
                 uri = Uri.parse(document.getPath());
             } else {
-                Timber.d("[download document] not downloaded");
+                Timber.d("[download_grey document] not downloaded");
                 uri = Uri.parse(document.url);
             }
         } catch (NullPointerException ignored) {
             return;
             // TODO: tell about invalid Uri back to UI
         }
-        Timber.d("[download document] download Uri: %s", uri);
+        Timber.d("[download_grey document] download_grey Uri: %s", uri);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(document.title);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, document.title);
         request.setVisibleInDownloadsUi(true);
-        Timber.d("[download document] enqueue request: %s", request);
+        Timber.d("[download_grey document] enqueue request: %s", request);
         systemDownloadManager.enqueue(request);
     }
 

@@ -33,7 +33,6 @@ public class OfflineAdapter extends BaseSortedAdapter {
     public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
         super(context, fileFormatter, sortMode);
         this.listener = listener;
-
     }
 
     public void setData(List<VkDocument> documents) {
@@ -66,7 +65,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document, parent, false);
+        View view = inflater.inflate(R.layout.item_document2, parent, false);
         if (viewType == DOCUMENT_STATE_NORMAL) {
             return new DocumentViewHolder(view, listener);
         } else {
@@ -96,13 +95,10 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_offline_progress)
-        ImageView documentOfflineInProgressIcon;
-
+        @Bind(R.id.ic_document_cache_offline_progress)
+        ImageView documentCacheOfflineInProgressIcon;
         @Bind(R.id.ic_document_cached)
         ImageView documentCachedIcon;
-        @Bind(R.id.ic_document_cache_progress)
-        ImageView documentCacheInProgressIcon;
 
         @Bind(R.id.text_document_title)
         TextView title;
@@ -131,9 +127,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
             ButterKnife.bind(this, view);
 
             documentOfflineIcon.setVisibility(View.GONE);
-            documentOfflineInProgressIcon.setVisibility(View.GONE);
+            documentCacheOfflineInProgressIcon.setVisibility(View.GONE);
             documentCachedIcon.setVisibility(View.GONE);
-            documentCacheInProgressIcon.setVisibility(View.GONE);
 
             downloadProgress.setVisibility(View.VISIBLE);
             sortLabel.setVisibility(View.GONE);

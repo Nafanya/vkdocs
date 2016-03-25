@@ -341,6 +341,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     }
 
     public void updateDocumentList() {
+        presenter.setFilter(getFilter());
         presenter.getDocuments();
         Timber.d("[fragment] calling getDocuments for %s", isOffline);
     }
