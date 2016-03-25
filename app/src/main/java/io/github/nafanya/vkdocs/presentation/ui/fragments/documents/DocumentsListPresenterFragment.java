@@ -86,6 +86,7 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
         }
         adapter.setData(documents);
         adapter.setSearchFilter(searchQuery);
+        adapter.setSortMode(sortMode);
         if (recyclerView.getAdapter() != adapter) {
             recyclerView.setAdapter(adapter);
         }

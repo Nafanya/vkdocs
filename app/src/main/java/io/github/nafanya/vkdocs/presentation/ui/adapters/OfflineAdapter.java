@@ -24,7 +24,6 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import timber.log.Timber;
 
 public class OfflineAdapter extends BaseSortedAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
@@ -55,7 +54,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        Timber.d("[offlineadapter] pos: %d, title: %s", position, documents.get(position).title);
+//        Timber.d("[offlineadapter] pos: %d, title: %s", position, documents.get(position).title);
         if (documents.get(position).isOfflineInProgress())
             return DOCUMENT_STATE_DOWNLOADING;
         return DOCUMENT_STATE_NORMAL;
@@ -63,7 +62,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Timber.d("[offlineadapter] viewtype: %d", viewType);
+//        Timber.d("[offlineadapter] viewtype: %d", viewType);
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -161,7 +160,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onComplete() {
-                Timber.d("[adapter] onComplete");
+//                Timber.d("[adapter] onComplete");
 //                Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
                 doc.setPath(doc.getRequest().getDest());
                 doc.resetRequest();

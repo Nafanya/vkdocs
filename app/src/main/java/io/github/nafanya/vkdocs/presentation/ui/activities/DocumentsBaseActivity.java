@@ -88,6 +88,7 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
             searchQuery = state.getString(SEARCH_FILTER_KEY);
             restoreContextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
             restoreDocPosition = state.getInt(CONTEXT_POS_KEY);
+            Timber.d("[STATE] Activity restored state doctype: %s", documentType);
         }
 
         setContentView(R.layout.activity_documents);
@@ -110,7 +111,7 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
 
         state.putParcelable(CONTEXT_DOC_KEY, restoreContextMenuDoc);
         state.putInt(CONTEXT_POS_KEY, restoreDocPosition);
-        Timber.d("[Activity] saved state: %s", state);
+        Timber.d("[STATE] Activity saved state doctype: %s %s", documentType, state.getSerializable(EXT_TYPE_KEY));
         super.onSaveInstanceState(state);
     }
 
@@ -205,18 +206,17 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
     private void notifySectionChanged(int position) {
         Timber.d("[fragment] navdrawer section changed to %d", position);
 
-        final VkDocument.ExtType type;
         switch (position) {
-            case 2: type = VkDocument.ExtType.TEXT; break;
-            case 3: type = VkDocument.ExtType.ARCHIVE; break;
-            case 4: type = VkDocument.ExtType.IMAGE; break;
-            case 5: type = VkDocument.ExtType.GIF; break;
-            case 6: type = VkDocument.ExtType.AUDIO; break;
-            case 7: type = VkDocument.ExtType.VIDEO; break;
-            case 8: type = VkDocument.ExtType.UNKNOWN; break;
-            default: type = null;
+            case 2: documentType = VkDocument.ExtType.TEXT; break;
+            case 3: documentType = VkDocument.ExtType.ARCHIVE; break;
+            case 4: documentType = VkDocument.ExtType.IMAGE; break;
+            case 5: documentType = VkDocument.ExtType.GIF; break;
+            case 6: documentType = VkDocument.ExtType.AUDIO; break;
+            case 7: documentType = VkDocument.ExtType.VIDEO; break;
+            case 8: documentType = VkDocument.ExtType.UNKNOWN; break;
+            default: documentType = null;
         }
-        adapter.notifySectionChanged(type);
+        adapter.notifySectionChanged(documentType);
     }
 
     private void notifySearchQueryChanged(String text) {

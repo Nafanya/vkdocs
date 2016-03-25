@@ -27,7 +27,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         SwipeRefreshLayout.OnRefreshListener {
 
     public static final String OFFLNE_KEY = "offlne_key";
-    public static final String DOC_TYPE_KEY = "doc_type_key";
+    public static final String EXT_TYPE_KEY = "ext_type_key";
     public static final String SORT_MODE_KEY = "sort_mode_key";
     public static final String SEARCH_QUERY_KEY = "search_query_key";
 
@@ -48,19 +48,22 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        isOffline = getArguments().getBoolean(OFFLNE_KEY);
-        documentType = (VkDocument.ExtType) getArguments().getSerializable(DOC_TYPE_KEY);
-        sortMode = (SortMode) getArguments().getSerializable(SORT_MODE_KEY);
-        searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
-        Timber.d("[Fragment] restored doctype: %s", documentType);
+        if (savedInstanceState != null) {
+            isOffline = savedInstanceState.getBoolean(OFFLNE_KEY);
+            documentType = (VkDocument.ExtType) savedInstanceState.getSerializable(EXT_TYPE_KEY);
+            sortMode = (SortMode) savedInstanceState.getSerializable(SORT_MODE_KEY);
+            searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY);
+            Timber.d("[STATE] Fragment restored doctype: %s", documentType);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
         state.putBoolean(OFFLNE_KEY, isOffline);
-        state.putSerializable(DOC_TYPE_KEY, documentType);
+        state.putSerializable(EXT_TYPE_KEY, documentType);
         state.putSerializable(SORT_MODE_KEY, sortMode);
         state.putString(SEARCH_QUERY_KEY, searchQuery);
+        Timber.d("[STATE] Fragment saved doctype: %s, %s", documentType, state.getSerializable(EXT_TYPE_KEY));
         super.onSaveInstanceState(state);
     }
 

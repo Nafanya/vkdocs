@@ -60,7 +60,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         DocumentsListFragment fragment = new DocumentsListFragment();
         Bundle args = new Bundle();
         args.putBoolean(OFFLNE_KEY, isOffline);
-        args.putSerializable(DOC_TYPE_KEY, type);
+        args.putSerializable(EXT_TYPE_KEY, type);
         args.putSerializable(SORT_MODE_KEY, sortMode);
         args.putString(SEARCH_QUERY_KEY, searchQuery);
         fragment.setArguments(args);
@@ -322,17 +322,20 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     }
 
     public void changeDocumentType(VkDocument.ExtType type) {
+        Timber.d("[fragment] Setting new document type: %s", type);
         documentType = type;
         presenter.setFilter(getFilter());
         presenter.getDocuments();
     }
 
     public void changeSearchQuery(String query) {
+        Timber.d("[fragment] Setting new search query: %s", query);
         searchQuery = query;
         adapter.setSearchFilter(query);
     }
 
     public void changeSortMode(SortMode sortMode) {
+        Timber.d("[fragment] Setting new sort mode: %s", sortMode);
         this.sortMode = sortMode;
         adapter.setSortMode(sortMode);
     }
