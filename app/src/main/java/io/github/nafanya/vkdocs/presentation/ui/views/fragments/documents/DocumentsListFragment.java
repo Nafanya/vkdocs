@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
+import android.view.View;
+import android.widget.AdapterView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
@@ -45,17 +48,22 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     private int restoreDocPosition;
     private FileFormatter fileFormatter;
 
-    public static DocumentsListBaseFragment newInstance(boolean isOffline) {
-        DocumentsListBaseFragment fragment = new DocumentsListFragment();
+    public static DocumentsListFragment newInstance(boolean isOffline, VkDocument.ExtType type, SortMode sortMode, String searchQuery) {
+        DocumentsListFragment fragment = new DocumentsListFragment();
         Bundle args = new Bundle();
         args.putBoolean(OFFLNE_KEY, isOffline);
-//        arDOC_TYPE_KEY
+        //TODO: parcelable/serializable
+//        args.putParcelable(DOC_TYPE_KEY, type);
+        args.putSerializable(SORT_MODE_KEY, sortMode);
+        args.putString(SEARCH_QUERY_KEY, searchQuery);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         App app = (App)getActivity().getApplication();
         fileFormatter = app.getFileFormatter();
         if (savedInstanceState != null) {
@@ -150,6 +158,16 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         dismissContextMenu();
         DialogFragment fragment = DeleteDialog.newInstance(position, document);
         fragment.show(getActivity().getSupportFragmentManager(), "delete");
+    }
+
+    @Override
+    public void onCloseContextMenu() {
+
+    }
+
+    @Override
+    public void onClickDownload(int position, VkDocument document) {
+
     }
 
     // TODO: [fragment] fix share
@@ -264,5 +282,47 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         Timber.d("[On delete] %s", document.title);
         presenter.delete(document);
         adapter.removeIndex(position);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    public void onTypeFilterChanged(VkDocument.ExtType documentType) {
+        this.documentType = documentType;
+        presenter.setFilter(getFilter());
+        presenter.getDocuments();
+    }
+
+    public void onSortModeChanged(SortMode sortMode) {
+        adapter.setSortMode(sortMode);
+    }
+
+//    public void onSectionChanged(int newSection) {
+//        presenter.setFilter(getFilter(newSection, documentType));
+//        if (adapter != null)
+//            adapter.removeData();
+//        adapter = null;
+//        if (recyclerView != null)
+//            recyclerView.scrollToPosition(0);
+//        presenter.getDocuments();
+//    }
+
+    public void changeDocumentType(VkDocument.ExtType type) {
+        //TODO: fragment
+    }
+
+    public void changeSearchQuery(String text) {
+        //TODO: fragment
+    }
+
+    public void changeSortMode(SortMode sortMode) {
+        // TODO: fragment
     }
 }

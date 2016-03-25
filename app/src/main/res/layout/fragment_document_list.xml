@@ -12,4 +12,6 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"/>
 
+    <include layout="@layout/view_empty_stub" />
+
 </android.support.v4.widget.SwipeRefreshLayout>

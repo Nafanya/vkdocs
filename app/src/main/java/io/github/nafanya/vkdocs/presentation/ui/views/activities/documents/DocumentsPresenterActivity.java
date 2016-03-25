@@ -1,37 +1,16 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.activities.documents;
 
-import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.webkit.MimeTypeMap;
+import android.support.v7.app.AppCompatActivity;
 
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.vk.sdk.api.model.VKApiUser;
-
-import java.io.File;
-import java.util.List;
-
-import io.github.nafanya.vkdocs.App;
-import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentsPresenter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
-import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
-import io.github.nafanya.vkdocs.utils.FileFormatter;
-import timber.log.Timber;
 
 /**
  * Created by pva701 on 15.03.16.
  */
-public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity implements DocumentsPresenter.Callback {
-
+public abstract class DocumentsPresenterActivity extends AppCompatActivity implements DocumentsPresenter.Callback {
+/*
     protected DocumentsPresenter presenter;
-    protected BaseSortedAdapter adapter;
+//    protected BaseSortedAdapter adapter;
     protected FileFormatter fileFormatter;
 
     @Override
@@ -41,7 +20,7 @@ public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity i
         fileFormatter = app.getFileFormatter();
 
         presenter = new DocumentsPresenter(
-                getFilter(navDrawerPos, extType),
+                getFilter(navDrawerPos, documentType),
                 app.getEventBus(),
                 app.getRepository(),
                 app.getDownloadManager(),
@@ -68,27 +47,21 @@ public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity i
         super.onStop();
     }
 
-    protected DocFilter getFilter(int section, VkDocument.ExtType extType) {
+    protected DocFilter getFilter(int section, VkDocument.ExtType documentType) {
         if (section == 1) {
-            if (extType == null)
+            if (documentType == null)
                 return ExtDocFilter.ALL;
-            return new ExtDocFilter(extType);
+            return new ExtDocFilter(documentType);
         } else {
-            if (extType == null)
+            if (documentType == null)
                 return OfflineDocFilter.ALL;
-            return new OfflineDocFilter(extType);
+            return new OfflineDocFilter(documentType);
         }
     }
 
     protected abstract BaseSortedAdapter newAdapter();
 
     private void updateData(List<VkDocument> documents) {
-        if (adapter == null)
-            adapter = newAdapter();
-        adapter.setData(documents);
-        adapter.setSearchFilter(searchFilter);
-        if (recyclerView.getAdapter() != adapter)
-            recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -100,13 +73,11 @@ public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity i
     @Override
     public void onNetworkDocuments(List<VkDocument> documents) {
         Timber.d("ON NETWORK DOCUMENTS");
-        setRefresh(false);
         updateData(documents);
     }
 
     @Override
     public void onNetworkError(Exception ex) {
-        setRefresh(false);
         Snackbar snackbar = Snackbar
                 .make(cooridnatorLayout, "No internet connection", Snackbar.LENGTH_LONG)
                 .setAction("RETRY", view -> {
@@ -175,6 +146,6 @@ public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity i
             public void onNext(Bitmap av) {
                 Timber.d("on next");
             }
-        });*/
-    }
+        });
+    }*/
 }

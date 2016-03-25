@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -15,16 +16,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
@@ -49,9 +47,9 @@ import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
 
-public abstract class DocumentsBaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
+public class DocumentsBaseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SortByDialog.Callback {
 
-    @Bind(R.id.coordinator_layout) LinearLayout cooridnatorLayout;
+    @Bind(R.id.coordinator_layout) CoordinatorLayout cooridnatorLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.empty_view) RelativeLayout emptyView;
     @Bind(R.id.viewpager) ViewPager viewPager;
@@ -63,15 +61,14 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
     private static final String SORT_MODE_KEY = "sort_mode_arg";
     private static final String EXT_TYPE_KEY = "ext_type_key";
     private static final String NAV_DRAW_POS = "nav_drawer_pos_key";
-    private static final String REFRESH_KEY = "refreshing_key";
     private static final String SEARCH_FILTER_KEY = "search_filter_key";
 
-    protected SortMode sortMode = SortMode.DATE;
-    protected VkDocument.ExtType extType;
-    protected String searchFilter = "";
-    protected int navDrawerPos = 1;//TODO make enum Section
+    private DocumentListFragmentPagerAdapter adapter;
 
-    private boolean isRefreshing;
+    protected SortMode sortMode = SortMode.DATE;
+    protected VkDocument.ExtType documentType;
+    protected String searchQuery = "";
+    protected int navDrawerPos = 1;//TODO make enum Section
 
     private boolean storagePermissionGranted = Build.VERSION.SDK_INT < 23;
 
@@ -80,10 +77,10 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
         super.onCreate(state);
         if (state != null) {
             sortMode = (SortMode)state.getSerializable(SORT_MODE_KEY);
-            extType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
+            documentType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
             navDrawerPos = state.getInt(NAV_DRAW_POS);
-            isRefreshing = state.getBoolean(REFRESH_KEY);
-            searchFilter = state.getString(SEARCH_FILTER_KEY);
+//            isRefreshing = state.getBoolean(IS_REFRESHING_KEY);
+            searchQuery = state.getString(SEARCH_FILTER_KEY);
         }
 
         setContentView(R.layout.activity_documents);
@@ -99,10 +96,10 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
     @Override
     public void onSaveInstanceState(Bundle state) {
         state.putSerializable(SORT_MODE_KEY, sortMode);
-        state.putSerializable(EXT_TYPE_KEY, extType);
+        state.putSerializable(EXT_TYPE_KEY, documentType);
         state.putInt(NAV_DRAW_POS, navDrawerPos);
-        state.putBoolean(REFRESH_KEY, isRefreshing);
-        state.putString(SEARCH_FILTER_KEY, searchFilter);
+//        state.putBoolean(IS_REFRESHING_KEY, isRefreshing);
+        state.putString(SEARCH_FILTER_KEY, searchQuery);
         super.onSaveInstanceState(state);
     }
 
@@ -179,7 +176,7 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
                     drawer.closeDrawer();
                     if (navDrawerPos != position) {
                         navDrawerPos = position;
-                        onSectionChanged(navDrawerPos);
+                        notifySectionChanged(navDrawerPos);
                     }
                     return true;
                 }).build();
@@ -188,14 +185,40 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
     }
 
     private void initViewPager() {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.accent_material_light)), "CAT");
-        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.ripple_material_light)), "DOG");
-        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.button_material_dark)), "MOUSE");
+        adapter = new DocumentListFragmentPagerAdapter(
+                getSupportFragmentManager(), documentType, sortMode, searchQuery);
         viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
-    /***Menu callbacks***/
+    private void notifySectionChanged(int position) {
+        Timber.d("[fragment] navdrawer section changed to %d", position);
+
+        final VkDocument.ExtType type;
+        switch (position) {
+            case 1: type = VkDocument.ExtType.TEXT; break;
+            case 2: type = VkDocument.ExtType.ARCHIVE; break;
+            case 3: type = VkDocument.ExtType.IMAGE; break;
+            case 4: type = VkDocument.ExtType.GIF; break;
+            case 5: type = VkDocument.ExtType.AUDIO; break;
+            case 6: type = VkDocument.ExtType.VIDEO; break;
+            case 7: type = VkDocument.ExtType.UNKNOWN; break;
+            default: type = null;
+        }
+        adapter.notifySectionChanged(type);
+    }
+    private void notifySearchQueryChanged(String text) {
+        Timber.d("[fragment] search query changed to %s", text);
+        adapter.notifySearchQueryChanged(text);
+    }
+
+
+    private void notifySortModeChanged(SortMode sortMode) {
+        Timber.d("[fragment] sort mode changed to %s", sortMode);
+        adapter.notifySortModeChanged(sortMode);
+    }
+
+    // Menu callbacks
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,28 +250,27 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
         dialog.show(getSupportFragmentManager(), "sortmode");
     }
 
-    /*** Sort dialog callbacks***/
-    @Override
-    public void onSortModeChanged(SortMode newSortMode) {
-        sortMode = newSortMode;
-    }
-
-    public abstract void onTypeFilterChanged(VkDocument.ExtType newExtType);
-    public abstract void onSectionChanged(int newPos);
-
-    /*** SerachView callbacks ***/
+    // SerachView callbacks
     @Override
     public boolean onQueryTextSubmit(String query) {
         return true;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
-        searchFilter = newText;
+    public boolean onQueryTextChange(String text) {
+        searchQuery = text;
+        notifySearchQueryChanged(text);
         return true;
     }
 
-    /*** Permissions check ***/
+    // SortByDialog callback
+    @Override
+    public void onSortModeChanged(SortMode sortMode) {
+        this.sortMode = sortMode;
+        notifySortModeChanged(sortMode);
+    }
+
+    // Permissions check
     public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -273,35 +295,52 @@ public abstract class DocumentsBaseActivity extends AppCompatActivity implements
         }
     }
 
-    static class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+    static class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
+        private final List<DocumentsListFragment> fragments = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        public DocumentListFragmentPagerAdapter(FragmentManager manager, VkDocument.ExtType documentType, SortMode sortMode, String searchQuery) {
             super(manager);
+            fragments.add(DocumentsListFragment.newInstance(false, documentType, sortMode, searchQuery));
+            fragments.add(DocumentsListFragment.newInstance(true, documentType, sortMode, searchQuery));
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 1:
-                    return DocumentsListFragment.new
-            }
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return 2;
-        }
-
-        public void addFrag(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+            return fragments.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            switch (position) {
+                // TODO: string res
+                case 0:
+                    return "ALL";
+                default:
+                    return "OFFLINE";
+            }
+        }
+
+        public void notifySectionChanged(VkDocument.ExtType type) {
+            for (DocumentsListFragment fragment : fragments) {
+                fragment.changeDocumentType(type);
+            }
+        }
+
+        public void notifySearchQueryChanged(String text) {
+            for (DocumentsListFragment fragment : fragments) {
+                fragment.changeSearchQuery(text);
+            }
+        }
+
+        public void notifySortModeChanged(SortMode sortMode) {
+            for (DocumentsListFragment fragment : fragments) {
+                fragment.changeSortMode(sortMode);
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.documents.DocumentsActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.documents.DocumentsBaseActivity;
 
 
 /**
@@ -128,7 +128,7 @@ public class LoginActivity extends FragmentActivity {
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(this, DocumentsActivity.class);
+        Intent intent = new Intent(this, DocumentsBaseActivity.class);
         startActivity(intent);
         finish();
     }

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 
 import com.vk.sdk.api.model.VKApiUser;
@@ -87,11 +88,11 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
             adapter = newAdapter();
         }
         adapter.setData(documents);
-        // TODO: [fragment]
-        // adapter.setSearchFilter(searchFilter);
+        adapter.setSearchFilter(searchQuery);
         if (recyclerView.getAdapter() != adapter) {
             recyclerView.setAdapter(adapter);
         }
+        emptyView.setVisibility(View.GONE);
     }
 
     @Override

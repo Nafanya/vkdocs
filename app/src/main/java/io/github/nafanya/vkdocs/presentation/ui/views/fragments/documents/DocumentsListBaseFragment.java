@@ -25,14 +25,16 @@ import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDeco
 public abstract class DocumentsListBaseFragment extends Fragment implements
         SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemSelectedListener {
+
     public static final String OFFLNE_KEY = "offlne_key";
     public static final String DOC_TYPE_KEY = "doc_type_key";
+    public static final String SORT_MODE_KEY = "sort_mode_key";
+    public static final String SEARCH_QUERY_KEY = "search_query_key";
 
     protected boolean isOffline;
     protected VkDocument.ExtType documentType;
-    // TODO: [fragment] add to instance creator fields
     protected SortMode sortMode = SortMode.DATE;
-    protected String searchFilter = "";
+    protected String searchQuery = "";
 
     protected boolean isRefreshing;
 
@@ -45,7 +47,10 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         super.onCreate(savedInstanceState);
 
         isOffline = getArguments().getBoolean(OFFLNE_KEY);
-        documentType = getArguments().getParcelable(DOC_TYPE_KEY);
+        //TODO: parcelable/serializable
+//        documentType = getArguments().getParcelable(DOC_TYPE_KEY);
+        sortMode = (SortMode) getArguments().getSerializable(SORT_MODE_KEY);
+        searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
     }
 
     @Override
