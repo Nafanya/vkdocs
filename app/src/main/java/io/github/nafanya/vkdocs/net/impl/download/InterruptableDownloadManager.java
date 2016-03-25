@@ -121,7 +121,6 @@ public class InterruptableDownloadManager implements DownloadManager {
                         }
                     }
                     RandomAccessFile output = new RandomAccessFile(request.getDest(), "rw"); //new FileOutputStream(request.getDest());
-
                     try {
                         byte data[] = new byte[4096];
                         long total = request.getBytes();
@@ -234,6 +233,7 @@ public class InterruptableDownloadManager implements DownloadManager {
         @Override
         public void onError(Throwable e) {
             Timber.d("exc = " + e.getMessage());
+            e.printStackTrace();
             request.publishError((Exception)e);
         }
 

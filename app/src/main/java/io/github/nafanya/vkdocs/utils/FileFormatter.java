@@ -54,10 +54,14 @@ public class FileFormatter {
         return file;
     }
 
-    public String formatFrom(DownloadRequest request) {
-        String sz1 = formatSize(request.getBytes());
-        String sz2 = formatSize(request.getTotalBytes());
+    public String formatFrom(long cur, long total) {
+        String sz1 = formatSize(cur);
+        String sz2 = formatSize(total);
         return sz1 + " " + from + " " + sz2;
+    }
+
+    public String formatFrom(DownloadRequest request) {
+        return formatFrom(request.getBytes(), request.getTotalBytes());
     }
 
     public String formatSize(long bytes) {

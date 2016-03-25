@@ -5,6 +5,8 @@
     <dimen name="material_drawer_item_primary_text">16sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
 
+    <dimen name="unknown_file">200dp</dimen>
+
     <dimen name="audio_player_button">60dp</dimen>
     <dimen name="audio_player_placeholder">450dp</dimen>
 

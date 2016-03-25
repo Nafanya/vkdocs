@@ -1,19 +1,19 @@
 package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
 
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.io.File;
 
@@ -26,29 +26,28 @@ import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 
-public class UnknownTypeDocFragment extends AppCompatDialogFragment
-        implements DocumentViewerPresenter.Callback,
-        OnPageChanged {
+public class UnknownTypeDocFragment extends Fragment
+        implements DocumentViewerPresenter.Callback, OnPageChanged {
 
     private static String DOC_KEY = "doc_key";
 
     private VkDocument document;
     private FileFormatter fileFormatter;
 
-    @Bind(R.id.ic_document_type)
-    ImageView documentTypeIcon;
+    @Bind(R.id.file_type_icon)
+    ImageView typeIcon;
 
-    @Bind(R.id.text_document_title)
-    TextView docTitle;
+    @Bind(R.id.file_name)
+    TextView fileName;
 
-    @Bind(R.id.down_progress)
-    ProgressBar downloadProgress;
+    @Bind(R.id.progressBar)
+    CircularProgressBar downloadProgress;
 
-    @Bind(R.id.statusLabels)
-    TextView size;
-
+    @Bind(R.id.downloaded_size)
+    TextView downloadedSize;
 
     private DocumentViewerPresenter presenter;
 
@@ -74,20 +73,24 @@ public class UnknownTypeDocFragment extends AppCompatDialogFragment
         fileFormatter = app.getFileFormatter();
     }
 
+    @Nullable
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_unknown_type_document, container, false);
 
-        View rootView = inflater.inflate(R.layout.open_progress_dialog, null);
-        builder.setView(rootView);
-        Dialog dialog = builder.create();
         ButterKnife.bind(this, rootView);
-        dialog.setCanceledOnTouchOutside(false);
+        fileName.setText(document.title);
 
-        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(document, getActivity()));
-        docTitle.setText(document.title);
-        return dialog;
+        if (!document.isDownloaded())
+            downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isBecameVisible)
+            onBecameVisible();
     }
 
     @Override
@@ -105,12 +108,16 @@ public class UnknownTypeDocFragment extends AppCompatDialogFragment
     /***Presenter callbacks**/
     @Override
     public void onProgress(int percentage) {
-        size.setText(fileFormatter.formatFrom(document.getRequest()));
+        long downSize = document.size * percentage / 100;
+        downloadedSize.setText(fileFormatter.formatFrom(downSize, document.size));
         downloadProgress.setProgress(percentage);
     }
 
     @Override
     public void onCompleteCaching(VkDocument document) {
+        downloadedSize.setText(fileFormatter.formatSize(document.size));
+        downloadProgress.setVisibility(View.GONE);
+
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
@@ -149,11 +156,11 @@ public class UnknownTypeDocFragment extends AppCompatDialogFragment
 
     @Override
     public void onBecameVisible() {
+        Timber.d("on became vis");
         if (isAlreadyNotifiedAboutVisible)
             return;
         isAlreadyNotifiedAboutVisible = true;
         presenter.openDocument(document);
-        //show(getFragmentManager(), "unknow_type");
     }
 
     @Override

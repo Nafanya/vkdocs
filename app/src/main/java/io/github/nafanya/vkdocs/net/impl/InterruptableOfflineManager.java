@@ -71,7 +71,7 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
 
     @Override
     public void makeOffline(VkDocument document, OnPreparedCallback callback) {
-        String toPath = OFFLINE_ROOT + document.title + "_" + document.getId();
+        String toPath = OFFLINE_ROOT + document.getId();//TODO fix it
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);

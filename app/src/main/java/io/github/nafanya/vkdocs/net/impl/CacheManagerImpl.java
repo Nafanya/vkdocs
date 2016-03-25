@@ -50,9 +50,8 @@ public class CacheManagerImpl implements CacheManager {
 
     @Override
     public void cache(VkDocument document) {
-        //TODO remove old cached documents
-
-        String toPath = CACHE_ROOT + document.title + "_" + document.getId();
+        //String toPath = CACHE_ROOT + document.title;//+ "_" + document.getId();
+        String toPath = CACHE_ROOT + document.getId();
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);
@@ -112,6 +111,7 @@ public class CacheManagerImpl implements CacheManager {
     }
 
     private void validateAndRemoveFiles(int trimSize) {
+        Timber.d("validate and remove");
         new GetDocuments(SUBSCRIBER, SUBSCRIBER, eventBus, repository).execute(new DefaultSubscriber<List<VkDocument>>() {
             @Override
             public void onNext(List<VkDocument> documents) {

@@ -52,7 +52,11 @@ import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDeco
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
 import timber.log.Timber;
 
-public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
+public abstract class BaseActivity extends AppCompatActivity implements
+        AdapterView.OnItemSelectedListener,
+        SortByDialog.Callback,
+        SwipeRefreshLayout.OnRefreshListener,
+        SearchView.OnQueryTextListener {
 
     @Bind(R.id.coordinator_layout)
     LinearLayout cooridnatorLayout;
