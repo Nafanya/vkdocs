@@ -17,7 +17,7 @@
         <ImageView
             android:id="@+id/file_type_icon"
             android:layout_centerInParent="true"
-            android:src="@drawable/zip_unknown_type"
+            app:srcCompat="@drawable/zip_unknown_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -37,7 +37,7 @@
             android:layout_alignBottom="@id/file_type_icon"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="30dp"
-            android:src="@drawable/cursor_pointer"
+            app:srcCompat="@drawable/cursor_pointer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"/>

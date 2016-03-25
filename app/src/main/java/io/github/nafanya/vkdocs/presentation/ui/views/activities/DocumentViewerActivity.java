@@ -53,7 +53,6 @@ public class DocumentViewerActivity extends AppCompatActivity implements AudioPl
         viewPager.setAdapter(documentsPagerAdapter);
         setTitle(documentsPagerAdapter.getPageTitle(position));
         viewPager.setCurrentItem(position);
-        Timber.d("position = " + position);
     }
 
     @Override

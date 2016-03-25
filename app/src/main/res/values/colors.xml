@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--color for Nav Drawer like GoogleMaps-->
+
+    <color name="primarySettingsSection">@color/md_blue_grey_500</color>
+    <color name="secondarySettingsSection">@color/md_grey_800</color>
+    <color name="subsectionTextColor">@android:color/black</color>
+
     <color name="unknownFileColor">@color/md_grey_700</color>
 
     <color name="selectedItem">@color/colorPrimary</color>

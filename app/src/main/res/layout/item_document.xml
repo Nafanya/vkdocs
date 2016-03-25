@@ -56,7 +56,7 @@
             android:focusable="false"
             android:scaleType="center"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_offline_gray"/>
+            app:srcCompat="@drawable/ic_offline_grey"/>
 
         <ImageView
             android:id="@+id/ic_document_cached"
@@ -67,7 +67,7 @@
             android:focusable="false"
             android:scaleType="center"
             android:visible="false"
-            app:srcCompat="@drawable/ic_offline_gray"/>
+            app:srcCompat="@drawable/ic_offline_grey"/>
 
         <ImageView
             android:id="@+id/ic_document_cache_progress"

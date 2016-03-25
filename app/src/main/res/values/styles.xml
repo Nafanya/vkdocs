@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme.SettingsPrimarySection">
+<!--    <style name="AppTheme.SettingsPrimarySection" parent="android:Widget.TextView.ListSeparator">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/settings_primary_label</item>
-        <item name="textColor">@color/md_black_1000</item>
-        <item name="android:starStyle">?android:listSeparatorTextViewStyle</item>
+        <item name="textColor">@android:color/black</item>
+    </style>-->
+
+    <style name="AppTheme.SettingsSecondarySection">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:textSize">@dimen/settings_secondary_label</item>
+        <item name="android:textColor">@color/secondarySettingsSection</item>
+    </style>
+
+    <style name="AppTheme.SettingsSubsection" parent="AppTheme.SettingsSecondarySection">
+        <item name="android:textSize">@dimen/subsection_text</item>
+        <item name="android:textColor">@color/subsectionTextColor</item>
+    </style>
+
+    <style name="AppTheme.SettingsItemWithComment" parent="AppTheme.SettingsItem">
+        <item name="android:clickable">true</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+    </style>
+
+    <style name="AppTheme.SettingsItem">
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
     </style>
 
     <!-- Base application theme. -->

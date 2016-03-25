@@ -1,56 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" 
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="20dp">
+    tools:context="io.github.nafanya.vkdocs.presentation.ui.views.activities.SettingsActivity">
 
-    <TextView
-        android:text="@string/used_memory"
-        style="?android:listSeparatorTextViewStyle"/>
-
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal">
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/data_in_cache"
-            android:textSize="@dimen/settings_secondary_label"
-            android:textColor="@color/md_grey_700"/>
-        <TextView
-            android:id="@+id/cache_used"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:title="@string/settings_activity_title"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+        </android.support.v7.widget.Toolbar>
 
-            android:text=" 1.3MB"/>
-    </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
+        android:paddingLeft="@dimen/m_grid_2x"
+        android:paddingRight="@dimen/m_grid_2x"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/data_in_offline"
-            android:textSize="@dimen/settings_secondary_label"
-            android:textColor="@color/md_grey_700"/>
+            android:layout_marginTop="@dimen/margin_primary"
+            android:textColor="@color/primarySettingsSection"
+            android:textSize="@dimen/settings_primary_label"
+            style="?android:listSeparatorTextViewStyle"
+            android:text="@string/data" />
+
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItem"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_folder_blue" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/total_documents_label"
+                android:layout_width="wrap_content"/>
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:id="@+id/total_documents"
+                android:layout_width="wrap_content"
+                android:gravity="right"
+                android:layout_weight="1"
+                android:text="115"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItem"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_offline_green" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/offline_documents_label"
+                android:layout_width="wrap_content"/>
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:id="@+id/total_offline"
+                android:layout_width="wrap_content"
+                android:text="10/513MB"
+                android:layout_weight="1"
+                android:gravity="right"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItem"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_offline_grey" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/cached_documents_label"
+                android:layout_width="wrap_content"/>
+
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:id="@+id/data_in_cache"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="7/20MB"/>
+        </LinearLayout>
+
+        <!---First section: Document cache-->
         <TextView
-            android:id="@+id/offline_used"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/settings_secondary_label"
-            android:textColor="@color/md_grey_700"
-            android:text=" 1.3MB"/>
+            android:layout_marginTop="@dimen/margin_primary"
+            android:textColor="@color/primarySettingsSection"
+            android:textSize="@dimen/settings_primary_label"
+            style="?android:listSeparatorTextViewStyle"
+            android:text="@string/document_cache"/>
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItemWithComment">
+
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/cache_size" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSubsection"
+                android:text="@string/current_cache_size" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItemWithComment">
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/clear_cache" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSubsection"
+                android:text="@string/clear_cache_comment" />
+        </LinearLayout>
+
+
+        <!---Second section: Document offline-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_primary"
+            android:textColor="@color/primarySettingsSection"
+            android:textSize="@dimen/settings_primary_label"
+            style="?android:listSeparatorTextViewStyle"
+            android:text="@string/document_offline"/>
+
+        <LinearLayout
+            style="@style/AppTheme.SettingsItemWithComment">
+            <TextView
+                style="@style/AppTheme.SettingsSecondarySection"
+                android:text="@string/clear_offline" />
+
+            <TextView
+                style="@style/AppTheme.SettingsSubsection"
+                android:text="@string/clear_offline_comment" />
+        </LinearLayout>
+
     </LinearLayout>
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
 
 </LinearLayout>

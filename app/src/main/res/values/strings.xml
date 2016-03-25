@@ -1,6 +1,21 @@
 <resources>
 
-    <string name="used_memory">Data</string>
+    <string name="data">Data</string>
+    <string name="total_documents_label">Total</string>
+    <string name="offline_documents_label">Offline</string>
+    <string name="cached_documents_label">Cached</string>
+
+
+    <string name="document_cache">Document cache</string>
+    <string name="cache_size">Cache size</string>
+    <string name="current_cache_size">Current cache size</string>
+    <string name="clear_cache">Clear cache</string>
+    <string name="clear_cache_comment">Remove all documents from cache</string>
+
+    <string name="document_offline">Document offline</string>
+    <string name="clear_offline">Remove offline documents</string>
+    <string name="clear_offline_comment">All documents available offline will removed</string>
+
     <string name="preference_user_repository">user_repository</string>
 
     <string name="app_name">VKDocs</string>
@@ -46,6 +61,6 @@
     <string name="title_activity_document_viewer">DocumentViewerActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="no_items">No items</string>
-    <string name="data_in_cache">"Data in cache "</string>
-    <string name="data_in_offline">Data in offline</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="settings_activity_title">Settings</string>
 </resources>

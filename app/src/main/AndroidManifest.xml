@@ -42,7 +42,11 @@
 
         <service android:name=".presentation.ui.media.AudioPlayerService"></service>
 
-        <activity android:name=".presentation.ui.views.activities.SettingsActivity"></activity>
+        <activity android:name=".presentation.ui.views.activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 
 </manifest>
