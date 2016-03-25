@@ -6,19 +6,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.List;
 
-import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.GifImageFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.ImageFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.VideoPlayerFragment;
-import timber.log.Timber;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.AudioPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.GifImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.ImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer.VideoPlayerFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

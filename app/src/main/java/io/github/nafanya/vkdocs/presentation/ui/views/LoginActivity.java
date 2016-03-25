@@ -18,7 +18,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentsActivity;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.documents.DocumentsActivity;
 
 
 /**

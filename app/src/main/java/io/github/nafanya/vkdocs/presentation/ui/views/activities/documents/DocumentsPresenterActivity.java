@@ -1,8 +1,7 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.views.activities.documents;
 
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -29,7 +28,7 @@ import timber.log.Timber;
 /**
  * Created by pva701 on 15.03.16.
  */
-public abstract class PresenterActivity extends BaseActivity implements DocumentsPresenter.Callback {
+public abstract class DocumentsPresenterActivity extends DocumentsBaseActivity implements DocumentsPresenter.Callback {
 
     protected DocumentsPresenter presenter;
     protected BaseSortedAdapter adapter;
@@ -49,7 +48,7 @@ public abstract class PresenterActivity extends BaseActivity implements Document
                 app.getOfflineManager(),
                 app.getAppCacheRoot(),
                 app.getAppOfflineRoot(),
-                (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+                (DownloadManager) getSystemService(DOWNLOAD_SERVICE),
                 app.getUserRepository(),
                 this);
         presenter.getUserInfo();

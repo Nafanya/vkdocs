@@ -29,12 +29,32 @@
     <color name="m_emptyview">@color/md_grey_500</color>
 
     <!-- Colors for icons in document list -->
-    <color name="m_icon_video">@color/md_red_A700</color>
-    <color name="m_icon_music">@color/md_green_A700</color>
-    <color name="m_icon_image">@color/md_yellow_A700</color>
-    <color name="m_icon_book">@color/md_purple_A700</color>
-    <color name="m_icon_file">@color/md_blue_A700</color>
-    <color name="m_icon_archive">@color/md_orange_A700</color>
+    <color name="m_section_all">@color/md_indigo_500</color>
+    <color name="m_section_text">@color/md_light_green_500</color>
+    <color name="m_section_archive">@color/md_orange_500</color>
+    <color name="m_section_gif">@color/md_purple_500</color>
+    <color name="m_section_image">@color/md_yellow_500</color>
+    <color name="m_section_music">@color/md_blue_500</color>
+    <color name="m_section_video">@color/md_red_500</color>
+    <color name="m_section_other">@color/md_blue_A700</color>
+
+    <color name="m_icon_all">@color/m_section_all</color>
+    <color name="m_icon_text">@color/m_section_text</color>
+    <color name="m_icon_archive">@color/m_section_archive</color>
+    <color name="m_icon_gif">@color/m_section_gif</color>
+    <color name="m_icon_image">@color/m_section_image</color>
+    <color name="m_icon_music">@color/m_section_music</color>
+    <color name="m_icon_video">@color/m_section_video</color>
+    <color name="m_icon_other">@color/m_section_other</color>
+
+    <color name="m_selected_text_all">@color/m_section_all</color>
+    <color name="m_selected_text_text">@color/m_section_text</color>
+    <color name="m_selected_text_archive">@color/m_section_archive</color>
+    <color name="m_selected_text_gif">@color/m_section_gif</color>
+    <color name="m_selected_text_image">@color/m_section_image</color>
+    <color name="m_selected_text_music">@color/m_section_music</color>
+    <color name="m_selected_text_video">@color/m_section_video</color>
+    <color name="m_selected_text_other">@color/m_section_other</color>
 
     <!-- google's material design colours from
 http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->

@@ -1,43 +1,43 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.views.activities.documents;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -45,47 +45,34 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.SpinnerAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView;
-import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
-import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.SortByDialog;
+import io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
 
-public abstract class BaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
+public abstract class DocumentsBaseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SortByDialog.Callback, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
 
-    @Bind(R.id.coordinator_layout)
-    LinearLayout cooridnatorLayout;
-
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-
-    @Bind(R.id.toolbar_spinner)
-    Spinner spinner;
-
-    @Bind(R.id.list_documents)
-    EmptyRecyclerView recyclerView;
-
-    @Bind(R.id.swipe_container)
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    @Bind(R.id.empty_view)
-    RelativeLayout emptyView;
+    @Bind(R.id.coordinator_layout) LinearLayout cooridnatorLayout;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.empty_view) RelativeLayout emptyView;
+    @Bind(R.id.viewpager) ViewPager viewPager;
+    @Bind(R.id.tab_layout) TabLayout tabLayout;
 
     private Drawer drawer;
     protected AccountHeader accountHeader;
 
-    private String SORT_MODE_KEY = "sort_mode_arg";
-    private String EXT_TYPE_KEY = "ext_type_key";
-    private String NAV_DRAW_POS = "nav_drawer_pos_key";
-    private String REFRESH_KEY = "refreshing_key";
-    private String SEARCH_FILTER_KEY = "search_filter_key";
+    private static final String SORT_MODE_KEY = "sort_mode_arg";
+    private static final String EXT_TYPE_KEY = "ext_type_key";
+    private static final String NAV_DRAW_POS = "nav_drawer_pos_key";
+    private static final String REFRESH_KEY = "refreshing_key";
+    private static final String SEARCH_FILTER_KEY = "search_filter_key";
 
     protected SortMode sortMode = SortMode.DATE;
     protected VkDocument.ExtType extType;
     protected String searchFilter = "";
     protected int navDrawerPos = 1;//TODO make enum Section
+
     private boolean isRefreshing;
+
     private boolean storagePermissionGranted = Build.VERSION.SDK_INT < 23;
 
     @Override
@@ -105,36 +92,8 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        List<String> spinnerItems = Arrays.asList(getResources().getStringArray(R.array.doc_type_filter_items));
-        SpinnerAdapter adapter = new SpinnerAdapter(this);
-        adapter.addItems(spinnerItems);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-
-        initRecyclerView();
         initNavigationDrawer();
-        initSwipeRefreshLayout();
-    }
-
-    private void initSwipeRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        //swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
-        //setRefresh(isRefreshing);
-    }
-
-    private void initRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new SimpleDivierItermDecorator(this));
-        recyclerView.setEmptyView(emptyView);
-        // Convert dp to px
-        final int px = (int) (this.getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getResources().getDisplayMetrics().density);
-        recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));
-
+        initViewPager();
     }
 
     @Override
@@ -146,8 +105,6 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         state.putString(SEARCH_FILTER_KEY, searchFilter);
         super.onSaveInstanceState(state);
     }
-
-    private PrimaryDrawerItem offlineItem;
 
     private void initNavigationDrawer() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
@@ -167,9 +124,6 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 .withHeaderBackground(R.drawable.header)
                 .build();
 
-        offlineItem = new PrimaryDrawerItem().withName(R.string.drawer_offline).withIcon(R.drawable.ic_offline).
-                withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_offline_selected);
-
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(accountHeader)
@@ -177,9 +131,46 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                 .withActionBarDrawerToggle(true)
                 .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_my_documents).withIcon(R.drawable.ic_folder).
-                                withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_folder_selected),
-                        offlineItem,
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_all)
+                                .withIcon(R.drawable.ic_folder)
+                                .withSelectedTextColorRes(R.color.m_selected_text_all)
+                                .withIconColorRes(R.color.m_icon_all),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_text)
+                                .withIcon(R.drawable.book_open_variant)
+                                .withSelectedTextColorRes(R.color.m_selected_text_text)
+                                .withIconColorRes(R.color.m_icon_text),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_archives)
+                                .withIcon(R.drawable.zip_box)
+                                .withSelectedTextColorRes(R.color.m_selected_text_archive)
+                                .withIconColorRes(R.color.m_icon_archive),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_images)
+                                .withIcon(R.drawable.image)
+                                .withSelectedTextColorRes(R.color.m_selected_text_image)
+                                .withIconColorRes(R.color.m_icon_image),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_gifs)
+                                .withIcon(R.drawable.image_vintage)
+                                .withSelectedTextColorRes(R.color.m_selected_text_gif)
+                                .withIconColorRes(R.color.m_icon_gif),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_music)
+                                .withIcon(R.drawable.music_box)
+                                .withSelectedTextColorRes(R.color.m_selected_text_music)
+                                .withIconColorRes(R.color.m_icon_music),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_video)
+                                .withIcon(R.drawable.movie)
+                                .withSelectedTextColorRes(R.color.m_selected_text_video)
+                                .withIconColorRes(R.color.m_icon_video),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.tab_other)
+                                .withIcon(R.drawable.file_multiple)
+                                .withSelectedTextColorRes(R.color.m_selected_text_other)
+                                .withIconColorRes(R.color.m_icon_other),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.drawer_settings).withIcon(R.drawable.ic_settings).
                                 withSelectedTextColorRes(R.color.selectedItem).withSelectedIcon(R.drawable.ic_settings_selected))
@@ -192,51 +183,16 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
                     }
                     return true;
                 }).build();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         drawer.setSelectionAtPosition(navDrawerPos);
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-
-        new PrimaryDrawerItem().withBadge((String)null);
     }
 
-    protected void setNumOffline(int numOffline) {
-        if (numOffline == 0)
-            offlineItem.withBadge((String)null);
-        else
-            offlineItem.withBadge(numOffline + "").withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_red_500).withMinWidth(50).withCorners(20));
-    }
-
-    //TODO fix infinite refreshing
-    protected void setRefresh(boolean isRef) {
-        isRefreshing = isRef;
-        //swipeRefreshLayout.setRefreshing(isRefreshing);
-        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(isRefreshing));
-    }
-
-    /*** Spinner callbacks***/
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        VkDocument.ExtType newExtType;
-        switch (position) {
-            case 1: newExtType = VkDocument.ExtType.TEXT; break;
-            case 2: newExtType = VkDocument.ExtType.BOOK; break;
-            case 3: newExtType = VkDocument.ExtType.ARCHIVE; break;
-            case 4: newExtType = VkDocument.ExtType.GIF; break;
-            case 5: newExtType = VkDocument.ExtType.IMAGE; break;
-            case 6: newExtType = VkDocument.ExtType.AUDIO; break;
-            case 7: newExtType = VkDocument.ExtType.VIDEO; break;
-            case 8: newExtType = VkDocument.ExtType.UNKNOWN; break;
-            default: newExtType = null;
-        }
-        if (newExtType != extType)
-            onTypeFilterChanged(newExtType);
-        extType = newExtType;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Do nothing if no filter category was selected.
+    private void initViewPager() {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.accent_material_light)), "CAT");
+        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.ripple_material_light)), "DOG");
+        adapter.addFrag(new DummyFragment(getResources().getColor(R.color.button_material_dark)), "MOUSE");
+        viewPager.setAdapter(adapter);
     }
 
     /***Menu callbacks***/
@@ -314,6 +270,38 @@ public abstract class BaseActivity extends AppCompatActivity implements AdapterV
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0]== PackageManager.PERMISSION_GRANTED){
             storagePermissionGranted = true;
+        }
+    }
+
+    static class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 1:
+                    return DocumentsListFragment.new
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        public void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 }

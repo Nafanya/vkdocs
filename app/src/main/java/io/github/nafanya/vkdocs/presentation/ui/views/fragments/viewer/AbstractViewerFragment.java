@@ -1,10 +1,9 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
-import timber.log.Timber;
 
 public abstract class AbstractViewerFragment extends Fragment implements DocumentViewerActivity.OnPageChanged  {
     public static String FIRST_KEY = "first_key";

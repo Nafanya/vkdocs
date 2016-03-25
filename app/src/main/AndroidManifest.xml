@@ -34,11 +34,13 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
-        <activity android:name=".presentation.ui.views.activities.DocumentsActivity" />
+        <activity
+            android:name=".presentation.ui.views.activities.documents.DocumentsActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".presentation.ui.views.activities.DocumentViewerActivity"
             android:label="@string/title_activity_document_viewer"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
 
         <service
             android:name=".presentation.ui.media.AudioPlayerService">

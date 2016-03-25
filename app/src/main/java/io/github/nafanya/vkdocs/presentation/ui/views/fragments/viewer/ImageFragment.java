@@ -1,18 +1,15 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer;
 
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
@@ -21,39 +18,30 @@ import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
-import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
-/**
- * Created by nafanya on 3/21/16.
- */
-public class GifImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
-    public static final String GIF_KEY = "gif_key";
 
-    private VkDocument document;
-    private GifDrawable gif;
+public class ImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
+    public static final String IMAGE_KEY = "image_key";
     private DocumentViewerPresenter presenter;
 
-    private SimpleTarget target = new SimpleTarget<GifDrawable>() {
+    private VkDocument document;
+    private PhotoViewAttacher attacher;
+    private SimpleTarget target = new SimpleTarget<GlideBitmapDrawable>() {
         @Override
-        public void onResourceReady(GifDrawable gifDrawable, GlideAnimation glideAnimation) {
-            gif = gifDrawable;
-            imageView.setImageDrawable(gif.getCurrent());
-            gif.start();
+        public void onResourceReady(GlideBitmapDrawable bitmap, GlideAnimation glideAnimation) {
+            imageView.setImageBitmap(bitmap.getBitmap());
+            if (attacher != null) {
+                attacher.update();
+            }
             progressBar.setVisibility(View.GONE);
         }
 
-        @Override
-        public void onLoadFailed(Exception e, Drawable errorDrawable) {
-//            GlideProgressListener.removeGlideProgressListener(listener);
-        }
     };
 
     @Bind(R.id.imageView)
@@ -62,10 +50,10 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
     @Bind(R.id.progressBar)
     CircularProgressBar progressBar;
 
-    public static GifImageFragment newInstance(VkDocument document, boolean isFirst) {
-        GifImageFragment fragment = new GifImageFragment();
+    public static ImageFragment newInstance(VkDocument document, boolean isFirst) {
+        ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelable(GIF_KEY, document);
+        args.putParcelable(IMAGE_KEY, document);
         args.putBoolean(FIRST_KEY, isFirst);
         fragment.setArguments(args);
         return fragment;
@@ -74,9 +62,7 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        document = getArguments().getParcelable(GIF_KEY);
-        //Timber.d("IS CACHED %s: %b", document.title, document.isCached());
+        document = getArguments().getParcelable(IMAGE_KEY);
 
         App app = (App)getActivity().getApplication();
         presenter = new DocumentViewerPresenter(
@@ -97,6 +83,7 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
         return rootView;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -105,25 +92,21 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     @Override
     public void onResume() {
-        if (gif != null) {
-            gif.start();
-        }
         super.onResume();
+        attacher = new PhotoViewAttacher(imageView);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (gif != null) {
-            gif.stop();
-        }
+        release();
     }
 
     @Override
     public void onStop() {
         presenter.onStop();
-        release();
         super.onStop();
+        release();
     }
 
     @Override
@@ -134,14 +117,14 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     private void release() {
 //        GlideProgressListener.removeGlideProgressListener(listener);
-        if (gif != null) {
-            gif = null;
+        if (attacher != null) {
+            attacher.cleanup();
+            attacher = null;
         }
     }
 
     @Override
     public void onBecameVisible() {
-        Timber.d("on became visible");
         document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
     }
@@ -154,10 +137,8 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     @Override
     public void onCompleteCaching(VkDocument document) {
-        Timber.d("cached = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
         Glide.with(this)
                 .load(Uri.fromFile(new File(document.getPath())))
-                .asGif()
                 .into(target);
     }
 
@@ -168,6 +149,6 @@ public class GifImageFragment extends AbstractViewerFragment implements Document
 
     @Override
     public void onError(Exception e) {
-        //TODO write here
+
     }
 }

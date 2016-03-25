@@ -29,7 +29,7 @@
         <item name="android:padding">16dp</item>
     </style>
 
-    <style name="Button" parent="Base.Widget.AppCompat.Button">
+    <style name="Button" parent="Widget.AppCompat.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">16dp</item>
@@ -93,7 +93,7 @@
         <item name="overlapAnchor">true</item>
     </style>
 
-    <style name="EmptyTitle" parent="Base.TextAppearance.AppCompat.Body1">
+    <style name="EmptyTitle" parent="TextAppearance.AppCompat.Body1">
         <item name="android:enabled">false</item>
         <item name="android:textSize">@dimen/m_text_size_title</item>
         <item name="android:textColor">@color/m_emptyview</item>

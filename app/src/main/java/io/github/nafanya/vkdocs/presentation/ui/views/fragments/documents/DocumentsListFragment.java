@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.views.fragments.documents;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,10 +14,10 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentViewerActivity;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.DeleteDialog;
 import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ErrorOpenDialog;
@@ -27,34 +27,44 @@ import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 /**
- * Created by pva701 on 15.03.16.
+ * Created by nafanya on 3/25/16.
  */
-public class DocumentsActivity extends PresenterActivity implements
+public class DocumentsListFragment extends DocumentsListPresenterFragment implements
         BottomMenu.MenuEventListener,
         OpenProgressDialog.Callback,
         ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener,
         RenameDialog.Callback,
         DeleteDialog.Callback {
-    private static String CONTEXT_DOC_KEY = "context_doc_key";
-    private static String CONTEXT_POS_KEY = "context_pos_key";
+
+    public static final String CONTEXT_DOC_KEY = "context_doc_key";
+    public static final String CONTEXT_POS_KEY = "context_pos_key";
 
     private BottomSheetDialog dialog;
     private VkDocument restoreContextMenuDoc;
     private int restoreDocPosition;
     private FileFormatter fileFormatter;
 
+    public static DocumentsListBaseFragment newInstance(boolean isOffline) {
+        DocumentsListBaseFragment fragment = new DocumentsListFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(OFFLNE_KEY, isOffline);
+//        arDOC_TYPE_KEY
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle state) {
-        super.onCreate(state);
-        App app = (App)getApplication();
+    public void onCreate(Bundle savedInstanceState) {
+        App app = (App)getActivity().getApplication();
         fileFormatter = app.getFileFormatter();
-        if (state != null) {
-            restoreContextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
-            restoreDocPosition = state.getInt(CONTEXT_POS_KEY);
+        if (savedInstanceState != null) {
+            restoreContextMenuDoc = savedInstanceState.getParcelable(CONTEXT_DOC_KEY);
+            restoreDocPosition = savedInstanceState.getInt(CONTEXT_POS_KEY);
         }
-        if (restoreContextMenuDoc != null)
+        if (restoreContextMenuDoc != null) {
             onClickContextMenu(restoreDocPosition, restoreContextMenuDoc);
+        }
     }
 
     @Override
@@ -65,77 +75,19 @@ public class DocumentsActivity extends PresenterActivity implements
     }
 
     @Override
-    public void onRefresh() {
-        Timber.d("ON REFRESH");
-        setRefresh(true);
-        presenter.forceNetworkLoad();
-    }
-
-    /***BaseActivity overrides***/
-    @Override
-    public void onTypeFilterChanged(VkDocument.ExtType extType) {
-        presenter.setFilter(getFilter(navDrawerPos, extType));
-        presenter.getDocuments();
-    }
-
-    @Override
-    public void onSortModeChanged(SortMode sortMode) {
-        super.onSortModeChanged(sortMode);
-        adapter.setSortMode(sortMode);
-    }
-
-    @Override
-    public void onSectionChanged(int newSection) {
-        presenter.setFilter(getFilter(newSection, extType));
-        if (adapter != null)
-            adapter.removeData();
-        adapter = null;
-        if (recyclerView != null)
-            recyclerView.scrollToPosition(0);
-        presenter.getDocuments();
-    }
-
-    @Override
-    public boolean onQueryTextChange(String query) {
-        adapter.setSearchFilter(query);
-
-        return super.onQueryTextChange(query);
-    }
-
-    @Override
     protected BaseSortedAdapter newAdapter() {
-        if (navDrawerPos == 1)
-            return new DocumentsAdapter(this, fileFormatter, sortMode, this);
-        else
-            return new OfflineAdapter(this, fileFormatter, sortMode, this);
-    }
-
-    /***Adapter callback***/
-    @Override
-    public void onClick(int position, VkDocument document) {
-        if (document.getExtType() != VkDocument.ExtType.AUDIO &&
-                document.getExtType() != VkDocument.ExtType.VIDEO &&
-                document.getExtType() != VkDocument.ExtType.IMAGE &&
-                document.getExtType() != VkDocument.ExtType.GIF) {
-            Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
-            Timber.d("is off %b, is ic_cached_green %b", document.isOffline(), document.isCached());
-            presenter.openDocument(document);
+        if (!isOffline) {
+            return new DocumentsAdapter(getActivity(), fileFormatter, sortMode, this);
         } else {
-            Intent intent = new Intent(this, DocumentViewerActivity.class);
-            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
-            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
-            startActivity(intent);
+            return new OfflineAdapter(getActivity(), fileFormatter, sortMode, this);
         }
     }
 
     @Override
-    public void onClickContextMenu(int position, VkDocument document) {
-        restoreContextMenuDoc = document;
-        this.restoreDocPosition = position;
-        dialog = new BottomMenu(this, position, document, fileFormatter, this);
-        dialog.show();
+    public void onRefresh() {
+        setRefresh(true);
+        presenter.forceNetworkLoad();
     }
-
 
     /***Offline adapter callbacks***/
     @Override
@@ -150,30 +102,57 @@ public class DocumentsActivity extends PresenterActivity implements
         adapter.notifyItemChanged(position);
     }
 
+    @Override
+    public void onClick(int position, VkDocument document) {
+        if (document.getExtType() != VkDocument.ExtType.AUDIO &&
+                document.getExtType() != VkDocument.ExtType.VIDEO &&
+                document.getExtType() != VkDocument.ExtType.IMAGE &&
+                document.getExtType() != VkDocument.ExtType.GIF) {
+            Timber.d("on click: %s, offtype = %d, request %s", document.title, document.getOfflineType(), document.getRequest());
+            Timber.d("is off %b, is ic_cached_green %b", document.isOffline(), document.isCached());
+            presenter.openDocument(document);
+        } else {
+            Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
+            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
+            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onClickContextMenu(int position, VkDocument document) {
+        restoreContextMenuDoc = document;
+        this.restoreDocPosition = position;
+        dialog = new BottomMenu(getActivity(), position, document, fileFormatter, this);
+        dialog.show();
+    }
+
     /***BottomMenu callbacks***/
     @Override
     public void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline) {
         Timber.d("[Bottom menu] clicked offline button for doc (title=%s, isMakeOffline=%s)", document.title, isMakeOffline);
-        if (isMakeOffline)
+        if (isMakeOffline) {
             presenter.makeOffline(document);
-        else
+        } else {
             presenter.undoMakeOffline(document);
+        }
     }
 
     @Override
     public void onClickRename(int position, VkDocument document) {
         dismissContextMenu();
         DialogFragment fragment = RenameDialog.newInstance(position, document);
-        fragment.show(getSupportFragmentManager(), "rename");
+        fragment.show(getActivity().getSupportFragmentManager(), "rename");
     }
 
     @Override
     public void onClickDelete(int position, VkDocument document) {
         dismissContextMenu();
         DialogFragment fragment = DeleteDialog.newInstance(position, document);
-        fragment.show(getSupportFragmentManager(), "delete");
+        fragment.show(getActivity().getSupportFragmentManager(), "delete");
     }
 
+    // TODO: [fragment] fix share
     @Override
     public void onClickShare(VkDocument document) {
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -187,7 +166,7 @@ public class DocumentsActivity extends PresenterActivity implements
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("*/*");
 
-        PackageManager pm = getPackageManager();
+        PackageManager pm = getActivity().getPackageManager();
         List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
         for (ResolveInfo info : resInfo) {
             // Extract the label, append it, and repackage it in a LabeledIntent
@@ -199,18 +178,6 @@ public class DocumentsActivity extends PresenterActivity implements
             }
         }
         startActivity(intent);
-    }
-
-    @Override
-    public void onCloseContextMenu() {
-        dismissContextMenu();
-    }
-
-    @Override
-    public void onClickDownload(int position, VkDocument document) {
-        if (isStoragePermissionGranted()) {
-            presenter.downloadDocumentToDownloads(document);
-        }
     }
 
     public void dismissContextMenu() {
@@ -228,13 +195,14 @@ public class DocumentsActivity extends PresenterActivity implements
 
     @Override
     public void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading) {
-        if (isReallyAlreadyDownloading)
+        if (isReallyAlreadyDownloading) {
             Timber.d("%s is already downloading now", document.title);
-        else
+        } else {
             Timber.d("%s isn't downloading now yet", document.title);
+        }
 
         DialogFragment fragment = OpenProgressDialog.newInstance(document, isReallyAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "progress_open");
+        fragment.show(getActivity().getSupportFragmentManager(), "progress_open");
     }
 
     @Override
@@ -257,7 +225,7 @@ public class DocumentsActivity extends PresenterActivity implements
     @Override
     public void onErrorCaching(Exception error, VkDocument document, boolean isAlreadyDownloading) {
         DialogFragment fragment = ErrorOpenDialog.newInstance(document, isAlreadyDownloading);
-        fragment.show(getSupportFragmentManager(), "error_open");
+        fragment.show(getActivity().getSupportFragmentManager(), "error_open");
     }
 
     /***ErrorOpen dialog callbacks***/

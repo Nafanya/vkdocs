@@ -1,5 +1,6 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.views.fragments.viewer;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
@@ -23,25 +24,31 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import uk.co.senab.photoview.PhotoViewAttacher;
+import timber.log.Timber;
 
-
-public class ImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
-    public static final String IMAGE_KEY = "image_key";
-    private DocumentViewerPresenter presenter;
+/**
+ * Created by nafanya on 3/21/16.
+ */
+public class GifImageFragment extends AbstractViewerFragment implements DocumentViewerPresenter.Callback {
+    public static final String GIF_KEY = "gif_key";
 
     private VkDocument document;
-    private PhotoViewAttacher attacher;
-    private SimpleTarget target = new SimpleTarget<GlideBitmapDrawable>() {
+    private GifDrawable gif;
+    private DocumentViewerPresenter presenter;
+
+    private SimpleTarget target = new SimpleTarget<GifDrawable>() {
         @Override
-        public void onResourceReady(GlideBitmapDrawable bitmap, GlideAnimation glideAnimation) {
-            imageView.setImageBitmap(bitmap.getBitmap());
-            if (attacher != null) {
-                attacher.update();
-            }
+        public void onResourceReady(GifDrawable gifDrawable, GlideAnimation glideAnimation) {
+            gif = gifDrawable;
+            imageView.setImageDrawable(gif.getCurrent());
+            gif.start();
             progressBar.setVisibility(View.GONE);
         }
 
+        @Override
+        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+//            GlideProgressListener.removeGlideProgressListener(listener);
+        }
     };
 
     @Bind(R.id.imageView)
@@ -50,10 +57,10 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
     @Bind(R.id.progressBar)
     CircularProgressBar progressBar;
 
-    public static ImageFragment newInstance(VkDocument document, boolean isFirst) {
-        ImageFragment fragment = new ImageFragment();
+    public static GifImageFragment newInstance(VkDocument document, boolean isFirst) {
+        GifImageFragment fragment = new GifImageFragment();
         Bundle args = new Bundle();
-        args.putParcelable(IMAGE_KEY, document);
+        args.putParcelable(GIF_KEY, document);
         args.putBoolean(FIRST_KEY, isFirst);
         fragment.setArguments(args);
         return fragment;
@@ -62,7 +69,9 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        document = getArguments().getParcelable(IMAGE_KEY);
+
+        document = getArguments().getParcelable(GIF_KEY);
+        //Timber.d("IS CACHED %s: %b", document.title, document.isCached());
 
         App app = (App)getActivity().getApplication();
         presenter = new DocumentViewerPresenter(
@@ -83,7 +92,6 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
         return rootView;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -92,21 +100,25 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
 
     @Override
     public void onResume() {
+        if (gif != null) {
+            gif.start();
+        }
         super.onResume();
-        attacher = new PhotoViewAttacher(imageView);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        release();
+        if (gif != null) {
+            gif.stop();
+        }
     }
 
     @Override
     public void onStop() {
         presenter.onStop();
-        super.onStop();
         release();
+        super.onStop();
     }
 
     @Override
@@ -117,14 +129,14 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
 
     private void release() {
 //        GlideProgressListener.removeGlideProgressListener(listener);
-        if (attacher != null) {
-            attacher.cleanup();
-            attacher = null;
+        if (gif != null) {
+            gif = null;
         }
     }
 
     @Override
     public void onBecameVisible() {
+        Timber.d("on became visible");
         document = GetDocuments.getDocument(document);
         presenter.openDocument(document);
     }
@@ -137,8 +149,10 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
 
     @Override
     public void onCompleteCaching(VkDocument document) {
+        Timber.d("cached = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
         Glide.with(this)
                 .load(Uri.fromFile(new File(document.getPath())))
+                .asGif()
                 .into(target);
     }
 
@@ -149,6 +163,6 @@ public class ImageFragment extends AbstractViewerFragment implements DocumentVie
 
     @Override
     public void onError(Exception e) {
-
+        //TODO write here
     }
 }
