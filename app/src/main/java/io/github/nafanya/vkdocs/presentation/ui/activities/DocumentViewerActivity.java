@@ -14,7 +14,7 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.AudioPlayerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import timber.log.Timber;
 
