@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,7 +18,7 @@
 
         <ImageView
             android:id="@+id/music_box_image"
-            android:src="@drawable/music_box_grey"
+            app:srcCompat="@drawable/music_box_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -56,18 +57,18 @@
         <ImageButton
             android:id="@+id/play_button"
             android:enabled="false"
-            android:src="@drawable/play"
+            app:srcCompat="@drawable/play"
             android:layout_above="@id/seek_bar"
             android:layout_centerHorizontal="true"
+            android:visibility="gone"
             style="@style/Button.Player"/>
 
         <ImageButton
             android:id="@+id/pause_button"
             android:enabled="false"
-            android:src="@drawable/pause"
+            app:srcCompat="@drawable/pause"
             android:layout_above="@id/seek_bar"
             android:layout_centerHorizontal="true"
-            android:visibility="gone"
             style="@style/Button.Player"/>
     </RelativeLayout>
 

@@ -1,12 +1,9 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
-import io.github.nafanya.vkdocs.net.base.OfflineManager;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
-import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -26,7 +23,6 @@ public class MakeOfflineDocument extends UseCase<VkDocument> {
     public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
             try {
-                eventBus.removeEvent(GetDocuments.class);
                 offlineManager.makeOffline(document, subscriber::onNext);
                 subscriber.onCompleted();
             } catch (Exception e) {
