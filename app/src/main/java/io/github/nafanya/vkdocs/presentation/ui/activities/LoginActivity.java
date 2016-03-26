@@ -6,10 +6,7 @@ package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -24,7 +21,7 @@ import io.github.nafanya.vkdocs.R;
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private boolean isResumed = false;
 
@@ -50,7 +47,7 @@ public class LoginActivity extends FragmentActivity {
                 if (isResumed) {
                     switch (res) {
                         case LoggedOut:
-                            showLogin();
+                            login();
                             break;
                         case LoggedIn:
                             startMainActivity();
@@ -70,18 +67,8 @@ public class LoginActivity extends FragmentActivity {
         });
     }
 
-    private void showLogout() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new LogoutFragment())
-                .commitAllowingStateLoss();
-    }
-
-    private void showLogin() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new LoginFragment())
-                .commitAllowingStateLoss();
+    private void login() {
+        VKSdk.login(this, APP_PERMISSIONS_SCOPE);
     }
 
     @Override
@@ -91,7 +78,7 @@ public class LoginActivity extends FragmentActivity {
         if (VKSdk.isLoggedIn()) {
             startMainActivity();
         } else {
-            showLogin();
+            login();
         }
     }
 
@@ -130,39 +117,5 @@ public class LoginActivity extends FragmentActivity {
         Intent intent = new Intent(this, DocumentsActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    public static class LoginFragment extends android.support.v4.app.Fragment {
-        public LoginFragment() {
-            super();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.fragment_login, container, false);
-            v.findViewById(R.id.sign_in_button).setOnClickListener(view -> VKSdk.login(getActivity(), APP_PERMISSIONS_SCOPE));
-            return v;
-        }
-
-    }
-
-    public static class LogoutFragment extends android.support.v4.app.Fragment {
-        public LogoutFragment() {
-            super();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.fragment_logout, container, false);
-            v.findViewById(R.id.continue_button).setOnClickListener(view -> ((LoginActivity) getActivity()).startMainActivity());
-
-            v.findViewById(R.id.logout).setOnClickListener(view -> {
-                VKSdk.logout();
-                if (!VKSdk.isLoggedIn()) {
-                    ((LoginActivity) getActivity()).showLogin();
-                }
-            });
-            return v;
-        }
     }
 }
