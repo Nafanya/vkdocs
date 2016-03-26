@@ -31,16 +31,20 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.presenter.UserPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
@@ -49,7 +53,7 @@ import timber.log.Timber;
 public class DocumentsBaseActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SortByDialog.Callback,
-        DocumentsListFragment.Callbacks {
+        DocumentsListFragment.Callbacks, UserPresenter.Callback {
 
     @Bind(R.id.coordinator_layout) CoordinatorLayout cooridnatorLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -77,6 +81,8 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
 
     private boolean storagePermissionGranted = Build.VERSION.SDK_INT < 23;
 
+    private UserPresenter userPresenter;
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -99,6 +105,22 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
 
         initNavigationDrawer();
         initViewPager();
+
+        App app = (App)getApplication();
+        userPresenter = new UserPresenter(app.getEventBus(), app.getUserRepository(), this);
+        userPresenter.getUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userPresenter.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        userPresenter.onStop();
+        super.onStop();
     }
 
     @Override
@@ -321,6 +343,27 @@ public class DocumentsBaseActivity extends AppCompatActivity implements
         if (grantResults[0]== PackageManager.PERMISSION_GRANTED){
             storagePermissionGranted = true;
         }
+    }
+
+    @Override
+    public void onUserInfoLoaded(VKApiUser userInfo) {
+        String fullName;
+        if (userInfo.first_name == null && userInfo.last_name == null) {
+            fullName = "Unknown";
+        } else if (userInfo.first_name == null) {
+            fullName = userInfo.last_name;
+        } else if (userInfo.last_name == null) {
+            fullName = userInfo.first_name;
+        } else {
+            fullName = userInfo.first_name + " " + userInfo.last_name;
+        }
+
+        ProfileDrawerItem account = new ProfileDrawerItem()
+                .withName(fullName)
+                .withIcon(userInfo.photo_100);
+
+        accountHeader.clear();
+        accountHeader.addProfile(account, 0);
     }
 
     static class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {

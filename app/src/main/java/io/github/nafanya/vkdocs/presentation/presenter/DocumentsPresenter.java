@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
-import com.vk.sdk.api.model.VKApiUser;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +14,12 @@ import io.github.nafanya.vkdocs.domain.interactor.CacheDocument;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
-import io.github.nafanya.vkdocs.domain.interactor.GetUserInfo;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
@@ -47,8 +43,6 @@ public class DocumentsPresenter extends BasePresenter {
         void onOpenDocument(VkDocument document);
         void onAlreadyDownloading(VkDocument document, boolean isReallyAlreadyDownloading);
         void onUpdatedDocument(VkDocument document);
-
-        void onUserInfoLoaded(VKApiUser userInfo);
     }
 
     private String OFFLINE_PATH;
@@ -57,14 +51,12 @@ public class DocumentsPresenter extends BasePresenter {
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
-    protected Subscriber<VKApiUser> userSubscriber = Subscribers.empty();
 
     protected DocFilter filter;
     protected InterruptableDownloadManager downloadManager;
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
-    protected UserRepository userRepository;
     protected OfflineManager offlineManager;
     protected DownloadManager systemDownloadManager;
 
@@ -77,14 +69,12 @@ public class DocumentsPresenter extends BasePresenter {
                               OfflineManager offlineManager,
                               File offlineRoot, File cacheRoot,
                               DownloadManager systemDownloadManager,
-                              UserRepository userRepository,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
-        this.userRepository = userRepository;
         this.OFFLINE_PATH = offlineRoot.getAbsolutePath() + File.separator;
         this.CACHE_PATH = cacheRoot.getAbsolutePath() + File.separator;
         this.systemDownloadManager = systemDownloadManager;
@@ -147,16 +137,6 @@ public class DocumentsPresenter extends BasePresenter {
                 }
             }
         }*/
-    }
-
-    public void getUserInfo() {
-        userSubscriber = new GetUserInfoSubscriber();
-        new GetUserInfo(
-                OBSERVER,
-                SUBSCRIBER,
-                eventBus,
-                userRepository
-        ).execute(userSubscriber);
     }
 
     public void makeOffline(VkDocument document) {
@@ -240,11 +220,6 @@ public class DocumentsPresenter extends BasePresenter {
             cacheSubscriber = new CacheSubscriber();
             eventBus.getEvent(CacheDocument.class).execute(cacheSubscriber);
         }
-
-        if (eventBus.contains(GetUserInfo.class) && userSubscriber.isUnsubscribed()) {
-            userSubscriber = new GetUserInfoSubscriber();
-            eventBus.getEvent(GetUserInfo.class).execute(userSubscriber);
-        }
     }
 
 
@@ -253,7 +228,6 @@ public class DocumentsPresenter extends BasePresenter {
         unsubscribeIfNot(documentsSubscriber);
         unsubscribeIfNot(networkSubscriber);
         unsubscribeIfNot(cacheSubscriber);
-        unsubscribeIfNot(userSubscriber);
     }
 
     private void findDownloadRequests(List<VkDocument> documents) {
@@ -264,13 +238,6 @@ public class DocumentsPresenter extends BasePresenter {
                     d.setRequest(req);
                     break;
                 }
-    }
-
-    public class GetUserInfoSubscriber extends DefaultSubscriber<VKApiUser> {
-        @Override
-        public void onNext(VKApiUser user) {
-            callback.onUserInfoLoaded(user);
-        }
     }
 
     public class GetDocumentsSubscriber extends DefaultSubscriber<List<VkDocument>> {

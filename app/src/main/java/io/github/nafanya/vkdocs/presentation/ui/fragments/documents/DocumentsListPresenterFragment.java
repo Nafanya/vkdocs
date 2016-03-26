@@ -47,7 +47,6 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
                 app.getAppCacheRoot(),
                 app.getAppOfflineRoot(),
                 (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE),
-                app.getUserRepository(),
                 this);
     }
 

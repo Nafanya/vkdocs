@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
 
-import com.vk.sdk.api.model.VKApiUser;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -257,11 +255,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     public void onUpdatedDocument(VkDocument document) {
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
         activity.notifyOther();
-    }
-
-    @Override
-    public void onUserInfoLoaded(VKApiUser userInfo) {
-
     }
 
     /***OpenProgressDialog callbacks***/
