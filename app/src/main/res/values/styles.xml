@@ -142,14 +142,13 @@
         <item name="android:background">?selectableItemBackground</item>
         <item name="android:layout_width">@dimen/m_grid_7x</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_alignParentRight">true</item>
     </style>
 
     <style name="RightButtonContainer">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_width">@dimen/m_grid_7x</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:paddingLeft">@dimen/m_grid_2x</item>
-        <item name="android:paddingRight">@dimen/m_grid_2x</item>
     </style>
 
     <style name="FixedSizeIcon">

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/buttonContextMenu"
+        android:layout_toLeftOf="@+id/buttons"
         android:layout_alignParentLeft="true"
         android:background="?selectableItemBackground">
 
@@ -88,15 +88,21 @@
 
     </RelativeLayout>
 
-    <ImageButton
-        android:id="@id/buttonContextMenu"
-        app:srcCompat="@drawable/dots_vertical"
-        style="@style/RightButton"/>
+    <LinearLayout
+        android:id="@+id/buttons"
+        style="@style/RightButtonContainer">
 
-    <ImageButton
-        android:id="@id/buttonCancel"
-        app:srcCompat="@drawable/ic_clear"
-        android:visibility="gone"
-        style="@style/RightButton"/>
+        <ImageButton
+            android:id="@id/buttonContextMenu"
+            app:srcCompat="@drawable/dots_vertical"
+            style="@style/RightButton"/>
+
+        <ImageButton
+            android:id="@id/buttonCancel"
+            app:srcCompat="@drawable/ic_clear"
+            android:visibility="gone"
+            style="@style/RightButton"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
