@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -198,29 +199,53 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     // TODO: [fragment] fix share
     @Override
     public void onClickShare(VkDocument document) {
+        dismissContextMenu();
+        Intent intent = createShareIntent(document);
+
+        // Try to find VK app and set it if found.
+        PackageManager pm = getActivity().getPackageManager();
+        List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
+        boolean vkAppFound = false;
+        for (ResolveInfo info : resInfo) {
+            String packageName = info.activityInfo.packageName;
+            if (packageName.contains("com.vkontakte.android")) {
+                Timber.d("[share] uri: found VK app, using it");
+                intent.setPackage(packageName);
+                vkAppFound = true;
+                break;
+            }
+        }
+        if (vkAppFound) {
+            startActivity(intent);
+        } else {
+            startActivity(Intent.createChooser(intent, document.title));
+        }
+    }
+
+    @Override
+    public void onClickShareExternal(VkDocument document) {
+        dismissContextMenu();
+        Intent intent = createShareIntent(document);
+        startActivity(Intent.createChooser(intent, document.title));
+    }
+
+    private Intent createShareIntent(VkDocument document) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        Uri uri;
+        final Uri uri;
+        final String mime;
         if (document.isCached() || document.isOffline()) {
             uri = Uri.fromFile(new File(document.getPath()));
         } else {
             uri = Uri.parse(document.url);
         }
+        MimeTypeMap mimeResolver = MimeTypeMap.getSingleton();
+        mime = mimeResolver.getMimeTypeFromExtension(document.getExt());
         Timber.d("[share] uri: %s", uri);
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.setType("*/*");
 
-        PackageManager pm = getActivity().getPackageManager();
-        List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
-        for (ResolveInfo info : resInfo) {
-            // Extract the label, append it, and repackage it in a LabeledIntent
-            String packageName = info.activityInfo.packageName;
-            if (packageName.contains("com.vkontakte.android")) {
-                Timber.d("[share] uri: found VK app, using it");
-                intent.setPackage(packageName);
-                break;
-            }
-        }
-        startActivity(intent);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType(mime);
+        Timber.d("[share] mimetype: %s", mime);
+        return intent;
     }
 
     public void dismissContextMenu() {

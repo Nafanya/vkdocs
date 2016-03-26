@@ -1,8 +1,6 @@
 <resources>
 
-    <!---override material draw item size, poh na guidelines-->
-    <dimen name="material_drawer_item_primary_text">16sp</dimen>
-    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="material_drawer_account_header_text">16sp</dimen>
 
     <dimen name="settings_primary_label">16sp</dimen>
     <dimen name="settings_secondary_label">20sp</dimen>
@@ -10,7 +8,7 @@
     <dimen name="margin_primary">8dp</dimen>
 
 
-    <dimen name="placeholder_size">200dp</dimen>
+    <dimen name="m_image_preview_splash_size">200dp</dimen>
 
     <dimen name="audio_player_button">60dp</dimen>
     <dimen name="audio_player_placeholder">450dp</dimen>

@@ -121,6 +121,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
 
     public Subscription setPlayingListener(CustomMediaPlayer.PlayingListener l) {
+        //TODO: [crash] after left-right swipe on and from music fragment
         return mediaPlayer.setPlayingListener(l);
     }
 }

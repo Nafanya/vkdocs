@@ -113,7 +113,7 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
-        Timber.d("[openDocument] path = %s", document.getPath());
+        Timber.d("[openDocument] mime: %s, title: %s", mimeType, document.title);
         File fileDoc = new File(document.getPath());
         newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?

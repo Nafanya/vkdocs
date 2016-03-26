@@ -21,10 +21,8 @@ public class FileFormatter {
     private Drawable image;
     private Drawable file;
     private Drawable archive;
-
-    private Drawable pdfUnknownType;
-    private Drawable zipUnknownType;
-    private Drawable fileUnknownType;
+    private Drawable gif;
+    private Drawable text;
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
@@ -38,6 +36,8 @@ public class FileFormatter {
             image = ContextCompat.getDrawable(context, R.drawable.image);
             file = ContextCompat.getDrawable(context, R.drawable.file);
             archive = ContextCompat.getDrawable(context, R.drawable.zip_box);
+            gif = ContextCompat.getDrawable(context, R.drawable.image_vintage);
+            text = ContextCompat.getDrawable(context, R.drawable.text_box);
         }
 
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
@@ -49,11 +49,17 @@ public class FileFormatter {
         if (doc.getExt().equals("pdf"))
             return filePdfBox;
 
+        if (doc.getExtType() == VkDocument.ExtType.GIF)
+            return gif;
+
         if (doc.getExtType() == VkDocument.ExtType.IMAGE)
             return image;
 
         if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
             return archive;
+
+        if (doc.getExtType() == VkDocument.ExtType.TEXT)
+            return text;
 
         return file;
     }

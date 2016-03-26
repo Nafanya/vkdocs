@@ -1,7 +1,7 @@
 <!-- drawable/file_pdf_box.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="@dimen/placeholder_size"
-    android:width="@dimen/placeholder_size"
+    android:height="@dimen/m_image_preview_splash_size"
+    android:width="@dimen/m_image_preview_splash_size"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path android:fillColor="@color/placeholderColor"

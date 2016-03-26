@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.ui.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -154,6 +155,10 @@ public class DocumentsActivity extends AppCompatActivity implements
         });
 
         accountHeader = new AccountHeaderBuilder()
+                .withSelectionListEnabledForSingleProfile(false)
+                .withSelectionListEnabled(false)
+                .withSelectionSecondLineShown(false)
+                .withTypeface(Typeface.DEFAULT_BOLD)
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header1)
                 .build();

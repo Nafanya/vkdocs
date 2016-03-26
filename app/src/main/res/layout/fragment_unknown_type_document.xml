@@ -8,59 +8,67 @@
     android:background="@color/md_black_1000">
 
     <RelativeLayout
-        android:id="@+id/file_type_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp">
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:id="@+id/file_type_icon"
-            android:layout_centerInParent="true"
-            app:srcCompat="@drawable/zip_placeholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <com.mikhaellopez.circularprogressbar.CircularProgressBar
-            android:id="@+id/progressBar"
-            android:visibility="gone"
-            android:layout_centerInParent="true"
-            android:layout_width="@dimen/circular_progress_diameter"
-            android:layout_height="@dimen/circular_progress_diameter"
-            android:max="100"
-            app:cpb_background_progressbar_color="@color/md_grey_600"
-            app:cpb_background_progressbar_width="@dimen/circular_progress_thickness"
-            app:cpb_progressbar_color="@color/md_grey_100"
-            app:cpb_progressbar_width="@dimen/circular_progress_thickness" />
-
-        <ImageView
-            android:id="@+id/notify_open"
-            android:layout_alignBottom="@id/file_type_icon"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp"
-            app:srcCompat="@drawable/cursor_pointer"
+        <RelativeLayout
+            android:id="@+id/file_type_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:id="@+id/file_type_icon"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:id="@+id/progressBar"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/circular_progress_diameter"
+                android:layout_height="@dimen/circular_progress_diameter"
+                android:max="100"
+                app:cpb_background_progressbar_color="@color/md_grey_600"
+                app:cpb_background_progressbar_width="@dimen/circular_progress_thickness"
+                app:cpb_progressbar_color="@color/md_grey_100"
+                app:cpb_progressbar_width="@dimen/circular_progress_thickness" />
+
+            <ImageView
+                android:id="@+id/notify_open"
+                android:layout_alignBottom="@id/file_type_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/file_type_wrapper"
+            android:layout_centerHorizontal="true"
+            android:text="Archive.zip"
+            android:textSize="25sp"
+            android:maxLines="2"
+            android:lines="2"
+            android:gravity="center_horizontal"
+            android:ellipsize="middle"
+            android:layout_marginLeft="@dimen/m_grid_2x"
+            android:layout_marginRight="@dimen/m_grid_2x"
+            android:textColor="@color/md_white_1000"/>
+
+        <TextView
+            android:id="@+id/downloaded_size"
+            android:layout_below="@id/file_name"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/EntryLabel"
+            android:text="3.5MB from 7MB (50%)"/>
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/file_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/file_type_wrapper"
-        android:layout_centerHorizontal="true"
-        android:text="Archive.zip"
-        android:textSize="25sp"
-        android:textColor="@color/md_white_1000"/>
-
-    <TextView
-        android:id="@+id/downloaded_size"
-        android:layout_below="@id/file_name"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/EntryLabel"
-        android:text="3.5MB from 7MB (50%)"/>
 
 </RelativeLayout>

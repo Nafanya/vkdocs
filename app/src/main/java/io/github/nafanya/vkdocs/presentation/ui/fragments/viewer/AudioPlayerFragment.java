@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -33,8 +34,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     @Bind(R.id.seek_bar)
     SeekBar seekBar;
 
-    @Bind(R.id.prev_button)
-    ImageView prevButton;
+//    @Bind(R.id.prev_button)
+//    ImageView prevButton;
 
     @Bind(R.id.play_button)
     ImageView playButton;
@@ -42,23 +43,27 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     @Bind(R.id.pause_button)
     ImageView pauseButton;
 
-    @Bind(R.id.next_button)
-    ImageView nextButton;
+    @Bind(R.id.file_name)
+    TextView fileName;
 
-    public interface AudioPlayerControl {
-        void nextAudio();
-        void prevAudio();
-    }
 
-    @OnClick(R.id.next_button)
-    void onClickNext(View v) {
-        callback.nextAudio();
-    }
+//    @Bind(R.id.next_button)
+//    ImageView nextButton;
 
-    @OnClick(R.id.prev_button)
-    void onClickPrev(View v) {
-        callback.prevAudio();
-    }
+//    public interface AudioPlayerControl {
+//        void nextAudio();
+//        void prevAudio();
+//    }
+
+//    @OnClick(R.id.next_button)
+//    void onClickNext(View v) {
+//        callback.nextAudio();
+//    }
+
+//    @OnClick(R.id.prev_button)
+//    void onClickPrev(View v) {
+//        callback.prevAudio();
+//    }
 
     @OnClick(R.id.play_button)
     void onClickPlay(View v) {
@@ -103,7 +108,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         return fragment;
     }
 
-    private AudioPlayerControl callback;
+//    private AudioPlayerControl callback;
 
     public boolean isPlayerInitialized() {
         return playerService != null;
@@ -112,12 +117,12 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        try {
-            callback = (AudioPlayerControl) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement AudioPlayerControl");
-        }
+//        try {
+//            callback = (AudioPlayerControl) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement AudioPlayerControl");
+//        }
 
         Intent intent = new Intent(activity, AudioPlayerService.class);
         activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -154,6 +159,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         View rootView = inflater.inflate(R.layout.fragment_audio_player, null);
         ButterKnife.bind(this, rootView);
         seekBar.setMax(100);
+        fileName.setText(audioDocument.title);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
