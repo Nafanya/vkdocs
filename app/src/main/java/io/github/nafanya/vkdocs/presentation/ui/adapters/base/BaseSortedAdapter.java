@@ -197,6 +197,7 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
                 return;
 
             int pos = getAdapterPosition();
+            Timber.d("adapter position = " + pos);
             if (v.getId() == contextMenu.getId()) {
                 listener.onClickContextMenu(pos, documents.get(pos));
                 Timber.d("Clicked context for #%d" , pos);

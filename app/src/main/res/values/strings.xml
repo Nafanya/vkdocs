@@ -63,4 +63,13 @@
     <string name="no_items">No items</string>
     <string name="title_activity_settings">Settings</string>
     <string name="settings_activity_title">Settings</string>
+    <string name="clear_offline_message">All available offline documents will be removed.</string>
+    <string name="clear_cache_message">Document cache will be cleared</string>
+    <string name="default_confirm_button">OK</string>
+    <string name="default_cancel_button">CANCEL</string>
+    <string name="clear_cache_title">Clear cache</string>
+    <string name="clear_offline_title">Remove offline</string>
+    <string name="file1_label">file</string>
+    <string name="file24_label">files</string>
+    <string name="files">files</string>
 </resources>

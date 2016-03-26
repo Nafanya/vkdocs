@@ -1,6 +1,8 @@
 package io.github.nafanya.vkdocs.domain.interactor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
@@ -35,6 +37,18 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
         }
     }
 
+    public static List<VkDocument> getDocuments(DocumentRepository repository) {
+        if (documents == null)
+            return repository.getMyDocuments();
+
+        synchronized (lock) {
+            List<VkDocument> ret = new ArrayList<>();
+            for (Map.Entry<Integer, VkDocument> entry : documents.entrySet())
+                ret.add(entry.getValue().copy());
+            return ret;
+        }
+    }
+
     @Override
     public Observable<List<VkDocument>> buildUseCase() {
         return Observable.create(subscriber -> {
@@ -62,8 +76,11 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
                 documents.put(document.getId(), document.copy());
             else
                 doc.copyFrom(document);
-
         }
+    }
+
+    public static int size() {
+        return documents.size();
     }
 
     public static VkDocument getDocument(int docId) {

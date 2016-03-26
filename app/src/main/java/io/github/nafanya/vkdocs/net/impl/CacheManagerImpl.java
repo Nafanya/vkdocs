@@ -7,13 +7,16 @@ import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.UpdateAllDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
-import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
+import io.github.nafanya.vkdocs.domain.model.DocumentsInfo;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.base.CacheManager;
+import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.utils.ThreadUtils;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -23,8 +26,10 @@ public class CacheManagerImpl implements CacheManager {
     private DownloadManager downloadManager;
     private EventBus eventBus;
     private String CACHE_ROOT;
-    private int size;
-    private Scheduler SUBSCRIBER = Schedulers.io();
+    private long size;
+    private final Scheduler IO_SCHEDULER = Schedulers.io();
+    private volatile long currentTotalSize = 0;
+    private volatile int currentFilesCached = 0;
 
     public CacheManagerImpl(
             EventBus eventBus,
@@ -35,7 +40,8 @@ public class CacheManagerImpl implements CacheManager {
         this.repository = repository;
         this.downloadManager = downloadManager;
         this.CACHE_ROOT = cacheRoot.getAbsolutePath() + File.separator;
-        this.size = size;
+        this.size = 1L * size * MB;
+        validateAndRemoveFiles(size);
     }
 
     @Override
@@ -43,8 +49,9 @@ public class CacheManagerImpl implements CacheManager {
         return downloadManager;
     }
 
-    public void setSize(int size) {//in megabytes
-        this.size = size;
+    @Override
+    public void setSizeLimit(int size) {//in megabytes
+        this.size = 1L * size * MB;
         validateAndRemoveFiles(size);
     }
 
@@ -69,7 +76,10 @@ public class CacheManagerImpl implements CacheManager {
                 document.resetRequest();
                 new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
                 //TODO remove listener here, jobana v rot. or no
-                validateAndRemoveFiles(size);
+                currentFilesCached++;
+                currentTotalSize += document.size;
+                if (currentTotalSize > size)
+                    validateAndRemoveFiles(size);
             }
 
             @Override
@@ -81,7 +91,7 @@ public class CacheManagerImpl implements CacheManager {
 
         document.setOfflineType(VkDocument.CACHE);
         document.setRequest(request);
-        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+        new UpdateDocument(IO_SCHEDULER, eventBus, repository, document).execute();
     }
 
     private static final int MB = 1024 * 1024;
@@ -110,41 +120,80 @@ public class CacheManagerImpl implements CacheManager {
         }
     }
 
-    private void validateAndRemoveFiles(int trimSize) {
-        Timber.d("validate and remove");
-        new GetDocuments(SUBSCRIBER, SUBSCRIBER, eventBus, repository).execute(new DefaultSubscriber<List<VkDocument>>() {
-            @Override
-            public void onNext(List<VkDocument> documents) {
-                List<CacheEntry> cacheEntries = new ArrayList<>();
-                for (VkDocument d: documents)
-                    if (d.isCached())
+    private void validateAndRemoveFiles(long limitSize) {
+        ThreadUtils.WorkerPool.execute(() -> {
+            List<VkDocument> documents = GetDocuments.getDocuments(repository);
+            List<CacheEntry> cacheEntries = new ArrayList<>();
+            for (VkDocument d: documents)
+                if (d.isCached()) {
+                    if (d.getPath() == null) { //something holy shit, ebat moj huj
+                        Timber.w("SOMETHING STRANGE: %s cached, but path is null", d.title);
+                        d.setOfflineType(VkDocument.NONE);
+                        new UpdateDocument(IO_SCHEDULER, eventBus, repository, d).execute();
+                    } else
                         cacheEntries.add(new CacheEntry(d));
+                }
+            Collections.sort(cacheEntries);
+            long currentSize = 0;
 
-                Collections.sort(cacheEntries);
-                long currentSize = 0;
-                long limitSize = 1L * trimSize * MB;
-                for (CacheEntry e: cacheEntries) {
-                    currentSize += e.size;
-                    if (!e.file.exists()) {
-                        e.relatedDocument.setOfflineType(VkDocument.NONE);
-                        e.relatedDocument.setPath(null);
-                        new UpdateDocument(SUBSCRIBER, eventBus, repository, e.relatedDocument).execute();
-                    } else if (currentSize > limitSize && currentSize - e.size >= limitSize)
-                        e.file.delete();
+            long newCurrentSize = 0;
+            int newFilesCached = 0;
+
+            List<VkDocument> updDocs = new ArrayList<>();
+            for (CacheEntry e: cacheEntries) {
+                currentSize += e.size;
+                if (!e.file.exists()) {
+                    e.relatedDocument.setOfflineType(VkDocument.NONE);
+                    e.relatedDocument.setPath(null);
+                    updDocs.add(e.relatedDocument);
+                } else if (currentSize > limitSize && currentSize - e.size >= limitSize) {
+                    e.file.delete();
+                    e.relatedDocument.setOfflineType(VkDocument.NONE);
+                    e.relatedDocument.setPath(null);
+                    updDocs.add(e.relatedDocument);
+                } else {
+                    newFilesCached++;
+                    newCurrentSize += e.size;
                 }
             }
+
+            currentTotalSize = newCurrentSize;
+            currentFilesCached = newFilesCached;
+            Timber.d("current total size/memory = %d %d", currentFilesCached, currentTotalSize);
+            new UpdateAllDocuments(IO_SCHEDULER, eventBus, repository, updDocs).execute();
         });
     }
 
     @Override
-    public void cacheFromOffline(VkDocument document) {
+    public void cacheFromOffline(VkDocument document, OfflineManager offlineManager) {
         document.setOfflineType(VkDocument.CACHE);
-        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
-        validateAndRemoveFiles(size);
+        new UpdateDocument(IO_SCHEDULER, eventBus, repository, document).execute();
+        offlineManager.removeFromOffline(document);
+
+        currentTotalSize += document.size;
+        currentFilesCached++;
+        if (currentTotalSize > size)
+            validateAndRemoveFiles(size);
     }
 
     @Override
     public void clear() {
         validateAndRemoveFiles(0);
+    }
+
+    @Override
+    public int geSizeLimit() {
+        return (int)(size / MB);
+    }
+
+    @Override
+    public DocumentsInfo getCurrentDocumentsInfo() {
+        return new DocumentsInfo(currentFilesCached, currentTotalSize);
+    }
+
+    @Override
+    public void removeFromCache(VkDocument document) {
+        currentFilesCached--;
+        currentTotalSize -= document.size;
     }
 }

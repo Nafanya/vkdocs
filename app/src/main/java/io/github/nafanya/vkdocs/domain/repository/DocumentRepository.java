@@ -14,4 +14,5 @@ public interface DocumentRepository {
     void update(VkDocument document);
     void synchronize() throws Exception;
     void rename(VkDocument document, String newName);
+    void updateAll(List<VkDocument> docs);
 }

@@ -3,16 +3,24 @@ package io.github.nafanya.vkdocs.net.impl;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
+import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.UpdateAllDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
+import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
+import io.github.nafanya.vkdocs.domain.model.DocumentsInfo;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.InternetService;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
+import io.github.nafanya.vkdocs.utils.ThreadUtils;
+import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -21,6 +29,9 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
     private DocumentRepository repository;
     private EventBus eventBus;
     private String OFFLINE_ROOT;
+    private final Scheduler IO_SCHEDULER = Schedulers.io();
+    private volatile int currentTotalFiles = 0;
+    private volatile long currentTotalSize = 0;
 
     public InterruptableOfflineManager(
             InternetService internetService,
@@ -47,6 +58,19 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
             if (internetService.hasInternetConnection())
                 downloadManager.retry(request);
         }
+
+        init();
+    }
+
+    private void init() {
+        ThreadUtils.WorkerPool.execute(()->{
+            List<VkDocument> docs = GetDocuments.getDocuments(repository);
+            for (VkDocument d : docs)
+                if (d.isOffline()) {
+                    currentTotalFiles++;
+                    currentTotalSize += d.size;
+                }
+        });
     }
 
     @Override
@@ -67,6 +91,48 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
             request.resetError();
             downloadManager.retry(request);
         }
+    }
+
+    @Override
+    public void offlineFromCache(VkDocument document, CacheManager cacheManager) {
+        document.setOfflineType(VkDocument.OFFLINE);
+        new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();
+        cacheManager.removeFromCache(document);
+    }
+
+    @Override
+    public void clear() {
+        ThreadUtils.WorkerPool.execute(()->{
+            Timber.d("[offline manager] clear");
+            List<VkDocument> docs = GetDocuments.getDocuments(repository);
+            List<VkDocument> updDocs = new ArrayList<>();
+            int currentTotalFiles_ = 0;
+            long currentTotalSize_ = 0;
+            for (VkDocument d: docs)
+                if (d.isOffline()) {
+                    d.setOfflineType(VkDocument.NONE);
+                    new File(d.getPath()).delete();
+                    d.setPath(null);
+                    updDocs.add(d);
+                    currentTotalFiles_++;
+                    currentTotalSize_ += d.size;
+                }
+            new UpdateAllDocuments(IO_SCHEDULER, eventBus, repository, docs).execute();
+
+            currentTotalFiles -= currentTotalFiles_;
+            currentTotalSize -= currentTotalSize_;
+        });
+    }
+
+    @Override
+    public DocumentsInfo getCurrentDocumentsInfo() {
+        return new DocumentsInfo(currentTotalFiles, currentTotalSize);
+    }
+
+    @Override
+    public void removeFromOffline(VkDocument document) {
+        currentTotalFiles--;
+        currentTotalSize -= document.size;
     }
 
     @Override
@@ -107,6 +173,8 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
             document.resetRequest();
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
             //request.removeListener(this);TODO fix it
+            currentTotalFiles++;
+            currentTotalSize += document.size;
         }
 
         @Override

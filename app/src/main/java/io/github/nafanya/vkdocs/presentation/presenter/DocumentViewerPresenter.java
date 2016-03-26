@@ -25,9 +25,6 @@ public class DocumentViewerPresenter extends BasePresenter {
         void onError(Exception e);
     }
 
-    protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
-    protected final Scheduler SUBSCRIBER = Schedulers.io();
-
     protected CacheManager cacheManager;
     protected Callback callback;
     protected EventBus eventBus;

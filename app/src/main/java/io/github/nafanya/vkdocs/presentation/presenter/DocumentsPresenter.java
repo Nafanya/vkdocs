@@ -64,9 +64,6 @@ public class DocumentsPresenter extends BasePresenter {
     protected DownloadManager systemDownloadManager;
     protected CacheManager cacheManager;
 
-    protected final Scheduler OBSERVER = AndroidSchedulers.mainThread();
-    protected final Scheduler SUBSCRIBER = Schedulers.io();
-
     public DocumentsPresenter(DocFilter filter, EventBus eventBus,
                               DocumentRepository repository,
                               InterruptableDownloadManager downloadManager,
@@ -138,16 +135,14 @@ public class DocumentsPresenter extends BasePresenter {
                     offlineManager,
                     document).execute(new OfflineSubscriber());
         else {
-            document.setOfflineType(VkDocument.OFFLINE);
-            new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+            offlineManager.offlineFromCache(document, cacheManager);
             callback.onUpdatedDocument(document);
         }
     }
 
     public void undoMakeOffline(VkDocument document) {
-        //TODO call cache manager
         if (document.isOffline()) {
-            cacheManager.cacheFromOffline(document);
+            cacheManager.cacheFromOffline(document, offlineManager);
             callback.onUpdatedDocument(document);
         } else {
             new CancelDownloadingDocument(OBSERVER, SUBSCRIBER, eventBus, repository, downloadManager, document).execute();
@@ -187,12 +182,12 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void forceNetworkLoad() {
         networkSubscriber = new NetworkSubscriber();
-        new NetworkDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).
-                execute(networkSubscriber);
+        new NetworkDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(networkSubscriber);
     }
 
     public void getDocuments() {
         documentsSubscriber = new GetDocumentsSubscriber();
+        Timber.d("HERE GET DOC");
         new GetDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(documentsSubscriber);
     }
 
@@ -243,6 +238,7 @@ public class DocumentsPresenter extends BasePresenter {
     public class GetDocumentsSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
         public void onNext(List<VkDocument> vkDocuments) {
+            Timber.d("on next thread = " + Thread.currentThread() + " " + Thread.currentThread().getId() + " " + Thread.currentThread().getName());
             List<VkDocument> documents = filterList(vkDocuments);
             findDownloadRequests(documents);
             callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));

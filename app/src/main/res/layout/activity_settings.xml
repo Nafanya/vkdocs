@@ -26,6 +26,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:paddingLeft="@dimen/m_grid_2x"
         android:paddingRight="@dimen/m_grid_2x"
@@ -63,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:gravity="right"
                 android:layout_weight="1"
-                android:text="115"/>
+                android:text="..."/>
         </LinearLayout>
 
         <View
@@ -87,9 +91,9 @@
 
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
-                android:id="@+id/total_offline"
+                android:id="@+id/offline_statistic"
                 android:layout_width="wrap_content"
-                android:text="10/513MB"
+                android:text="..."
                 android:layout_weight="1"
                 android:gravity="right"/>
         </LinearLayout>
@@ -116,11 +120,11 @@
 
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
-                android:id="@+id/data_in_cache"
+                android:id="@+id/cache_statistic"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="7/20MB"/>
+                android:text="..."/>
         </LinearLayout>
 
         <!---First section: Document cache-->
@@ -134,6 +138,7 @@
             android:text="@string/document_cache"/>
 
         <LinearLayout
+            android:id="@+id/cache_size"
             style="@style/AppTheme.SettingsItemWithComment">
 
             <TextView
@@ -151,7 +156,8 @@
             android:background="@android:color/darker_gray"/>
 
         <LinearLayout
-            style="@style/AppTheme.SettingsItemWithComment">
+            style="@style/AppTheme.SettingsItemWithComment"
+            android:id="@+id/clear_cache">
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
                 android:text="@string/clear_cache" />
@@ -173,7 +179,8 @@
             android:text="@string/document_offline"/>
 
         <LinearLayout
-            style="@style/AppTheme.SettingsItemWithComment">
+            style="@style/AppTheme.SettingsItemWithComment"
+            android:id="@+id/clear_offline">
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
                 android:text="@string/clear_offline" />
@@ -184,5 +191,7 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

@@ -108,10 +108,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
                 } else if (!cur.title.equals(dbDoc.getTitle())) {
                     dbDoc.setTitle(cur.title);
                     updated = true;
-                }/* else if (dbDoc.getSync() != VKDocumentEntity.SYNCHRONIZED) {
-                    dbDoc.setSync(VKDocumentEntity.SYNCHRONIZED);
-                    updated = true;
-                }*/
+                }
                 if (updated)
                     updatedDocuments.add(dbDoc);
 
@@ -129,5 +126,13 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         entity.setTitle(newName);
         entity.setSync(VKDocumentEntity.RENAMED);
         entity.update();
+    }
+
+    @Override
+    public void updateAll(List<VkDocument> docs) {
+        List<VKDocumentEntity> entities = new ArrayList<>();
+        for (VkDocument d : docs)
+            entities.add(dbMapper.transformInv(d));
+        databaseRepository.updateAll(entities);
     }
 }
