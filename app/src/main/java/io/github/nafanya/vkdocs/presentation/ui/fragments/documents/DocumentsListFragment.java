@@ -24,6 +24,7 @@ import io.github.nafanya.vkdocs.presentation.ui.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.DeleteDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.RenameDialog;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.UnknownTypeDocFragment;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -127,12 +128,24 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 //        adapter.notifyItemChanged(position);
     }
 
+
+    private boolean weCanOpen(VkDocument doc) {
+        return doc.getExtType() == VkDocument.ExtType.AUDIO ||
+                doc.getExtType() == VkDocument.ExtType.IMAGE ||
+                doc.getExtType() == VkDocument.ExtType.GIF ||
+                doc.getExtType() == VkDocument.ExtType.VIDEO;
+    }
+
     @Override
     public void onClick(int position, VkDocument document) {
-        Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
-        intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
-        intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
-        startActivity(intent);
+        if (document.isDownloaded() && !weCanOpen(document)) {
+            UnknownTypeDocFragment.throwIntentToOpen(getActivity(), document);
+        } else {
+            Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
+            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>) adapter.getData());
+            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
+            startActivity(intent);
+        }
     }
 
     @Override

@@ -170,7 +170,7 @@ public class DocumentsActivity extends AppCompatActivity implements
                                 .withIconColorRes(R.color.m_icon_all),
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_text)
-                                .withIcon(R.drawable.book_open_variant)
+                                .withIcon(R.drawable.text_box)
                                 .withSelectedTextColorRes(R.color.m_selected_text_text)
                                 .withIconColorRes(R.color.m_icon_text),
                         new PrimaryDrawerItem()

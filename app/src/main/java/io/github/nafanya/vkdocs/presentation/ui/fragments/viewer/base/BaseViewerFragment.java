@@ -1,13 +1,17 @@
 package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import android.view.View;
 
 import io.github.nafanya.vkdocs.R;
+import io.github.nafanya.vkdocs.domain.model.VkDocument;
 
 public class BaseViewerFragment extends Fragment implements OnPageChanged {
 
@@ -19,6 +23,25 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
     }
 
     private static Snackbar snackbar;
+
+
+    protected Drawable getPlaceholder(VkDocument doc) {
+        Context context = getActivity();
+
+        if (doc.getExt().equals("pdf"))
+            return ContextCompat.getDrawable(context, R.drawable.pdf_placeholder);
+
+        if (doc.getExtType().equals("doc") || doc.getExtType().equals("docx"))
+            return ContextCompat.getDrawable(context, R.drawable.file_word_placeholder);
+
+        if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
+            return ContextCompat.getDrawable(context, R.drawable.zip_placeholder);
+
+        if (doc.getExtType() == VkDocument.ExtType.TEXT)
+            return ContextCompat.getDrawable(context, R.drawable.text_placeholder);
+
+        return ContextCompat.getDrawable(context, R.drawable.file_unknown_type_placeholder);
+    }
 
     public View rootForSnackbar() {
         return null;

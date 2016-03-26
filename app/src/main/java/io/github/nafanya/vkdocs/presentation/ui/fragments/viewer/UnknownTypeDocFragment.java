@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -67,11 +68,11 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         View rootView = inflater.inflate(R.layout.fragment_unknown_type_document, container, false);
 
         ButterKnife.bind(this, rootView);
-        typeIcon.setImageDrawable(fileFormatter.getPlaceholder(document, getActivity()));
+        typeIcon.setImageDrawable(getPlaceholder(document));
         fileName.setText(document.title);
         typeIcon.setOnClickListener(v -> {
             if (presenter.isDownloaded())
-                throwIntentToOpen();
+                throwIntentToOpen(getActivity(), document);
         });
         if (!presenter.isDownloaded())
             downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
@@ -105,12 +106,10 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         Timber.d("wnen downloaded = " + document.title);
         hideProgress();
 
-        showSnackBar(v -> {
-            throwIntentToOpen();
-        });
+        showSnackBar(v -> throwIntentToOpen(getActivity(), document));
     }
 
-    protected void throwIntentToOpen() {
+    public static void throwIntentToOpen(Context context, VkDocument document) {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
@@ -119,7 +118,7 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         newIntent.setDataAndType(Uri.fromFile(fileDoc), mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//TODO one task?
         try {
-            startActivity(newIntent);
+            context.startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
             //TODO do something
             //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
