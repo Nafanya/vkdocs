@@ -2,7 +2,6 @@ package io.github.nafanya.vkdocs.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 
 import java.text.DateFormat;
@@ -22,6 +21,7 @@ public class FileFormatter {
     private Drawable image;
     private Drawable file;
     private Drawable archive;
+    private Drawable gif;
 
     private Drawable pdfUnknownType;
     private Drawable zipUnknownType;
@@ -39,6 +39,7 @@ public class FileFormatter {
             image = ContextCompat.getDrawable(context, R.drawable.image);
             file = ContextCompat.getDrawable(context, R.drawable.file);
             archive = ContextCompat.getDrawable(context, R.drawable.zip_box);
+            gif = ContextCompat.getDrawable(context, R.drawable.image_vintage);
         }
 
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
@@ -49,6 +50,9 @@ public class FileFormatter {
 
         if (doc.getExt().equals("pdf"))
             return filePdfBox;
+
+        if (doc.getExtType() == VkDocument.ExtType.GIF)
+            return gif;
 
         if (doc.getExtType() == VkDocument.ExtType.IMAGE)
             return image;

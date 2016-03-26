@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.DialogFragment;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -185,6 +186,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     // TODO: [fragment] fix share
     @Override
     public void onClickShare(VkDocument document) {
+        dismissContextMenu();
         Intent intent = createShareIntent(document);
 
         // Try to find VK app and set it if found.
@@ -209,6 +211,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 
     @Override
     public void onClickShareExternal(VkDocument document) {
+        dismissContextMenu();
         Intent intent = createShareIntent(document);
         startActivity(Intent.createChooser(intent, document.title));
     }
@@ -216,29 +219,19 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     private Intent createShareIntent(VkDocument document) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         final Uri uri;
+        final String mime;
         if (document.isCached() || document.isOffline()) {
             uri = Uri.fromFile(new File(document.getPath()));
         } else {
             uri = Uri.parse(document.url);
         }
+        MimeTypeMap mimeResolver = MimeTypeMap.getSingleton();
+        mime = mimeResolver.getMimeTypeFromExtension(document.getExt());
         Timber.d("[share] uri: %s", uri);
+
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        switch (document.getExtType()) {
-            case IMAGE:
-                intent.setType("image/*"); break;
-            case GIF:
-                intent.setType("image/gif"); break;
-            case AUDIO:
-                intent.setType("audio/*"); break;
-            case VIDEO:
-                intent.setType("video/*"); break;
-            case TEXT:case BOOK:
-                final String mime = String.format("*/%s", document.getExt());
-                intent.setType(mime); break;
-            case ARCHIVE: case UNKNOWN: default:
-                intent.setType("*/*"); break;
-        }
-        Timber.d("[share] mimetype: %s", intent.getType());
+        intent.setType(mime);
+        Timber.d("[share] mimetype: %s", mime);
         return intent;
     }
 
