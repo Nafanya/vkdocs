@@ -292,7 +292,11 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         Timber.d("[fragment] calling getDocuments for %s", isOffline);
     }
 
-    public void updateDocumentListItem(VkDocument document) {
-        adapter.notifyItemChanged(adapter.getData().indexOf(document));
+    public void updateDocumentListItem(VkDocument document) {//TODO ну что делать, надо быстро пофикситьы
+        int index = adapter.getData().indexOf(document);
+        if (index == -1)
+            return;
+        adapter.getData().get(index).title = document.title;
+        adapter.notifyItemChanged(index);
     }
 }

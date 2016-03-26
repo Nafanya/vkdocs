@@ -110,7 +110,7 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     protected void setRequest(int position, DownloadRequest request) {
-        if (listeners.get(position) != null)
+        if (listeners.get(position) != null && requests.get(position) != null)
             requests.get(position).removeListener(listeners.get(position));
         requests.set(position, request);
     }
