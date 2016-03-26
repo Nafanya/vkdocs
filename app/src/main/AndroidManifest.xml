@@ -42,11 +42,16 @@
             android:label="@string/title_activity_document_viewer"
             android:theme="@style/AppTheme" />
 
-        <service android:name=".presentation.ui.media.AudioPlayerService"></service>
+        <service android:name=".presentation.ui.media.AudioPlayerService"/>
 
         <activity android:name=".presentation.ui.views.activities.SettingsActivity"
+            android:parentActivityName=".presentation.ui.activities.DocumentsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".presentation.ui.activities.DocumentsActivity" />
         </activity>
 
     </application>

@@ -11,7 +11,6 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import rx.Observable;
 import rx.Scheduler;
-import timber.log.Timber;
 
 /*
 Получает доки из локальной базы данных.
@@ -70,6 +69,9 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
     }
 
     public static void update(VkDocument document) {
+        if (documents == null)
+            return;
+        
         synchronized (lock) {
             VkDocument doc = documents.get(document.getId());
             if (doc == null)

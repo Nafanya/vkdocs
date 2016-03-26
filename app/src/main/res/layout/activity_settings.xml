@@ -54,7 +54,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_folder_blue" />
+                app:srcCompat="@drawable/ic_folder"/>
 
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
@@ -82,7 +82,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_offline_green" />
+                app:srcCompat="@drawable/ic_offline_green_settings" />
 
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"
@@ -110,7 +110,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_offline_grey" />
+                app:srcCompat="@drawable/download_blue" />
 
             <TextView
                 style="@style/AppTheme.SettingsSecondarySection"

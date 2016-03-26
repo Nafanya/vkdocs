@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +50,7 @@ import io.github.nafanya.vkdocs.presentation.presenter.UserPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
+import io.github.nafanya.vkdocs.presentation.ui.views.activities.SettingsActivity;
 import timber.log.Timber;
 
 public class DocumentsActivity extends AppCompatActivity implements
@@ -210,7 +213,13 @@ public class DocumentsActivity extends AppCompatActivity implements
                     drawer.closeDrawer();
                     if (navDrawerPos != position) {
                         navDrawerPos = position;
-                        notifySectionChanged(navDrawerPos);
+
+                        if (position != 10)
+                            notifySectionChanged(navDrawerPos);
+                        else {
+                            Intent intent = new Intent(this, SettingsActivity.class);
+                            startActivity(intent);
+                        }
                     }
                     return true;
                 }).build();
@@ -272,6 +281,9 @@ public class DocumentsActivity extends AppCompatActivity implements
                 showSortByDialog(sortMode);
                 return true;
             case R.id.action_search:
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
