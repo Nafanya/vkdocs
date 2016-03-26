@@ -179,6 +179,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     public void onClickDelete(int position, VkDocument document) {
         dismissContextMenu();
         DialogFragment fragment = DeleteDialog.newInstance(position, document);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getActivity().getSupportFragmentManager(), "delete");
     }
 
