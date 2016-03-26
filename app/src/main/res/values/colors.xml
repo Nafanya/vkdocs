@@ -39,7 +39,7 @@
     <color name="m_section_text">@color/md_light_green_500</color>
     <color name="m_section_archive">@color/md_orange_500</color>
     <color name="m_section_gif">@color/md_purple_500</color>
-    <color name="m_section_image">@color/md_yellow_500</color>
+    <color name="m_section_image">@color/md_amber_500</color>
     <color name="m_section_music">@color/md_blue_500</color>
     <color name="m_section_video">@color/md_red_500</color>
     <color name="m_section_other">@color/md_blue_A700</color>
