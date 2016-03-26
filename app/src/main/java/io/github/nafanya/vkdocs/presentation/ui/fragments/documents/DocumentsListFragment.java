@@ -185,8 +185,37 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     // TODO: [fragment] fix share
     @Override
     public void onClickShare(VkDocument document) {
+        Intent intent = createShareIntent(document);
+
+        // Try to find VK app and set it if found.
+        PackageManager pm = getActivity().getPackageManager();
+        List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
+        boolean vkAppFound = false;
+        for (ResolveInfo info : resInfo) {
+            String packageName = info.activityInfo.packageName;
+            if (packageName.contains("com.vkontakte.android")) {
+                Timber.d("[share] uri: found VK app, using it");
+                intent.setPackage(packageName);
+                vkAppFound = true;
+                break;
+            }
+        }
+        if (vkAppFound) {
+            startActivity(intent);
+        } else {
+            startActivity(Intent.createChooser(intent, document.title));
+        }
+    }
+
+    @Override
+    public void onClickShareExternal(VkDocument document) {
+        Intent intent = createShareIntent(document);
+        startActivity(Intent.createChooser(intent, document.title));
+    }
+
+    private Intent createShareIntent(VkDocument document) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        Uri uri;
+        final Uri uri;
         if (document.isCached() || document.isOffline()) {
             uri = Uri.fromFile(new File(document.getPath()));
         } else {
@@ -194,20 +223,23 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         }
         Timber.d("[share] uri: %s", uri);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.setType("*/*");
-
-        PackageManager pm = getActivity().getPackageManager();
-        List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
-        for (ResolveInfo info : resInfo) {
-            // Extract the label, append it, and repackage it in a LabeledIntent
-            String packageName = info.activityInfo.packageName;
-            if (packageName.contains("com.vkontakte.android")) {
-                Timber.d("[share] uri: found VK app, using it");
-                intent.setPackage(packageName);
-                break;
-            }
+        switch (document.getExtType()) {
+            case IMAGE:
+                intent.setType("image/*"); break;
+            case GIF:
+                intent.setType("image/gif"); break;
+            case AUDIO:
+                intent.setType("audio/*"); break;
+            case VIDEO:
+                intent.setType("video/*"); break;
+            case TEXT:case BOOK:
+                final String mime = String.format("*/%s", document.getExt());
+                intent.setType(mime); break;
+            case ARCHIVE: case UNKNOWN: default:
+                intent.setType("*/*"); break;
         }
-        startActivity(intent);
+        Timber.d("[share] mimetype: %s", intent.getType());
+        return intent;
     }
 
     public void dismissContextMenu() {
