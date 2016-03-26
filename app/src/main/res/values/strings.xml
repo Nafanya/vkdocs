@@ -6,15 +6,15 @@
     <string name="cached_documents_label">Cached</string>
 
 
-    <string name="document_cache">Document cache</string>
+    <string name="document_cache">Cache</string>
     <string name="cache_size">Cache size</string>
-    <string name="current_cache_size">Current cache size</string>
+    <string name="current_cache_size_label">"Current cache size: "</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_comment">Remove all documents from cache</string>
 
-    <string name="document_offline">Document offline</string>
+    <string name="document_offline">Offline</string>
     <string name="clear_offline">Remove offline documents</string>
-    <string name="clear_offline_comment">All documents available offline will removed</string>
+    <string name="clear_offline_comment">All documents available offline will be removed</string>
 
     <string name="preference_user_repository">user_repository</string>
 
@@ -64,7 +64,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="settings_activity_title">Settings</string>
     <string name="clear_offline_message">All available offline documents will be removed.</string>
-    <string name="clear_cache_message">Document cache will be cleared</string>
+    <string name="clear_cache_message">Document cache will be cleared.</string>
     <string name="default_confirm_button">OK</string>
     <string name="default_cancel_button">CANCEL</string>
     <string name="clear_cache_title">Clear cache</string>
@@ -72,4 +72,5 @@
     <string name="file1_label">file</string>
     <string name="file24_label">files</string>
     <string name="files">files</string>
+    <string name="cache_size_title">Cache size</string>
 </resources>

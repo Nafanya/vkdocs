@@ -50,7 +50,6 @@ import io.github.nafanya.vkdocs.presentation.presenter.UserPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.SettingsActivity;
 import timber.log.Timber;
 
 public class DocumentsActivity extends AppCompatActivity implements
@@ -155,7 +154,7 @@ public class DocumentsActivity extends AppCompatActivity implements
 
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.drawable.header1)
                 .build();
 
         drawer = new DrawerBuilder()
@@ -163,7 +162,6 @@ public class DocumentsActivity extends AppCompatActivity implements
                 .withAccountHeader(accountHeader)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_all)

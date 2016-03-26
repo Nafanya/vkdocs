@@ -1,10 +1,14 @@
 package io.github.nafanya.vkdocs.net.impl;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateAllDocuments;
@@ -30,17 +34,21 @@ public class CacheManagerImpl implements CacheManager {
     private final Scheduler IO_SCHEDULER = Schedulers.io();
     private volatile long currentTotalSize = 0;
     private volatile int currentFilesCached = 0;
+    private SharedPreferences sharedPreferences;
 
     public CacheManagerImpl(
             EventBus eventBus,
             DocumentRepository repository,
             DownloadManager downloadManager,
-            File cacheRoot, int size) {
+            File cacheRoot, Context context, int defaultValue) {
         this.eventBus = eventBus;
         this.repository = repository;
         this.downloadManager = downloadManager;
         this.CACHE_ROOT = cacheRoot.getAbsolutePath() + File.separator;
-        this.size = 1L * size * MB;
+
+        this.sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preference_user_repository), Context.MODE_PRIVATE);
+        this.size = (long) getStoredCacheSize(defaultValue) * MB;
         validateAndRemoveFiles(size);
     }
 
@@ -50,7 +58,8 @@ public class CacheManagerImpl implements CacheManager {
     }
 
     @Override
-    public void setSizeLimit(int size) {//in megabytes
+    public void setSize(int size) {//in megabytes
+        changeCacheSize(size);
         this.size = 1L * size * MB;
         validateAndRemoveFiles(size);
     }
@@ -182,7 +191,7 @@ public class CacheManagerImpl implements CacheManager {
     }
 
     @Override
-    public int geSizeLimit() {
+    public int getSize() {
         return (int)(size / MB);
     }
 
@@ -195,5 +204,17 @@ public class CacheManagerImpl implements CacheManager {
     public void removeFromCache(VkDocument document) {
         currentFilesCached--;
         currentTotalSize -= document.size;
+    }
+
+    private static final String CACHE_SIZE_KEY = "cache_size_key";
+
+    private int getStoredCacheSize(int defaultValue) {
+        return sharedPreferences.getInt(CACHE_SIZE_KEY, defaultValue);
+    }
+
+    private  void changeCacheSize(int newValue) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(CACHE_SIZE_KEY, newValue);
+        editor.apply();
     }
 }

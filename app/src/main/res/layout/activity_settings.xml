@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.github.nafanya.vkdocs.presentation.ui.views.activities.SettingsActivity">
+    tools:context=".presentation.ui.activities.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -147,7 +147,9 @@
 
             <TextView
                 style="@style/AppTheme.SettingsSubsection"
-                android:text="@string/current_cache_size" />
+                android:id="@+id/current_cache_size"
+                android:text="@string/current_cache_size_label" />
+
         </LinearLayout>
 
         <View

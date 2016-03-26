@@ -64,6 +64,8 @@ public class App extends Application {
     };
 
 
+    public static final int DEFAULT_CACHE_SIZE = 100;//mb
+
     public void onCreate() {
         super.onCreate();
 
@@ -90,7 +92,7 @@ public class App extends Application {
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus, getAppCacheRoot());
-        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot(), 100);
+        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot(), this, DEFAULT_CACHE_SIZE);
         startService(new Intent(this, AudioPlayerService.class));
 
         try {

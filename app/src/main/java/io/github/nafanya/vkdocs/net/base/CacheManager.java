@@ -9,8 +9,8 @@ public interface CacheManager {
     void cache(VkDocument document);
     void cacheFromOffline(VkDocument document, OfflineManager offlineManager);
     void clear();
-    int geSizeLimit();
-    void setSizeLimit(int sizeLimit);
+    int getSize();
+    void setSize(int sizeLimit);
     DocumentsInfo getCurrentDocumentsInfo();
 
     void removeFromCache(VkDocument document);

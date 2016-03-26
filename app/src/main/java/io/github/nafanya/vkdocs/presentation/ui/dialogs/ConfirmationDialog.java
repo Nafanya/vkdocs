@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
+package io.github.nafanya.vkdocs.presentation.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,9 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 
-import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.utils.FileFormatter;
 
 public class ConfirmationDialog extends AppCompatDialogFragment {
     public interface Callback {
