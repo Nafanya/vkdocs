@@ -8,7 +8,7 @@
     <dimen name="margin_primary">8dp</dimen>
 
 
-    <dimen name="unknown_file">200dp</dimen>
+    <dimen name="m_image_preview_splash_size">200dp</dimen>
 
     <dimen name="audio_player_button">60dp</dimen>
     <dimen name="audio_player_placeholder">450dp</dimen>

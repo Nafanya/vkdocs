@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:weightSum="2"
     android:background="@color/md_black_1000">
 
     <RelativeLayout
+        android:layout_weight="1"
         android:id="@+id/audio_views"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/music_box_image"
@@ -40,11 +38,11 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:layout_weight="1"
         android:id="@+id/audio_controls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/audio_views">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center">
 
         <SeekBar
             android:id="@+id/seek_bar"
@@ -71,4 +69,4 @@
             style="@style/Button.Player"/>
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

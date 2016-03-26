@@ -1,7 +1,7 @@
 <!-- drawable/file.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="@dimen/unknown_file"
-    android:width="@dimen/unknown_file"
+    android:height="@dimen/m_image_preview_splash_size"
+    android:width="@dimen/m_image_preview_splash_size"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path android:fillColor="@color/unknownFileColor"

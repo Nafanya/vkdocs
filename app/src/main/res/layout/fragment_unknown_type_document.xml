@@ -58,6 +58,8 @@
             android:lines="2"
             android:gravity="center_horizontal"
             android:ellipsize="middle"
+            android:layout_marginLeft="@dimen/m_grid_2x"
+            android:layout_marginRight="@dimen/m_grid_2x"
             android:textColor="@color/md_white_1000"/>
 
         <TextView

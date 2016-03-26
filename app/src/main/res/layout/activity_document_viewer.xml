@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     tools:context=".presentation.ui.activities.DocumentViewerActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <!--<android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
 
         </android.support.v7.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.AppBarLayout> -->
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
