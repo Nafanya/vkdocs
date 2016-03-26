@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views;
+package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 /**
  * Created by nafanya on 1/31/16.
@@ -18,7 +18,6 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.DocumentsActivity;
 
 
 /**

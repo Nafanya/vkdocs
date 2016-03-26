@@ -67,7 +67,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/m_grid_2x"
             style="@style/FixedSizeIcon"
-            app:srcCompat="@drawable/download"/>
+            app:srcCompat="@drawable/download_grey"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -108,7 +108,8 @@
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:id="@+id/switch1" />
+            android:id="@+id/switch1"
+            app:theme="@style/AppTheme"/>
     </RelativeLayout>
 
     <RelativeLayout

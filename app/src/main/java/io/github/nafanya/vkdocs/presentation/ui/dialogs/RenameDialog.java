@@ -1,7 +1,6 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
+package io.github.nafanya.vkdocs.presentation.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,22 +48,11 @@ public class RenameDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-
-        try {
-            callback = (Callback) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement Callback");
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doc = getArguments().getParcelable(DOC_KEY);
         position = getArguments().getInt(POS_KEY);
+        callback = (Callback) getTargetFragment();
 
         App app = (App)getActivity().getApplication();
         fileFormatter = app.getFileFormatter();

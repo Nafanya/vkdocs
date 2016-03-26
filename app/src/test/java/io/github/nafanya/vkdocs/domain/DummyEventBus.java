@@ -2,7 +2,6 @@ package io.github.nafanya.vkdocs.domain;
 
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
-import rx.Observable;
 
 /**
  * Created by pva701 on 24.02.16.
@@ -54,7 +53,8 @@ public class DummyEventBus implements EventBus {
     }
 
     @Override
-    public <T> UseCase<T> getEvent(Class<? extends UseCase<T>> clazz) {
+    public <T extends UseCase<?>> T getEvent(Class<T> clazz) {
         return null;
     }
+
 }

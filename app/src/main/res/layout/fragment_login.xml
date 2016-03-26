@@ -2,7 +2,7 @@
     style="@style/Container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.ui.views.LoginActivity">
+    tools:context=".presentation.ui.activities.LoginActivity">
 
     <Button
         android:id="@+id/sign_in_button"

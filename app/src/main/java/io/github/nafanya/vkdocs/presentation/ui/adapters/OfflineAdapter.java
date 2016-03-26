@@ -1,7 +1,6 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +17,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
 import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import timber.log.Timber;
 
 public class OfflineAdapter extends BaseSortedAdapter {
     private static final int DOCUMENT_STATE_NORMAL = 0;
@@ -37,7 +33,6 @@ public class OfflineAdapter extends BaseSortedAdapter {
     public OfflineAdapter(Context context, FileFormatter fileFormatter, SortMode sortMode, ItemEventListener listener) {
         super(context, fileFormatter, sortMode);
         this.listener = listener;
-
     }
 
     public void setData(List<VkDocument> documents) {
@@ -58,6 +53,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     @Override
     public int getItemViewType(int position) {
+//        Timber.d("[offlineadapter] pos: %d, title: %s", position, documents.get(position).title);
         if (documents.get(position).isOfflineInProgress())
             return DOCUMENT_STATE_DOWNLOADING;
         return DOCUMENT_STATE_NORMAL;
@@ -65,10 +61,11 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//        Timber.d("[offlineadapter] viewtype: %d", viewType);
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.item_document, parent, false);
+        View view = inflater.inflate(R.layout.item_document2, parent, false);
         if (viewType == DOCUMENT_STATE_NORMAL) {
             return new DocumentViewHolder(view, listener);
         } else {
@@ -98,13 +95,10 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_offline_progress)
-        ImageView documentOfflineInProgressIcon;
-
+        @Bind(R.id.ic_document_cache_offline_progress)
+        ImageView documentCacheOfflineInProgressIcon;
         @Bind(R.id.ic_document_cached)
         ImageView documentCachedIcon;
-        @Bind(R.id.ic_document_cache_progress)
-        ImageView documentCacheInProgressIcon;
 
         @Bind(R.id.text_document_title)
         TextView title;
@@ -133,9 +127,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
             ButterKnife.bind(this, view);
 
             documentOfflineIcon.setVisibility(View.GONE);
-            documentOfflineInProgressIcon.setVisibility(View.GONE);
+            documentCacheOfflineInProgressIcon.setVisibility(View.GONE);
             documentCachedIcon.setVisibility(View.GONE);
-            documentCacheInProgressIcon.setVisibility(View.GONE);
 
             downloadProgress.setVisibility(View.VISIBLE);
             sortLabel.setVisibility(View.GONE);
@@ -162,7 +155,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onComplete() {
-                Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
+//                Timber.d("[adapter] onComplete");
+//                Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
                 doc.setPath(doc.getRequest().getDest());
                 doc.resetRequest();
                 listener.onCompleteDownloading(getAdapterPosition(), doc);

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".presentation.ui.views.LoginActivity"
+            android:name=".presentation.ui.activities.LoginActivity"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <data android:scheme="vk5252455" />
@@ -34,9 +34,14 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
-        <activity android:name=".presentation.ui.views.activities.DocumentsActivity" />
         <activity
-            android:name=".presentation.ui.views.activities.DocumentViewerActivity"
+            android:name=".presentation.ui.activities.documents.DocumentsActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".presentation.ui.activities.DocumentsActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".presentation.ui.activities.DocumentViewerActivity"
             android:label="@string/title_activity_document_viewer"
             android:theme="@style/AppTheme" />
 

@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 
 import android.net.Uri;
 import android.os.Bundle;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.nafanya.vkdocs.net.base.download.BaseDownloadRequest;
-import rx.Subscription;
 import timber.log.Timber;
 
 public class DownloadRequest extends BaseDownloadRequest {
@@ -83,6 +82,10 @@ public class DownloadRequest extends BaseDownloadRequest {
 
     public void resetError() {
         lastEx = null;
+    }
+
+    public void resetComplete() {
+        isCompleted = false;
     }
 
     public interface RequestListener {

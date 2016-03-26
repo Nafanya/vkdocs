@@ -10,7 +10,6 @@ import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateAllDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
-import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.DocumentsInfo;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
@@ -170,7 +169,10 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
         @Override
         public void onComplete() {
             document.setPath(request.getDest());
+            document.getRequest().resetError();
+            document.getRequest().resetComplete();
             document.resetRequest();
+            Timber.d("[offlinemanager] onComplete");
             new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
             //request.removeListener(this);TODO fix it
             currentTotalFiles++;

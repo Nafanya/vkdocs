@@ -5,9 +5,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
-import com.vk.sdk.api.model.VKApiUser;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,26 +12,20 @@ import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.CancelDownloadingDocument;
 import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
-import io.github.nafanya.vkdocs.domain.interactor.GetUserInfo;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkDocuments;
-import io.github.nafanya.vkdocs.domain.interactor.RenameDocument;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
-import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.presentation.presenter.base.BasePresenter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.DocFilter;
-import rx.Scheduler;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DocumentsPresenter extends BasePresenter {
@@ -46,20 +37,16 @@ public class DocumentsPresenter extends BasePresenter {
         void onDatabaseError(Exception ex);
 
         void onUpdatedDocument(VkDocument document);
-
-        void onUserInfoLoaded(VKApiUser userInfo);
     }
 
     protected Subscriber<List<VkDocument>> documentsSubscriber = Subscribers.empty();
     protected Subscriber<List<VkDocument>> networkSubscriber = Subscribers.empty();
-    protected Subscriber<VKApiUser> userSubscriber = Subscribers.empty();
 
     protected DocFilter filter;
     protected InterruptableDownloadManager downloadManager;
     protected Callback callback;
     protected EventBus eventBus;
     protected DocumentRepository repository;
-    protected UserRepository userRepository;
     protected OfflineManager offlineManager;
     protected DownloadManager systemDownloadManager;
     protected CacheManager cacheManager;
@@ -70,14 +57,12 @@ public class DocumentsPresenter extends BasePresenter {
                               OfflineManager offlineManager,
                               CacheManager cacheManager,
                               DownloadManager systemDownloadManager,
-                              UserRepository userRepository,
                               @NonNull Callback callback) {
         this.filter = filter;
         this.downloadManager = downloadManager;
         this.callback = callback;
         this.eventBus = eventBus;
         this.repository = repository;
-        this.userRepository = userRepository;
         this.systemDownloadManager = systemDownloadManager;
         this.offlineManager = offlineManager;
         this.cacheManager = cacheManager;
@@ -93,8 +78,6 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void downloadDocumentToDownloads(VkDocument document) {
         Uri uri = null;
-        Timber.d("[download document] %s", document);
-        Timber.d("[download document] ic_cached_green(%s), offline(%s)", document.isCached(), document.isOffline());
         try {
             if (document.isCached() || document.isOffline()) {
                 Timber.d("[download document] already downloaded as local file");
@@ -114,16 +97,6 @@ public class DocumentsPresenter extends BasePresenter {
         request.setVisibleInDownloadsUi(true);
         Timber.d("[download document] enqueue request: %s", request);
         systemDownloadManager.enqueue(request);
-    }
-
-    public void getUserInfo() {
-        userSubscriber = new GetUserInfoSubscriber();
-        new GetUserInfo(
-                OBSERVER,
-                SUBSCRIBER,
-                eventBus,
-                userRepository
-        ).execute(userSubscriber);
     }
 
     public void makeOffline(VkDocument document) {
@@ -169,11 +142,11 @@ public class DocumentsPresenter extends BasePresenter {
                 req.resetError();//smth holy shit
                 break;
             }
-        //openDocument(document);
     }
 
     public void rename(VkDocument document, String newName) {
-        new RenameDocument(OBSERVER, SUBSCRIBER, eventBus, repository, document, newName).execute();
+        document.title = newName;
+        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
     }
 
     public void delete(VkDocument document) {
@@ -187,7 +160,6 @@ public class DocumentsPresenter extends BasePresenter {
 
     public void getDocuments() {
         documentsSubscriber = new GetDocumentsSubscriber();
-        Timber.d("HERE GET DOC");
         new GetDocuments(OBSERVER, SUBSCRIBER, eventBus, repository).execute(documentsSubscriber);
     }
 
@@ -203,11 +175,6 @@ public class DocumentsPresenter extends BasePresenter {
             networkSubscriber = new NetworkSubscriber();
             eventBus.getEvent(NetworkDocuments.class).execute(networkSubscriber);
         }
-
-        if (eventBus.contains(GetUserInfo.class) && userSubscriber.isUnsubscribed()) {
-            userSubscriber = new GetUserInfoSubscriber();
-            eventBus.getEvent(GetUserInfo.class).execute(userSubscriber);
-        }
     }
 
 
@@ -215,7 +182,6 @@ public class DocumentsPresenter extends BasePresenter {
     public void onStop() {
         unsubscribeIfNot(documentsSubscriber);
         unsubscribeIfNot(networkSubscriber);
-        unsubscribeIfNot(userSubscriber);
     }
 
     private void findDownloadRequests(List<VkDocument> documents) {
@@ -228,17 +194,9 @@ public class DocumentsPresenter extends BasePresenter {
                 }
     }
 
-    public class GetUserInfoSubscriber extends DefaultSubscriber<VKApiUser> {
-        @Override
-        public void onNext(VKApiUser user) {
-            callback.onUserInfoLoaded(user);
-        }
-    }
-
     public class GetDocumentsSubscriber extends DefaultSubscriber<List<VkDocument>> {
         @Override
         public void onNext(List<VkDocument> vkDocuments) {
-            Timber.d("on next thread = " + Thread.currentThread() + " " + Thread.currentThread().getId() + " " + Thread.currentThread().getName());
             List<VkDocument> documents = filterList(vkDocuments);
             findDownloadRequests(documents);
             callback.onGetDocuments(copyVkDocumentsList(filterList(documents)));

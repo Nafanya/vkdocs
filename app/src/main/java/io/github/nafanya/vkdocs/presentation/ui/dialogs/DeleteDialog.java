@@ -1,7 +1,6 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.dialogs;
+package io.github.nafanya.vkdocs.presentation.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -40,23 +39,11 @@ public class DeleteDialog extends AppCompatDialogFragment {
         super.onCreate(savedInstanceState);
         doc = getArguments().getParcelable(DOC_KEY);
         position = getArguments().getInt(POS_KEY);
+        callback = (Callback) getTargetFragment();
 
         App app = (App)getActivity().getApplication();
         fileFormatter = app.getFileFormatter();
     }
-
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-
-        try {
-            callback = (Callback) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement Callback");
-        }
-    }
-
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

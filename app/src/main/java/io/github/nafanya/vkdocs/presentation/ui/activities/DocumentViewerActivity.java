@@ -1,4 +1,4 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;

@@ -1,6 +1,5 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
@@ -25,32 +24,26 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
-import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
-/**
- * Created by nafanya on 3/21/16.
- */
-public class GifImageFragment extends Fragment
+
+public class ImageFragment extends Fragment
         implements DocumentViewerPresenter.Callback, OnPageChanged {
-    public static final String GIF_KEY = "gif_key";
-
-    private VkDocument document;
-    private GifDrawable gif;
+    public static final String IMAGE_KEY = "image_key";
     private DocumentViewerPresenter presenter;
 
-    private SimpleTarget target = new SimpleTarget<GifDrawable>() {
+    private VkDocument document;
+    private PhotoViewAttacher attacher;
+    private SimpleTarget target = new SimpleTarget<GlideBitmapDrawable>() {
         @Override
-        public void onResourceReady(GifDrawable gifDrawable, GlideAnimation glideAnimation) {
-            gif = gifDrawable;
-            imageView.setImageDrawable(gif.getCurrent());
-            gif.start();
+        public void onResourceReady(GlideBitmapDrawable bitmap, GlideAnimation glideAnimation) {
+            imageView.setImageBitmap(bitmap.getBitmap());
+            if (attacher != null) {
+                attacher.update();
+            }
             progressBar.setVisibility(View.GONE);
         }
 
-        @Override
-        public void onLoadFailed(Exception e, Drawable errorDrawable) {
-//            GlideProgressListener.removeGlideProgressListener(listener);
-        }
     };
 
     @Bind(R.id.imageView)
@@ -59,10 +52,10 @@ public class GifImageFragment extends Fragment
     @Bind(R.id.progressBar)
     CircularProgressBar progressBar;
 
-    public static GifImageFragment newInstance(VkDocument document) {
-        GifImageFragment fragment = new GifImageFragment();
+    public static ImageFragment newInstance(VkDocument document) {
+        ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelable(GIF_KEY, document);
+        args.putParcelable(IMAGE_KEY, document);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,9 +63,7 @@ public class GifImageFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        document = getArguments().getParcelable(GIF_KEY);
-        //Timber.d("IS CACHED %s: %b", document.title, document.isCached());
+        document = getArguments().getParcelable(IMAGE_KEY);
 
         App app = (App)getActivity().getApplication();
         presenter = new DocumentViewerPresenter(
@@ -93,6 +84,7 @@ public class GifImageFragment extends Fragment
         return rootView;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -102,25 +94,22 @@ public class GifImageFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (gif != null)
-            gif.start();
+        attacher = new PhotoViewAttacher(imageView);
         if (isBecameVisible)
             onBecameVisible();
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
-        if (gif != null)
-            gif.stop();
+        release();
     }
 
     @Override
     public void onStop() {
         presenter.onStop();
-        release();
         super.onStop();
+        release();
     }
 
     @Override
@@ -131,26 +120,14 @@ public class GifImageFragment extends Fragment
 
     private void release() {
 //        GlideProgressListener.removeGlideProgressListener(listener);
-        if (gif != null) {
-            gif = null;
+        if (attacher != null) {
+            attacher.cleanup();
+            attacher = null;
         }
     }
 
     private boolean isBecameVisible = false;
     private boolean isAlreadyNotifiedAboutVisible = false;
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser != isBecameVisible) {
-            isBecameVisible = isVisibleToUser;
-            if (isBecameVisible) {
-                if (isResumed())
-                    onBecameVisible();
-            } else
-                onBecameInvisible();
-        }
-    }
 
     @Override
     public void onBecameVisible() {
@@ -170,11 +147,22 @@ public class GifImageFragment extends Fragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser != isBecameVisible) {
+            isBecameVisible = isVisibleToUser;
+            if (isBecameVisible) {
+                if (isResumed())
+                    onBecameVisible();
+            } else
+                onBecameInvisible();
+        }
+    }
+
+    @Override
     public void onCompleteCaching(VkDocument document) {
-        Timber.d("cached = " + document.isCached() + " off = " + document.isOffline() + " path = " + document.getPath());
         Glide.with(this)
                 .load(Uri.fromFile(new File(document.getPath())))
-                .asGif()
                 .into(target);
     }
 
@@ -185,6 +173,6 @@ public class GifImageFragment extends Fragment
 
     @Override
     public void onError(Exception e) {
-        //TODO write here
+
     }
 }

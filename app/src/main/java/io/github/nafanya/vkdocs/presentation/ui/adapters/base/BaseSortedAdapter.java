@@ -126,6 +126,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
+        @Bind(R.id.ic_document_cache_offline_progress)
+        ImageView documentCacheOfflineInProgressIcon;
 
         @Bind(R.id.ic_document_cached)
         ImageView documentCachedIcon;
@@ -134,8 +136,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         ImageButton contextMenu;
         @Bind(R.id.text_document_title)
         TextView title;
-        @Bind(R.id.sortLabel) TextView sortLabel; // Only size yet
-        @Bind(R.id.statusLabels) TextView statusLables; // Only size yet
+        @Bind(R.id.sortLabel) TextView sortLabel;
+        @Bind(R.id.statusLabels) TextView statusLables;
 
         private CommonItemEventListener listener;
 
@@ -157,21 +159,22 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             documentOfflineIcon.setVisibility(View.GONE);
+            documentCacheOfflineInProgressIcon.setVisibility(View.GONE);
             documentCachedIcon.setVisibility(View.GONE);
 
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
-            } else if (doc.isOfflineInProgress()) {
+            } else if (doc.isOfflineInProgress() || doc.isCacheInProgress()) {
+                documentCacheOfflineInProgressIcon.setVisibility(View.VISIBLE);
             } else if (doc.isCached()) {
                 documentCachedIcon.setVisibility(View.VISIBLE);
-            } else if (doc.isCacheInProgress()) {
             }
 
             final int sortLabelText;
             final String statusLabelText;
             switch (sortMode) {
                 case DATE:
-                    sortLabelText = R.string.label_modified;
+                    sortLabelText = R.string.label_added;
                     statusLabelText = fileFormatter.formatDate(doc.date);
                     break;
                 case SIZE:case NAME:
@@ -197,7 +200,6 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
                 return;
 
             int pos = getAdapterPosition();
-            Timber.d("adapter position = " + pos);
             if (v.getId() == contextMenu.getId()) {
                 listener.onClickContextMenu(pos, documents.get(pos));
                 Timber.d("Clicked context for #%d" , pos);
