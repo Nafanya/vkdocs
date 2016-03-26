@@ -1,11 +1,10 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.fragments;
+package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,18 +22,12 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.DownloadableDocFragment;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
 
-public class UnknownTypeDocFragment extends Fragment
-        implements DocumentViewerPresenter.Callback, OnPageChanged {
-
-    private static String DOC_KEY = "doc_key";
-
-    private VkDocument document;
+public class UnknownTypeDocFragment extends DownloadableDocFragment {
     private FileFormatter fileFormatter;
 
     @Bind(R.id.unknown_type_layout)
@@ -52,7 +45,6 @@ public class UnknownTypeDocFragment extends Fragment
     @Bind(R.id.downloaded_size)
     TextView downloadedSize;
 
-    private DocumentViewerPresenter presenter;
 
     public static UnknownTypeDocFragment newInstance(VkDocument document) {
         UnknownTypeDocFragment fragment = new UnknownTypeDocFragment();
@@ -63,16 +55,9 @@ public class UnknownTypeDocFragment extends Fragment
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        document = getArguments().getParcelable(DOC_KEY);
-
         App app = (App)getActivity().getApplication();
-        presenter = new DocumentViewerPresenter(
-                app.getEventBus(),
-                app.getRepository(),
-                app.getCacheManager(), this);
-
         fileFormatter = app.getFileFormatter();
     }
 
@@ -85,30 +70,44 @@ public class UnknownTypeDocFragment extends Fragment
         typeIcon.setImageDrawable(fileFormatter.getPlaceholder(document, getActivity()));
         fileName.setText(document.title);
         typeIcon.setOnClickListener(v -> {
-            if (document.isDownloaded())
+            if (presenter.isDownloaded())
                 throwIntentToOpen();
-
         });
-
-        if (!document.isDownloaded())
+        if (!presenter.isDownloaded())
             downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
         else
-            whenDownloaded();
+            downloadedSize.setText(fileFormatter.formatSize(document.size));
         return rootView;
     }
 
-    protected void whenDownloaded() {
+    protected void showProgress() {
+        downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
+        downloadProgress.setVisibility(View.VISIBLE);
+        hideSnackbar();
+    }
+
+    protected void hideProgress() {
         downloadedSize.setText(fileFormatter.formatSize(document.size));
         downloadProgress.setVisibility(View.GONE);
 
-        /*Timber.d("rel layout = " + relativeLayout);
-        Snackbar snackbar = Snackbar
-                .make(relativeLayout, "Open in other app", Snackbar.LENGTH_INDEFINITE)
-                .setAction("OPEN", view -> {
-                    Timber.d("on click open");
-                });
-        snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.show();*/
+        if (!presenter.isDownloaded()) {
+            downloadProgress.setProgress(0);
+            downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
+        }
+    }
+
+    @Override
+    public View rootForSnackbar() {
+        return relativeLayout;
+    }
+
+    protected void whenDownloaded() {
+        Timber.d("wnen downloaded = " + document.title);
+        hideProgress();
+
+        showSnackBar(v -> {
+            throwIntentToOpen();
+        });
     }
 
     protected void throwIntentToOpen() {
@@ -137,64 +136,27 @@ public class UnknownTypeDocFragment extends Fragment
 
     @Override
     public void onCompleteCaching(VkDocument document) {
+        this.document = document;
         whenDownloaded();
     }
 
-    @Override
-    public void onError(Exception e) {
-
-    }
-    /***End callbacks***/
-
-    private boolean isBecameVisible = false;
-    private boolean isAlreadyNotifiedAboutVisible = false;
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser != isBecameVisible) {
-            isBecameVisible = isVisibleToUser;
-            if (isBecameVisible) {
-                if (isResumed())
-                    onBecameVisible();
-            } else
-                onBecameInvisible();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (isBecameVisible)
-            onBecameVisible();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        presenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        presenter.onStop();
-        super.onStop();
-    }
+    /***Fragment callbacsk***/
 
     @Override
     public void onBecameVisible() {
-        if (isAlreadyNotifiedAboutVisible)
-            return;
-        isAlreadyNotifiedAboutVisible = true;
-        presenter.openDocument(document);
+        super.onBecameVisible();
+        if (!presenter.isDownloaded()) {
+            showProgress();
+            presenter.openDocument();
+        } else
+            whenDownloaded();
     }
 
     @Override
     public void onBecameInvisible() {
-        isAlreadyNotifiedAboutVisible = false;
-        if (presenter.isDownloading()) {
+        super.onBecameInvisible();
+        if (presenter.isDownloading())
             presenter.cancelDownloading();
-            downloadProgress.setProgress(0);
-        }
+        hideProgress();
     }
 }

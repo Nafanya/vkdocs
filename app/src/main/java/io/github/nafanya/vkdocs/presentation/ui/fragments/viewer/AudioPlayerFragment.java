@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +20,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.BaseViewerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.media.AudioPlayerService;
 import io.github.nafanya.vkdocs.presentation.ui.media.CustomMediaPlayer;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
-public class AudioPlayerFragment extends Fragment
-        implements OnPageChanged, AudioPlayerService.OnPrepared {
+public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlayerService.OnPrepared {
     public static String MUSIC_KEY = "music_key";
 
     @Bind(R.id.seek_bar)
@@ -87,7 +85,7 @@ public class AudioPlayerFragment extends Fragment
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            if (isBecameVisible)
+            if (isBecameVisible())
                 startPlaying();
         }
 
@@ -110,9 +108,6 @@ public class AudioPlayerFragment extends Fragment
     public boolean isPlayerInitialized() {
         return playerService != null;
     }
-
-    private boolean isBecameVisible = false;
-    private boolean isAlreadyNotifiedAboutVisible = false;
 
     @Override
     public void onAttach(Context activity) {
@@ -196,7 +191,9 @@ public class AudioPlayerFragment extends Fragment
     }
 
     private class SeekBarUpdater extends CustomMediaPlayer.PlayingListener {
-        /**Progress callback***/
+        /**
+         * Progress callback
+         ***/
         @Override
         public void onCompleted() {
             Timber.d("on complete seek bar");
@@ -215,31 +212,16 @@ public class AudioPlayerFragment extends Fragment
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser != isBecameVisible) {
-            isBecameVisible = isVisibleToUser;
-            if (isBecameVisible) {
-                if (isResumed())
-                    onBecameVisible();
-            } else
-                onBecameInvisible();
-        }
-    }
-
-    @Override
     public void onBecameVisible() {
-        if (isAlreadyNotifiedAboutVisible)
-            return;
+        super.onBecameVisible();
         enableControlButton(false);
-        isAlreadyNotifiedAboutVisible = true;
         if (isPlayerInitialized())
             startPlaying();
     }
 
     @Override
     public void onBecameInvisible() {
-        isAlreadyNotifiedAboutVisible = false;
+        super.onBecameInvisible();
         if (isPlayerInitialized())
             playerService.stop();
         enableControlButton(false);
@@ -248,11 +230,9 @@ public class AudioPlayerFragment extends Fragment
 
     @Override
     public void onResume() {
-        super.onResume();
         if (subscription.isUnsubscribed() && isPlayerInitialized())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
-        if (isBecameVisible)
-            onBecameVisible();
+        super.onResume();
     }
 
     @Override

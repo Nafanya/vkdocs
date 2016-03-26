@@ -23,6 +23,7 @@
 
         <com.mikhaellopez.circularprogressbar.CircularProgressBar
             android:id="@+id/progressBar"
+            android:visibility="gone"
             android:layout_centerInParent="true"
             android:layout_width="@dimen/circular_progress_diameter"
             android:layout_height="@dimen/circular_progress_diameter"

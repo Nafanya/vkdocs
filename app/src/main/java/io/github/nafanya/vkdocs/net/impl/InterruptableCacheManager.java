@@ -20,14 +20,15 @@ import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.utils.ThreadUtils;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class CacheManagerImpl implements CacheManager {
+public class InterruptableCacheManager implements CacheManager {
     private DocumentRepository repository;
-    private DownloadManager downloadManager;
+    private InterruptableDownloadManager downloadManager;
     private EventBus eventBus;
     private String CACHE_ROOT;
     private long size;
@@ -36,10 +37,10 @@ public class CacheManagerImpl implements CacheManager {
     private volatile int currentFilesCached = 0;
     private SharedPreferences sharedPreferences;
 
-    public CacheManagerImpl(
+    public InterruptableCacheManager(
             EventBus eventBus,
             DocumentRepository repository,
-            DownloadManager downloadManager,
+            InterruptableDownloadManager downloadManager,
             File cacheRoot, Context context, int defaultValue) {
         this.eventBus = eventBus;
         this.repository = repository;
@@ -101,6 +102,18 @@ public class CacheManagerImpl implements CacheManager {
         document.setOfflineType(VkDocument.CACHE);
         document.setRequest(request);
         new UpdateDocument(IO_SCHEDULER, eventBus, repository, document).execute();
+    }
+
+    @Override
+    public void retryCache(VkDocument document) {
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (DownloadRequest req: requests)
+            if (req.getDocId() == document.getId()) {
+                document.setRequest(req);
+                req.resetError();//smth holy shit
+                downloadManager.retry(req);
+                break;
+            }
     }
 
     private static final int MB = 1024 * 1024;

@@ -14,4 +14,6 @@ public interface CacheManager {
     DocumentsInfo getCurrentDocumentsInfo();
 
     void removeFromCache(VkDocument document);
+
+    void retryCache(VkDocument document);
 }

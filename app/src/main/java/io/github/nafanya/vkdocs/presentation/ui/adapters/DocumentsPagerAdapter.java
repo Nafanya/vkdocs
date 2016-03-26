@@ -11,8 +11,8 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.AudioPlayerFragment;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.GifImageFragment;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.ImageFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.UnknownTypeDocFragment;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.VideoPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.UnknownTypeDocFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -40,7 +40,7 @@ public class DocumentsPagerAdapter extends FragmentStatePagerAdapter {
         if (extType == VkDocument.ExtType.AUDIO) {
             ret = AudioPlayerFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.VIDEO) {
-            ret = VideoPlayerFragment.newInstance(document, false);
+            ret = VideoPlayerFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.IMAGE) {
             ret = ImageFragment.newInstance(document);
         } else if (extType == VkDocument.ExtType.GIF) {

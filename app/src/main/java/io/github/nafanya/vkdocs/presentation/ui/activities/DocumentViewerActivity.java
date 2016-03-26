@@ -15,7 +15,8 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.AudioPlayerFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.BaseViewerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.OnPageChanged;
 import timber.log.Timber;
 
 public class DocumentViewerActivity extends AppCompatActivity implements AudioPlayerFragment.AudioPlayerControl {
@@ -53,6 +54,7 @@ public class DocumentViewerActivity extends AppCompatActivity implements AudioPl
         viewPager.setAdapter(documentsPagerAdapter);
         setTitle(documentsPagerAdapter.getPageTitle(position));
         viewPager.setCurrentItem(position);
+        BaseViewerFragment.destroySnackbar();
     }
 
     @Override
@@ -123,5 +125,12 @@ public class DocumentViewerActivity extends AppCompatActivity implements AudioPl
         @Override
         public void onPageScrollStateChanged(int state) {
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Timber.d("on destroy and hide snackbar  ");
+        BaseViewerFragment.destroySnackbar();
+        super.onDestroy();
     }
 }

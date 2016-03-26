@@ -30,8 +30,8 @@ import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.InternetService;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
-import io.github.nafanya.vkdocs.net.impl.CacheManagerImpl;
 import io.github.nafanya.vkdocs.net.impl.InternetServiceImpl;
+import io.github.nafanya.vkdocs.net.impl.InterruptableCacheManager;
 import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.presentation.ui.activities.LoginActivity;
@@ -92,7 +92,7 @@ public class App extends Application {
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus, getAppCacheRoot());
-        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot(), this, DEFAULT_CACHE_SIZE);
+        cacheManager = new InterruptableCacheManager(eventBus, repository, downloadManager, getAppCacheRoot(), this, DEFAULT_CACHE_SIZE);
         startService(new Intent(this, AudioPlayerService.class));
 
         try {
