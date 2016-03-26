@@ -156,6 +156,7 @@ public class DocumentsActivity extends AppCompatActivity implements
 
         accountHeader = new AccountHeaderBuilder()
                 .withSelectionListEnabledForSingleProfile(false)
+                .withSelectionListEnabled(false)
                 .withSelectionSecondLineShown(false)
                 .withTypeface(Typeface.DEFAULT_BOLD)
                 .withActivity(this)
