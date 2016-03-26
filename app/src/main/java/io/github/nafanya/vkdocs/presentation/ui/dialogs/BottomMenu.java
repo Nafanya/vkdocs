@@ -2,10 +2,12 @@ package io.github.nafanya.vkdocs.presentation.ui.dialogs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -58,6 +60,12 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         title.setText(doc.title);
         offlineSwitch.setChecked(doc.isOffline() || doc.isOfflineInProgress());
         offlineSwitch.setOnCheckedChangeListener(this);
+
+        setOnShowListener(dialog -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialog;
+            FrameLayout bottomSheet = (FrameLayout) d.findViewById(android.support.design.R.id.design_bottom_sheet);
+            BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
     }
 
     @Override
@@ -88,6 +96,9 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
     @OnClick(R.id.bottom_share)
     public void onClickShare(View v) { listener.onClickShare(doc); }
 
+    @OnClick(R.id.bottom_share_external)
+    public void onClickShareExternal(View v) { listener.onClickShareExternal(doc); }
+
     public interface MenuEventListener {
         void onClickMakeOffline(int position, VkDocument document, boolean isMakeOffline);
         void onClickRename(int position, VkDocument document);
@@ -95,6 +106,7 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         void onCloseContextMenu();
         void onClickDownload(int position, VkDocument document);
         void onClickShare(VkDocument document);
+        void onClickShareExternal(VkDocument document);
     }
 
     @Override
