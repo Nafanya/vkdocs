@@ -37,7 +37,6 @@
             android:layout_alignBottom="@id/file_type_icon"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="30dp"
-            app:srcCompat="@drawable/cursor_pointer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"/>
