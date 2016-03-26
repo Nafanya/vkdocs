@@ -36,7 +36,9 @@
             android:theme="@style/VK.Transparent" />
         <activity
             android:name=".presentation.ui.activities.DocumentsActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"/>
+
         <activity
             android:name=".presentation.ui.activities.DocumentViewerActivity"
             android:label="@string/title_activity_document_viewer"

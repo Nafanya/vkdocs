@@ -2,8 +2,10 @@ package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -76,6 +78,17 @@ public class SettingsActivity extends AppCompatActivity
         cacheStatistic.setText(getStatisticLabel(presenter.getCacheInfo()));
         String cacheSize = presenter.getCacheSize() + "MB";
         currentCacheSize.setText(cacheSizeLabel + cacheSize);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private static final int CACHE_CLEAR = 0;

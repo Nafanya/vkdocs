@@ -88,6 +88,7 @@ public class DocumentsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        Timber.d("ON CREATE DOCUMENTS ACTIVITY");
         if (state != null) {
             sortMode = (SortMode)state.getSerializable(SORT_MODE_KEY);
             documentType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
@@ -209,15 +210,17 @@ public class DocumentsActivity extends AppCompatActivity implements
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     Timber.d("[Documents activity] Nav drawer position: %d", position);
                     drawer.closeDrawer();
-                    if (navDrawerPos != position) {
-                        navDrawerPos = position;
+                    if (navDrawerPos == position)
+                        return true;
 
-                        if (position != 10)
-                            notifySectionChanged(navDrawerPos);
-                        else {
-                            Intent intent = new Intent(this, SettingsActivity.class);
-                            startActivity(intent);
-                        }
+                    if (position != 10) {
+                        notifySectionChanged(position);
+                        if (navDrawerPos != position)
+                            navDrawerPos = position;
+                    } else {
+                        Intent intent = new Intent(this, SettingsActivity.class);
+                        startActivity(intent);
+                        drawer.setSelectionAtPosition(navDrawerPos);
                     }
                     return true;
                 }).build();
