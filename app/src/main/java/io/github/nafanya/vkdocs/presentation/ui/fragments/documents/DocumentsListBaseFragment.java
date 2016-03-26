@@ -14,11 +14,9 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView;
+import io.github.nafanya.vkdocs.presentation.ui.decorators.DividerItemDecorator;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
-import io.github.nafanya.vkdocs.presentation.ui.decorators.SimpleDivierItermDecorator;
-import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/25/16.
@@ -30,8 +28,6 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
     public static final String EXT_TYPE_KEY = "ext_type_key";
     public static final String SORT_MODE_KEY = "sort_mode_key";
     public static final String SEARCH_QUERY_KEY = "search_query_key";
-
-    protected BaseSortedAdapter adapter;
 
     protected boolean isOffline;
     protected VkDocument.ExtType documentType;
@@ -60,7 +56,6 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
             documentType = (VkDocument.ExtType) savedInstanceState.getSerializable(EXT_TYPE_KEY);
             sortMode = (SortMode) savedInstanceState.getSerializable(SORT_MODE_KEY);
             searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY);
-            Timber.d("[STATE] Fragment restored doctype: %s", documentType);
         }
     }
 
@@ -70,7 +65,6 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         state.putSerializable(EXT_TYPE_KEY, documentType);
         state.putSerializable(SORT_MODE_KEY, sortMode);
         state.putString(SEARCH_QUERY_KEY, searchQuery);
-        Timber.d("[STATE] Fragment saved doctype: %s, %s", documentType, state.getSerializable(EXT_TYPE_KEY));
         super.onSaveInstanceState(state);
     }
 
@@ -91,7 +85,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new SimpleDivierItermDecorator(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecorator(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setEmptyView(emptyView);
         // Convert dp to px
         final int px = (int) (this.getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getResources().getDisplayMetrics().density);
