@@ -129,6 +129,7 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
     /***Presenter callbacks**/
     @Override
     public void onProgress(int percentage) {
+        hideErrorSnackbar();
         long downSize = document.size * percentage / 100;
         downloadedSize.setText(fileFormatter.formatFrom(downSize, document.size));
         downloadProgress.setProgress(percentage);

@@ -37,7 +37,7 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
     public void showSnackBar(View.OnClickListener onClickListener) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(" ");
-        builder.setSpan(new ImageSpan(getActivity(), R.drawable.open_in_new), 0, 1, 0);
+        builder.setSpan(new ImageSpan(getActivity(), R.drawable.open_in_new), 0, 1, ImageSpan.ALIGN_BASELINE);
         builder.append(" ");
         builder.append("Open in other app");
 

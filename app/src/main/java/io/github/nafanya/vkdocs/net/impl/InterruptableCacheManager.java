@@ -59,9 +59,9 @@ public class InterruptableCacheManager implements CacheManager {
     }
 
     @Override
-    public void setSize(int size) {//in megabytes
-        changeCacheSize(size);
-        this.size = 1L * size * MB;
+    public void setSize(int newSize) {//in megabytes
+        changeCacheSize(newSize);
+        this.size = (long) newSize * MB;
         validateAndRemoveFiles(size);
     }
 
@@ -69,6 +69,7 @@ public class InterruptableCacheManager implements CacheManager {
     public void cache(VkDocument document) {
         //String toPath = CACHE_ROOT + document.title;//+ "_" + document.getId();
         String toPath = CACHE_ROOT + document.getId();
+        Timber.d("extension = " + document.ext);
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);
@@ -81,7 +82,6 @@ public class InterruptableCacheManager implements CacheManager {
 
             @Override
             public void onComplete() {
-                Timber.d("ON COMPLETE CACHE " + document);
                 document.setPath(request.getDest());
                 document.resetRequest();
                 new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
@@ -160,7 +160,6 @@ public class InterruptableCacheManager implements CacheManager {
 
             long newCurrentSize = 0;
             int newFilesCached = 0;
-
             List<VkDocument> updDocs = new ArrayList<>();
             for (CacheEntry e: cacheEntries) {
                 currentSize += e.size;
