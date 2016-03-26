@@ -35,9 +35,6 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity
-            android:name=".presentation.ui.activities.documents.DocumentsActivity"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".presentation.ui.activities.DocumentsActivity"
             android:theme="@style/AppTheme" />
         <activity
