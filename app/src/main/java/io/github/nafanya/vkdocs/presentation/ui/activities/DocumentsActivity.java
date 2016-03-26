@@ -50,7 +50,7 @@ import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
 
-public class DocumentsBaseActivity extends AppCompatActivity implements
+public class DocumentsActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SortByDialog.Callback,
         DocumentsListFragment.Callbacks, UserPresenter.Callback {
