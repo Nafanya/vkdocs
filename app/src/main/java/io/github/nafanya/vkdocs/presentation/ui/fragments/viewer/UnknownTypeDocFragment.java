@@ -76,8 +76,10 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         });
         if (!presenter.isDownloaded())
             downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
-        else
-            downloadedSize.setText(fileFormatter.formatSize(document.size));
+        else {
+            hideProgress();
+            //downloadedSize.setText(fileFormatter.formatSize(document.size));
+        }
         return rootView;
     }
 
@@ -155,8 +157,6 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
     @Override
     public void onBecameInvisible() {
         super.onBecameInvisible();
-        if (presenter.isDownloading())
-            presenter.cancelDownloading();
         hideProgress();
     }
 }

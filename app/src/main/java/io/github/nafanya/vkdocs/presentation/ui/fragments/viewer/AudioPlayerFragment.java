@@ -254,4 +254,10 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         subscription.unsubscribe();
         super.onPause();
     }
+
+    @Override
+    public void onReleaseResources() {
+        playerService.stop();
+        subscription.unsubscribe();
+    }
 }

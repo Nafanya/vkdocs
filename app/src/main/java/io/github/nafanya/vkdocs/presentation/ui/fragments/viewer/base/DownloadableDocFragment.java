@@ -46,6 +46,8 @@ public abstract class DownloadableDocFragment extends BaseViewerFragment impleme
     @Override
     public void onBecameInvisible() {
         hideErrorSnackbar();
+        if (presenter.isDownloading())
+            presenter.cancelDownloading();
         super.onBecameInvisible();
     }
 
@@ -64,5 +66,11 @@ public abstract class DownloadableDocFragment extends BaseViewerFragment impleme
     protected void hideErrorSnackbar() {
         if (errorSnackbar != null)
             errorSnackbar.dismiss();
+    }
+
+    @Override
+    public void onReleaseResources() {
+        hideErrorSnackbar();
+        super.onReleaseResources();
     }
 }

@@ -5,6 +5,6 @@ package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base;
  */
 public interface OnPageChanged {
     void onBecameVisible();
-
     void onBecameInvisible();
+    void onReleaseResources();
 }

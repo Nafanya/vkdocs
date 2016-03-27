@@ -57,7 +57,7 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        ((OnPageChanged)documentsPagerAdapter.getFragment(position)).onBecameInvisible();
+        ((OnPageChanged)documentsPagerAdapter.getFragment(position)).onReleaseResources();
         super.onBackPressed();
     }
 

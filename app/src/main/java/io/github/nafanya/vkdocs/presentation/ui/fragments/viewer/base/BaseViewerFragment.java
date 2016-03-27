@@ -114,4 +114,10 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
                 onBecameInvisible();
         }
     }
+
+    @Override
+    public void onReleaseResources() {
+        if (snackbar != null)
+            snackbar.dismiss();
+    }
 }

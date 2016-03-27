@@ -35,11 +35,14 @@ public abstract class BaseImageFragment extends DownloadableDocFragment {
         return layout;
     }
 
+    protected Snackbar errorOpening;
+
     protected void errorWithOpening() {
-        Snackbar loadFailed = Snackbar
+        progressBar.setVisibility(View.GONE);
+        errorOpening = Snackbar
                 .make(rootForSnackbar(), "Problem with opening", Snackbar.LENGTH_INDEFINITE);
-        loadFailed.setActionTextColor(Color.YELLOW);
-        showSnackbar(loadFailed);
+        errorOpening.setActionTextColor(Color.YELLOW);
+        showSnackbar(errorOpening);
     }
 
 
@@ -52,6 +55,8 @@ public abstract class BaseImageFragment extends DownloadableDocFragment {
     @Override
     public void onBecameInvisible() {
         super.onBecameInvisible();
+        if (errorOpening != null)
+            errorOpening.dismiss();
         if (presenter.isDownloading()) {
             presenter.cancelDownloading();
             progressBar.setProgress(0);
