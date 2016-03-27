@@ -1,10 +1,14 @@
 package io.github.nafanya.vkdocs.net.impl;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateAllDocuments;
@@ -16,31 +20,36 @@ import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
 import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
+import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.utils.ThreadUtils;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class CacheManagerImpl implements CacheManager {
+public class InterruptableCacheManager implements CacheManager {
     private DocumentRepository repository;
-    private DownloadManager downloadManager;
+    private InterruptableDownloadManager downloadManager;
     private EventBus eventBus;
     private String CACHE_ROOT;
     private long size;
     private final Scheduler IO_SCHEDULER = Schedulers.io();
     private volatile long currentTotalSize = 0;
     private volatile int currentFilesCached = 0;
+    private SharedPreferences sharedPreferences;
 
-    public CacheManagerImpl(
+    public InterruptableCacheManager(
             EventBus eventBus,
             DocumentRepository repository,
-            DownloadManager downloadManager,
-            File cacheRoot, int size) {
+            InterruptableDownloadManager downloadManager,
+            File cacheRoot, Context context, int defaultValue) {
         this.eventBus = eventBus;
         this.repository = repository;
         this.downloadManager = downloadManager;
         this.CACHE_ROOT = cacheRoot.getAbsolutePath() + File.separator;
-        this.size = 1L * size * MB;
+
+        this.sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preference_user_repository), Context.MODE_PRIVATE);
+        this.size = (long) getStoredCacheSize(defaultValue) * MB;
         validateAndRemoveFiles(size);
     }
 
@@ -50,8 +59,9 @@ public class CacheManagerImpl implements CacheManager {
     }
 
     @Override
-    public void setSizeLimit(int size) {//in megabytes
-        this.size = 1L * size * MB;
+    public void setSize(int newSize) {//in megabytes
+        changeCacheSize(newSize);
+        this.size = (long) newSize * MB;
         validateAndRemoveFiles(size);
     }
 
@@ -59,6 +69,7 @@ public class CacheManagerImpl implements CacheManager {
     public void cache(VkDocument document) {
         //String toPath = CACHE_ROOT + document.title;//+ "_" + document.getId();
         String toPath = CACHE_ROOT + document.getId();
+        Timber.d("extension = " + document.ext);
         DownloadRequest request = new DownloadRequest(document.url, toPath);
         request.setDocId(document.getId());
         request.setTotalBytes(document.size);
@@ -71,7 +82,6 @@ public class CacheManagerImpl implements CacheManager {
 
             @Override
             public void onComplete() {
-                Timber.d("ON COMPLETE CACHE " + document);
                 document.setPath(request.getDest());
                 document.resetRequest();
                 new UpdateDocument(Schedulers.io(), eventBus, repository, document).execute();//for design, caching in GetDocuments in future
@@ -92,6 +102,18 @@ public class CacheManagerImpl implements CacheManager {
         document.setOfflineType(VkDocument.CACHE);
         document.setRequest(request);
         new UpdateDocument(IO_SCHEDULER, eventBus, repository, document).execute();
+    }
+
+    @Override
+    public void retryCache(VkDocument document) {
+        List<DownloadRequest> requests = downloadManager.getQueue();
+        for (DownloadRequest req: requests)
+            if (req.getDocId() == document.getId()) {
+                document.setRequest(req);
+                req.resetError();//smth holy shit
+                downloadManager.retry(req);
+                break;
+            }
     }
 
     private static final int MB = 1024 * 1024;
@@ -138,7 +160,6 @@ public class CacheManagerImpl implements CacheManager {
 
             long newCurrentSize = 0;
             int newFilesCached = 0;
-
             List<VkDocument> updDocs = new ArrayList<>();
             for (CacheEntry e: cacheEntries) {
                 currentSize += e.size;
@@ -182,7 +203,7 @@ public class CacheManagerImpl implements CacheManager {
     }
 
     @Override
-    public int geSizeLimit() {
+    public int getSize() {
         return (int)(size / MB);
     }
 
@@ -195,5 +216,17 @@ public class CacheManagerImpl implements CacheManager {
     public void removeFromCache(VkDocument document) {
         currentFilesCached--;
         currentTotalSize -= document.size;
+    }
+
+    private static final String CACHE_SIZE_KEY = "cache_size_key";
+
+    private int getStoredCacheSize(int defaultValue) {
+        return sharedPreferences.getInt(CACHE_SIZE_KEY, defaultValue);
+    }
+
+    private  void changeCacheSize(int newValue) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(CACHE_SIZE_KEY, newValue);
+        editor.apply();
     }
 }

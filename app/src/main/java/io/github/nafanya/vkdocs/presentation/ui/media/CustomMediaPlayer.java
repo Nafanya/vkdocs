@@ -13,6 +13,7 @@ import timber.log.Timber;
 public class CustomMediaPlayer extends MediaPlayer implements
         MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
+    public static final int PERCENTAGE = 1000;
     private volatile int fuckingMediaPlayerPosition;
     private volatile int realPosition;
     private volatile boolean invalidState = false;
@@ -29,6 +30,10 @@ public class CustomMediaPlayer extends MediaPlayer implements
         super.setOnPreparedListener(this);
     }
 
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
     public static abstract class PlayingListener extends Subscriber<Integer> {
     }
 
@@ -38,6 +43,7 @@ public class CustomMediaPlayer extends MediaPlayer implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Timber.d("on completion");
         isCompleted = true;
     }
 
@@ -101,7 +107,6 @@ public class CustomMediaPlayer extends MediaPlayer implements
         private PlayingThread(int sessionId) {
             this.sessionId = sessionId;
         }
-        private static final int PERCENTAGE = 100;
 
         @Override
         public void call(Subscriber<? super Integer> subscriber) {
@@ -110,16 +115,22 @@ public class CustomMediaPlayer extends MediaPlayer implements
             while (sessionId == currentSessionId) {
                 if (!invalidState) {
                     int diff = getCurrentPosition() - fuckingMediaPlayerPosition;
-                    int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
+                    int perc = realPosition + diff;
+                    if (perc > duration)
+                        perc = duration;
+                    //int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
+                    //if (isCompleted)
+                        //perc = PERCENTAGE;
+
                     if (isCompleted)
-                        perc = PERCENTAGE;
+                        perc = duration;
 
                     if (prevPerc != perc)
                         subscriber.onNext(perc);
                     prevPerc = perc;
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException ignore) {}
             }
             subscriber.onCompleted();

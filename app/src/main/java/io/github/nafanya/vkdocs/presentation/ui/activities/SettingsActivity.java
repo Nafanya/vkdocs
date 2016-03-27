@@ -1,11 +1,12 @@
-package io.github.nafanya.vkdocs.presentation.ui.views.activities;
+package io.github.nafanya.vkdocs.presentation.ui.activities;
 
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -15,10 +16,12 @@ import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.DocumentsInfo;
 import io.github.nafanya.vkdocs.presentation.presenter.SettingsPresenter;
-import io.github.nafanya.vkdocs.presentation.ui.views.dialogs.ConfirmationDialog;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.CacheSizePicker;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.ConfirmationDialog;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 
-public class SettingsActivity extends AppCompatActivity implements ConfirmationDialog.Callback {
+public class SettingsActivity extends AppCompatActivity
+        implements ConfirmationDialog.Callback, CacheSizePicker.OnPickCacheSize {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -31,6 +34,9 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
 
     @Bind(R.id.offline_statistic)
     TextView offlineStatistic;
+
+    @Bind(R.id.current_cache_size)
+    TextView currentCacheSize;
 
     private SettingsPresenter presenter;
     private FileFormatter fileFormatter;
@@ -50,6 +56,8 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
         return getFiles(info.totalFiles) + "/" + fileFormatter.formatSize(info.totalSize);
     }
 
+    private CharSequence cacheSizeLabel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +67,7 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
         setSupportActionBar(toolbar);
         toolbar.setTitle("Settings");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        cacheSizeLabel = currentCacheSize.getText();
 
         App app = (App)getApplication();
         presenter = new SettingsPresenter(app.getOfflineManager(), app.getCacheManager());
@@ -67,6 +76,19 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
         totalDocuments.setText(getFiles(presenter.getTotalFiles()));
         offlineStatistic.setText(getStatisticLabel(presenter.getOfflineInfo()));
         cacheStatistic.setText(getStatisticLabel(presenter.getCacheInfo()));
+        String cacheSize = presenter.getCacheSize() + "MB";
+        currentCacheSize.setText(cacheSizeLabel + cacheSize);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private static final int CACHE_CLEAR = 0;
@@ -74,7 +96,16 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
 
     @OnClick(R.id.cache_size)
     void onClickCacheSize(View v) {
+        int currentCacheSize = presenter.getCacheSize();
+        DialogFragment dialog = CacheSizePicker.newInstance(currentCacheSize);
+        dialog.show(getSupportFragmentManager(), "cache_size");
+    }
 
+    @Override
+    public void onPick(int cacheSize) {
+        presenter.setCacheSize(cacheSize);
+        String cacheSizeStr = cacheSize + "MB";
+        currentCacheSize.setText(cacheSizeLabel + cacheSizeStr);
     }
 
     @OnClick(R.id.clear_cache)
@@ -83,7 +114,6 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
                 getResources().getString(R.string.clear_cache_title),
                 getResources().getString(R.string.clear_cache_message));
         dialog.show(getSupportFragmentManager(), "clear_cache");
-
     }
 
     @OnClick(R.id.clear_offline)
@@ -91,14 +121,19 @@ public class SettingsActivity extends AppCompatActivity implements ConfirmationD
         DialogFragment dialog = ConfirmationDialog.newInstance(OFFLINE_CLEAR,
                 getResources().getString(R.string.clear_offline_title),
                 getResources().getString(R.string.clear_offline_message));
-        dialog.show(getSupportFragmentManager(), "clear_cache");
+        dialog.show(getSupportFragmentManager(), "clear_offline");
     }
+
+    private static final DocumentsInfo EMPTY_INFO = new DocumentsInfo(0, 0);
 
     @Override
     public void onConfirm(int label) {
-        if (label == CACHE_CLEAR)
+        if (label == CACHE_CLEAR) {
             presenter.clearCache();
-        else
+            cacheStatistic.setText(getStatisticLabel(EMPTY_INFO));
+        } else {
             presenter.clearOffline();
+            offlineStatistic.setText(getStatisticLabel(EMPTY_INFO));
+        }
     }
 }

@@ -2,14 +2,11 @@ package io.github.nafanya.vkdocs.domain.interactor;
 
 import java.util.List;
 
-import io.github.nafanya.vkdocs.net.base.CacheManager;
-import io.github.nafanya.vkdocs.net.base.download.DownloadManager;
-import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
-import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
+import io.github.nafanya.vkdocs.net.base.CacheManager;
+import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import rx.Observable;
 import rx.Scheduler;
@@ -19,7 +16,6 @@ public class CacheDocument extends UseCase<VkDocument> {
     private VkDocument document;
     private CacheManager cacheManager;
     private InterruptableDownloadManager downloadManager;
-    //private volatile boolean isAlreadyOfflineInProgress;
 
     public CacheDocument(Scheduler observerScheduler, Scheduler subscriberScheduler, EventBus eventBus,
                          CacheManager cacheManager, VkDocument document) {
@@ -43,17 +39,14 @@ public class CacheDocument extends UseCase<VkDocument> {
     @Override
     public Observable<VkDocument> buildUseCase() {
         return Observable.create(subscriber -> {
-            Timber.d("IN CACHING");
+            Timber.d("[CacheDocument] cahcing " + document.title);
             if (document.getRequest() == null)
                 document.setRequest(findDownloadRequest(document));
-            Timber.d("AFTER FOUND REQUEST");
 
             if (document.isDownloaded()) {
-                Timber.d("DOWNLOADED %s", document.title);
+                Timber.d("[CacheDocument] already %s", document.title);
                 subscriber.onNext(document);
             } else if (document.isDownloading()) {
-                //isAlreadyOfflineInProgress = document.isOfflineInProgress();
-                //TODO save this already caching of offline
                 if (document.getRequest().isActive()) {
                     Timber.d("DOWNLOADING IS ACTIVE %s", document.title);
                     subscriber.onNext(document);

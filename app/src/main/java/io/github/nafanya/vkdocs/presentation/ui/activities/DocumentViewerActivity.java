@@ -13,7 +13,8 @@ import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.DocumentsPagerAdapter;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.BaseViewerFragment;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.OnPageChanged;
 import timber.log.Timber;
 
 public class DocumentViewerActivity extends AppCompatActivity {
@@ -51,11 +52,12 @@ public class DocumentViewerActivity extends AppCompatActivity {
         viewPager.setAdapter(documentsPagerAdapter);
         setTitle(documentsPagerAdapter.getPageTitle(position));
         viewPager.setCurrentItem(position);
+        BaseViewerFragment.destroySnackbar();
     }
 
     @Override
     public void onBackPressed() {
-        ((OnPageChanged)documentsPagerAdapter.getFragment(position)).onBecameInvisible();
+        ((OnPageChanged)documentsPagerAdapter.getFragment(position)).onReleaseResources();
         super.onBackPressed();
     }
 
@@ -85,26 +87,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void nextAudio() {
-//        int i;
-//        int size = documents.size();
-//        for (i = (position + 1) % size;
-//             documents.get(i).getExtType() != VkDocument.ExtType.AUDIO && i != position;
-//             i = (i + 1) % size);
-//        viewPager.setCurrentItem(i, false);
-//    }
-//
-//    @Override
-//    public void prevAudio() {
-//        int i;
-//        int size = documents.size();
-//        for (i = (position + size - 1) % size;
-//             documents.get(i).getExtType() != VkDocument.ExtType.AUDIO && i != position;
-//             i = (i + size - 1) % size);
-//        viewPager.setCurrentItem(i, false);
-//    }
-
 
     private class OnPageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
@@ -121,5 +103,11 @@ public class DocumentViewerActivity extends AppCompatActivity {
         @Override
         public void onPageScrollStateChanged(int state) {
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        BaseViewerFragment.destroySnackbar();
+        super.onDestroy();
     }
 }

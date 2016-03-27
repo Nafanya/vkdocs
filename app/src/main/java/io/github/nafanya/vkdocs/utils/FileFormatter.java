@@ -22,10 +22,7 @@ public class FileFormatter {
     private Drawable file;
     private Drawable archive;
     private Drawable gif;
-
-    private Drawable pdfUnknownType;
-    private Drawable zipUnknownType;
-    private Drawable fileUnknownType;
+    private Drawable text;
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
@@ -40,6 +37,7 @@ public class FileFormatter {
             file = ContextCompat.getDrawable(context, R.drawable.file);
             archive = ContextCompat.getDrawable(context, R.drawable.zip_box);
             gif = ContextCompat.getDrawable(context, R.drawable.image_vintage);
+            text = ContextCompat.getDrawable(context, R.drawable.text_box);
         }
 
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
@@ -59,6 +57,9 @@ public class FileFormatter {
 
         if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
             return archive;
+
+        if (doc.getExtType() == VkDocument.ExtType.TEXT)
+            return text;
 
         return file;
     }
@@ -99,21 +100,5 @@ public class FileFormatter {
     private DateFormat df = new SimpleDateFormat();
     public String formatDate(Date date) {
         return df.format(date);
-    }
-
-    public Drawable getPlaceholder(VkDocument doc, Context context) {
-        if (fileUnknownType == null) {
-            fileUnknownType = ContextCompat.getDrawable(context, R.drawable.file_unknown_type);
-            zipUnknownType = ContextCompat.getDrawable(context, R.drawable.zip_unknown_type);
-            pdfUnknownType = ContextCompat.getDrawable(context, R.drawable.pdf_unknown_type);
-        }
-
-        if (doc.getExt().equals("pdf"))
-            return pdfUnknownType;
-
-        if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
-            return zipUnknownType;
-
-        return fileUnknownType;
     }
 }

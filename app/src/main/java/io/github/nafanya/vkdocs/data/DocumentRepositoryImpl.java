@@ -92,7 +92,6 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             } else {
                 boolean updated = false;
                 /*if (!cur.url.equals(dbDoc.getUrl())) {
-                    Timber.d("update url");
                     dbDoc.setUrl(cur.url);
                     updated = true;
                 }*/

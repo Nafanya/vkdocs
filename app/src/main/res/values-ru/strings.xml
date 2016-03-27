@@ -1,0 +1,107 @@
+<resources>
+
+    <string name="data">Данные</string>
+    <string name="total_documents_label">Всего</string>
+    <string name="offline_documents_label">Оффлайн</string>
+    <string name="cached_documents_label">В кеше</string>
+
+
+    <string name="document_cache">Кеш</string>
+    <string name="cache_size">Размер кеша</string>
+    <string name="current_cache_size_label">"Текущий размер кеша: "</string>
+    <string name="clear_cache">Очистить кеш</string>
+    <string name="clear_cache_comment">Удалить все закешированные документы</string>
+
+    <string name="document_offline">Оффлайн</string>
+    <string name="clear_offline">Удалить оффлайн документы</string>
+    <string name="clear_offline_comment">Все документы, доступные оффлайн, будут удалены</string>
+
+    <string name="preference_user_repository">user_repository</string>
+
+    <string name="app_name">VKDocs</string>
+    <string name="continue_using_app">Продолжить использовать это приложение</string>
+    <string name="logout">Выйти</string>
+    <integer name="com_vk_sdk_AppId">5252455</integer>
+    <string name="title_activity_documents">Мои документы</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Navigation drawer -->
+    <string name="drawer_my_documents">Мои документы</string>
+    <string name="drawer_offline">Оффлайн</string>
+    <string name="drawer_uploads">Uploads</string>
+    <string name="drawer_settings">Настройки</string>
+
+    <!-- Tabs -->
+    <string name="tab_all">Все</string>
+    <string name="tab_text">Текст</string>
+    <string name="tab_books">Книги</string>
+    <string name="tab_archives">Архивы</string>
+    <string name="tab_gifs">Gifs</string>
+    <string name="tab_images">Изображения</string>
+    <string name="tab_music">Аудио</string>
+    <string name="tab_video">Видео</string>
+    <string name="tab_other">Другие</string>
+
+    <string name="from">из</string>
+    <string name="download">Скачать</string>
+    <string name="available_offline">Оффлайн</string>
+    <string name="rename">Переименовать</string>
+    <string name="delete">Удалить</string>
+    <string name="share_external">Поделиться</string>
+    <string name="send">Отправить</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_sort_by">Сортировать по</string>
+    <string name="label_added">Загружен:</string>
+    <string name="label_size">Размер:</string>
+    <string name="title_activity_document_viewer">DocumentViewerActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="no_items">Нет элементов</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="settings_activity_title">Настройки</string>
+    <string name="clear_offline_message">Все документы, доступные оффлайн, будут удалены.</string>
+    <string name="clear_cache_message">Кеш документов будет очищен.</string>
+    <string name="default_confirm_button">ОК</string>
+    <string name="default_cancel_button">ОТМЕНА</string>
+    <string name="clear_cache_title">Очистить кеш</string>
+    <string name="file1_label">файл</string>
+    <string name="file24_label">файла</string>
+    <string name="files">файлов</string>
+    <string name="cache_size_title">Размер кеша</string>
+    <string name="delete_document_title">Удаление документа</string>
+    <string name="no_internet_connection">Нет интернет соединения</string>
+    <string name="retry">ПОВТОРИТЬ</string>
+    <string name="cant_open">Не удалось открыть файл</string>
+    <string name="open_in_other_app">Открыть другим приложением</string>
+    <string name="open_button">ОТКРЫТЬ</string>
+    <string name="clear_offline_title">Удалить оффлайн документы</string>
+    <string name="gifs">Gifs</string>
+    <string name="all_title_tab">ВСЕ</string>
+    <string name="offline_title_tab">ОФФЛАЙН</string>
+    <string name="images">Изображения</string>
+    <string name="logout_message">После выхода, все данные, связанные с этой учетной записью будут удалены из системы.</string>
+    <string name="modified">Загружен</string>
+    <string name="music">Аудио</string>
+    <string name="name">Названию</string>
+    <string name="no_archives">Нет архивов</string>
+    <string name="no_audios">Нет аудио</string>
+    <string name="no_books">Нет книг</string>
+    <string name="no_documents">Нет документов</string>
+    <string name="no_gifs">Нет Gif</string>
+    <string name="action_sign_in_short">Войти</string>
+    <string name="all">Все</string>
+    <string name="archives">Архивы</string>
+    <string name="books">Книги</string>
+    <string name="no_images">Нет изображений</string>
+    <string name="no_others">Нет файлов</string>
+    <string name="no_videos">Нет видео</string>
+    <string name="other">Другие</string>
+    <string name="send_request_title">Выбрать друга</string>
+    <string name="size">Размеру</string>
+    <string name="text">Текст</string>
+    <string name="video">Видео</string>
+</resources>

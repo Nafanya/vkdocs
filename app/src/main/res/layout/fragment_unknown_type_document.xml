@@ -22,12 +22,12 @@
             <ImageView
                 android:id="@+id/file_type_icon"
                 android:layout_centerInParent="true"
-                android:src="@drawable/zip_unknown_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
                 android:id="@+id/progressBar"
+                android:visibility="gone"
                 android:layout_centerInParent="true"
                 android:layout_width="@dimen/circular_progress_diameter"
                 android:layout_height="@dimen/circular_progress_diameter"

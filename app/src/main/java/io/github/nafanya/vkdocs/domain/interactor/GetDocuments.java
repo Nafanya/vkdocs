@@ -82,6 +82,8 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
     }
 
     public static int size() {
+        if (documents == null)
+            return 0;
         return documents.size();
     }
 
@@ -91,5 +93,10 @@ public class GetDocuments extends UseCase<List<VkDocument>> {
 
     public static VkDocument getDocument(VkDocument document) {
         return documents.get(document.getId()).copy();
+    }
+
+    public static void deleteDocument(VkDocument doc) {
+        if (documents != null)
+            documents.remove(doc.getId());
     }
 }

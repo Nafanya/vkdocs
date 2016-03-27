@@ -232,7 +232,6 @@ public class InterruptableDownloadManager implements DownloadManager {
         @Override
         public void onError(Throwable e) {
             Timber.d("exc = " + e.getMessage());
-            e.printStackTrace();
             request.publishError((Exception)e);
         }
 

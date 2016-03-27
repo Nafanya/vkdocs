@@ -10,11 +10,8 @@ import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.presenter.base.BasePresenter;
-import rx.Scheduler;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.Subscribers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DocumentViewerPresenter extends BasePresenter {
@@ -32,7 +29,9 @@ public class DocumentViewerPresenter extends BasePresenter {
     protected Subscriber<VkDocument> cacheSubscriber = Subscribers.empty();
     protected VkDocument currentDocument;
     protected boolean isAlreadyOfflineInProgress;
-    protected boolean isDownloading;
+
+    protected enum DownloadingState{IDLE, DOWNLOADING, DOWNLOADED}
+    protected DownloadingState downState = DownloadingState.IDLE;
 
     protected DownloadRequest.RequestListener downloadingProgressListener = new DownloadRequest.RequestListener() {
         @Override
@@ -42,10 +41,10 @@ public class DocumentViewerPresenter extends BasePresenter {
 
         @Override
         public void onComplete() {
+            downState = DownloadingState.DOWNLOADED;
             callback.onCompleteCaching(currentDocument);
             int hash = CacheDocument.hashByDoc(currentDocument);
             eventBus.removeEvent(hash);
-            isDownloading = false;
         }
 
         @Override
@@ -54,38 +53,54 @@ public class DocumentViewerPresenter extends BasePresenter {
         }
     };
 
-    public DocumentViewerPresenter(EventBus eventBus, DocumentRepository repository,
-                                   CacheManager cacheManager, Callback callback) {
+    public DocumentViewerPresenter(EventBus eventBus,
+                                   DocumentRepository repository,
+                                   CacheManager cacheManager,
+                                   VkDocument document,
+                                   Callback callback) {
         this.cacheManager = cacheManager;
         this.eventBus = eventBus;
         this.repository = repository;
         this.callback = callback;
-
-    }
-
-    public void openDocument(VkDocument document) {
-        Timber.d("open document!");
         currentDocument = GetDocuments.getDocument(document);
         document.copyFrom(currentDocument);
-        isAlreadyOfflineInProgress = document.isOfflineInProgress();
+        if (currentDocument.isDownloaded())
+            downState = DownloadingState.DOWNLOADED;
+    }
+
+    public void openDocument() {
+        isAlreadyOfflineInProgress = currentDocument.isOfflineInProgress();
 
         Timber.d("[open document] %s: request %s", currentDocument.title, currentDocument.getRequest());
         Timber.d("[open document] %s: cached = %b, offline = %b", currentDocument.title, currentDocument.isCached(), currentDocument.isOffline());
         cacheSubscriber = new CacheSubscriber();
         new CacheDocument(OBSERVER, SUBSCRIBER, eventBus, cacheManager, currentDocument).execute(cacheSubscriber);
-        isDownloading = true;
+
+        if (!currentDocument.isDownloaded())
+            downState = DownloadingState.DOWNLOADING;
     }
 
     public boolean isDownloading() {
-        return isDownloading;
+        return downState == DownloadingState.DOWNLOADING;
+    }
+
+    public boolean isDownloaded() {
+        return downState == DownloadingState.DOWNLOADED;
     }
 
     public void cancelDownloading() {
         if (!isAlreadyOfflineInProgress) {
             new CancelDownloadingDocument(OBSERVER, SUBSCRIBER, eventBus, repository, cacheManager.getDownloadManager(), currentDocument).execute();
             eventBus.removeEvent(CacheDocument.hashByDoc(currentDocument));
-        }//TODO replace to interactor CancelCaching, because CacheManager managed caching documents
+        }
+        if (currentDocument.getRequest() != null)
+            currentDocument.getRequest().removeListener(downloadingProgressListener);
     }
+
+    public void retryOpen() {
+        cacheManager.retryCache(currentDocument);
+    }
+
 
     @Override
     public void onStart() {
@@ -109,7 +124,7 @@ public class DocumentViewerPresenter extends BasePresenter {
         public void onNext(VkDocument document) {
             currentDocument = document;
             if (document.isDownloaded()) {
-                isDownloading = false;
+                downState = DownloadingState.DOWNLOADED;
                 callback.onCompleteCaching(document);
             } else
                 document.getRequest().addListener(downloadingProgressListener);

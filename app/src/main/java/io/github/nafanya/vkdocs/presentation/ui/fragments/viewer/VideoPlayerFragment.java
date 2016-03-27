@@ -3,7 +3,6 @@ package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.presentation.ui.views.fragments.base.OnPageChanged;
-import timber.log.Timber;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.BaseViewerFragment;
 
-public class VideoPlayerFragment extends Fragment implements OnPageChanged {
+public class VideoPlayerFragment extends BaseViewerFragment {
 
     public static String VIDEO_KEY = "video_key";
     public static String FIRST_KEY = "first_key";
@@ -26,10 +24,9 @@ public class VideoPlayerFragment extends Fragment implements OnPageChanged {
     VideoView videoView;
 
     private VkDocument videoDocument;
-    private boolean isThisFirstFragment;
     private MediaController videoControl;
 
-    public static VideoPlayerFragment newInstance(VkDocument document, boolean isThisFirst) {
+    public static VideoPlayerFragment newInstance(VkDocument document) {
         VideoPlayerFragment fragment = new VideoPlayerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(VIDEO_KEY, document);
@@ -41,7 +38,6 @@ public class VideoPlayerFragment extends Fragment implements OnPageChanged {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         videoDocument = getArguments().getParcelable(VIDEO_KEY);
-        isThisFirstFragment = getArguments().getBoolean(FIRST_KEY);
         videoControl = new MediaController(getActivity());
         //setRetainInstance(true);//holy shit
     }
@@ -66,13 +62,13 @@ public class VideoPlayerFragment extends Fragment implements OnPageChanged {
 
     @Override
     public void onBecameVisible() {
-        Timber.d("visible " + this);
+        super.onBecameVisible();
         videoView.start();
     }
 
     @Override
     public void onBecameInvisible() {
-        Timber.d("invisible " + this);
+        super.onBecameInvisible();
         videoView.stopPlayback();
     }
 

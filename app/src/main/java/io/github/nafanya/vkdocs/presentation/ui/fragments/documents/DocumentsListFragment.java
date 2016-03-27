@@ -23,8 +23,8 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.DeleteDialog;
-import io.github.nafanya.vkdocs.presentation.ui.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.RenameDialog;
+import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.UnknownTypeDocFragment;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -33,7 +33,6 @@ import timber.log.Timber;
  */
 public class DocumentsListFragment extends DocumentsListPresenterFragment implements
         BottomMenu.MenuEventListener,
-        ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener,
         RenameDialog.Callback,
         DeleteDialog.Callback {
@@ -128,12 +127,24 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
 //        adapter.notifyItemChanged(position);
     }
 
+
+    private boolean weCanOpen(VkDocument doc) {
+        return doc.getExtType() == VkDocument.ExtType.AUDIO ||
+                doc.getExtType() == VkDocument.ExtType.IMAGE ||
+                doc.getExtType() == VkDocument.ExtType.GIF ||
+                doc.getExtType() == VkDocument.ExtType.VIDEO;
+    }
+
     @Override
     public void onClick(int position, VkDocument document) {
-        Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
-        intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>)adapter.getData());
-        intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
-        startActivity(intent);
+        if (document.isDownloaded() && !weCanOpen(document)) {
+            UnknownTypeDocFragment.throwIntentToOpen(getActivity(), document);
+        } else {
+            Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
+            intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>) adapter.getData());
+            intent.putExtra(DocumentViewerActivity.POSITION_KEY, position);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -253,19 +264,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         activity.notifyOther();
     }
 
-    /***ErrorOpen dialog callbacks***/
-    @Override
-    public void onRetry(VkDocument document, boolean isAlreadyDownloading) {
-        presenter.retryDownloadDocument(document);
-    }
-
-    @Override
-    public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading) {
-            presenter.cancelDownloading(document);
-        }
-    }
-
     /***Rename dialog callbacks***/
     @Override
     public void onCancelRename(VkDocument document) {
@@ -318,7 +316,11 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         Timber.d("[fragment] calling getDocuments for %s", isOffline);
     }
 
-    public void updateDocumentListItem(VkDocument document) {
-        adapter.notifyItemChanged(adapter.getData().indexOf(document));
+    public void updateDocumentListItem(VkDocument document) {//TODO ну что делать, надо быстро пофикситьы
+        int index = adapter.getData().indexOf(document);
+        if (index == -1)
+            return;
+        adapter.getData().get(index).title = document.title;
+        adapter.notifyItemChanged(index);
     }
 }

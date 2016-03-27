@@ -36,7 +36,9 @@
             android:theme="@style/VK.Transparent" />
         <activity
             android:name=".presentation.ui.activities.DocumentsActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"/>
+
         <activity
             android:name=".presentation.ui.activities.DocumentViewerActivity"
             android:label="@string/title_activity_document_viewer"
@@ -44,7 +46,7 @@
 
         <service android:name=".presentation.ui.media.AudioPlayerService"/>
 
-        <activity android:name=".presentation.ui.views.activities.SettingsActivity"
+        <activity android:name=".presentation.ui.activities.SettingsActivity"
             android:parentActivityName=".presentation.ui.activities.DocumentsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme">

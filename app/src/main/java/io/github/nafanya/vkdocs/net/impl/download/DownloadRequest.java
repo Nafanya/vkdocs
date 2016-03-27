@@ -33,6 +33,7 @@ public class DownloadRequest extends BaseDownloadRequest {
     }
 
     public void removeListener(RequestListener listener) {
+        Timber.d("REMOVE LISTENER " + listener + " request = " + this);
         listeners.remove(listener);
     }
 

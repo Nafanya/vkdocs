@@ -14,6 +14,7 @@ import io.github.nafanya.vkdocs.domain.interactor.DeleteDocument;
 import io.github.nafanya.vkdocs.domain.interactor.GetDocuments;
 import io.github.nafanya.vkdocs.domain.interactor.MakeOfflineDocument;
 import io.github.nafanya.vkdocs.domain.interactor.NetworkDocuments;
+import io.github.nafanya.vkdocs.domain.interactor.RenameDocument;
 import io.github.nafanya.vkdocs.domain.interactor.UpdateDocument;
 import io.github.nafanya.vkdocs.domain.interactor.base.DefaultSubscriber;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
@@ -145,8 +146,7 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public void rename(VkDocument document, String newName) {
-        document.title = newName;
-        new UpdateDocument(SUBSCRIBER, eventBus, repository, document).execute();
+        new RenameDocument(SUBSCRIBER, eventBus, repository, document, newName).execute();
     }
 
     public void delete(VkDocument document) {

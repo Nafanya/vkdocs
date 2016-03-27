@@ -56,7 +56,6 @@ import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.LogoutDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
-import io.github.nafanya.vkdocs.presentation.ui.views.activities.SettingsActivity;
 import timber.log.Timber;
 
 public class DocumentsActivity extends AppCompatActivity implements
@@ -174,7 +173,7 @@ public class DocumentsActivity extends AppCompatActivity implements
                 .withSelectionSecondLineShown(false)
                 .withTypeface(Typeface.DEFAULT_BOLD)
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.drawable.header1)
                 .addProfiles(
                     new ProfileSettingDrawerItem()
                             .withName(getString(R.string.logout))
@@ -194,7 +193,6 @@ public class DocumentsActivity extends AppCompatActivity implements
                 .withAccountHeader(accountHeader)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_all)
@@ -203,7 +201,7 @@ public class DocumentsActivity extends AppCompatActivity implements
                                 .withIconColorRes(R.color.m_icon_all),
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_text)
-                                .withIcon(R.drawable.book_open_variant)
+                                .withIcon(R.drawable.text_box)
                                 .withSelectedTextColorRes(R.color.m_selected_text_text)
                                 .withIconColorRes(R.color.m_icon_text),
                         new PrimaryDrawerItem()
@@ -242,15 +240,17 @@ public class DocumentsActivity extends AppCompatActivity implements
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     Timber.d("[Documents activity] Nav drawer position: %d", position);
                     drawer.closeDrawer();
-                    if (navDrawerPos != position) {
-                        navDrawerPos = position;
+                    if (navDrawerPos == position)
+                        return true;
 
-                        if (position != 10)
-                            notifySectionChanged(navDrawerPos);
-                        else {
-                            Intent intent = new Intent(this, SettingsActivity.class);
-                            startActivity(intent);
-                        }
+                    if (position != 10) {
+                        notifySectionChanged(position);
+                        if (navDrawerPos != position)
+                            navDrawerPos = position;
+                    } else {
+                        Intent intent = new Intent(this, SettingsActivity.class);
+                        startActivity(intent);
+                        drawer.setSelectionAtPosition(navDrawerPos);
                     }
                     return true;
                 }).build();
@@ -422,7 +422,7 @@ public class DocumentsActivity extends AppCompatActivity implements
         finish();
     }
 
-    static class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
+    class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
         private final List<DocumentsListFragment> fragments = new ArrayList<>();
         private FragmentManager manager;
 
@@ -447,11 +447,10 @@ public class DocumentsActivity extends AppCompatActivity implements
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                // TODO: string res
                 case 0:
-                    return "ALL";
+                    return getString(R.string.all_title_tab);
                 default:
-                    return "OFFLINE";
+                    return getString(R.string.offline_title_tab);
             }
         }
         private DocumentsListFragment getFragment(int pos) {

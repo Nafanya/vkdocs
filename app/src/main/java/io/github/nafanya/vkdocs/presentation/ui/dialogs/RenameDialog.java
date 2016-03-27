@@ -65,10 +65,10 @@ public class RenameDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         View rootView = inflater.inflate(R.layout.rename_dialog, null);
-        builder.setView(rootView).setNegativeButton("Cancel", (dialog, which) -> {
+        builder.setView(rootView).setNegativeButton(R.string.default_cancel_button, (dialog, which) -> {
             callback.onCancelRename(doc);
             dismiss();
-        }).setPositiveButton("OK", (dialog, which) -> {
+        }).setPositiveButton(R.string.default_confirm_button, (dialog, which) -> {
             callback.onRename(position, doc, docTitle.getText().toString());
             dismiss();
         });

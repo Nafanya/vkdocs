@@ -1,8 +1,12 @@
 package io.github.nafanya.vkdocs;
 
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 
 import com.crashlytics.android.Crashlytics;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -32,8 +36,8 @@ import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import io.github.nafanya.vkdocs.net.base.CacheManager;
 import io.github.nafanya.vkdocs.net.base.InternetService;
 import io.github.nafanya.vkdocs.net.base.OfflineManager;
-import io.github.nafanya.vkdocs.net.impl.CacheManagerImpl;
 import io.github.nafanya.vkdocs.net.impl.InternetServiceImpl;
+import io.github.nafanya.vkdocs.net.impl.InterruptableCacheManager;
 import io.github.nafanya.vkdocs.net.impl.InterruptableOfflineManager;
 import io.github.nafanya.vkdocs.net.impl.download.InterruptableDownloadManager;
 import io.github.nafanya.vkdocs.presentation.ui.activities.LoginActivity;
@@ -52,6 +56,7 @@ public class App extends Application {
     private OfflineManager offlineManager;
     private UserRepository userRepository;
     private CacheManager cacheManager;
+    private AudioPlayerService playerService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -65,6 +70,8 @@ public class App extends Application {
         }
     };
 
+
+    public static final int DEFAULT_CACHE_SIZE = 100;//mb
 
     public void onCreate() {
         super.onCreate();
@@ -93,7 +100,7 @@ public class App extends Application {
         internetService = new InternetServiceImpl(this);
         registerReceiver(internetService, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         offlineManager = new InterruptableOfflineManager(internetService, downloadManager, repository, eventBus, getAppCacheRoot());
-        cacheManager = new CacheManagerImpl(eventBus, repository, downloadManager, getAppCacheRoot(), 100);
+        cacheManager = new InterruptableCacheManager(eventBus, repository, downloadManager, getAppCacheRoot(), this, DEFAULT_CACHE_SIZE);
         startService(new Intent(this, AudioPlayerService.class));
 
         try {
@@ -105,7 +112,23 @@ public class App extends Application {
         createIfNotExist(getAppCacheRoot());
         createIfNotExist(getAppOfflineRoot());
 
+
+        Intent intent = new Intent(this, AudioPlayerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            playerService = null;
+        }
+    };
+
 
     public File getAppCacheRoot() {
         return getExternalCacheDir();
@@ -152,5 +175,9 @@ public class App extends Application {
 
     public CacheManager getCacheManager() {
         return cacheManager;
+    }
+
+    public AudioPlayerService getPlayerService() {
+        return playerService;
     }
 }
