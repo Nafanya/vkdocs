@@ -7,6 +7,9 @@ package io.github.nafanya.vkdocs.presentation.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -47,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (isResumed) {
                     switch (res) {
                         case LoggedOut:
-                            login();
+                            showLogin();
                             break;
                         case LoggedIn:
                             startMainActivity();
@@ -71,6 +74,13 @@ public class LoginActivity extends AppCompatActivity {
         VKSdk.login(this, APP_PERMISSIONS_SCOPE);
     }
 
+    private void showLogin() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new LoginFragment())
+                .commitAllowingStateLoss();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -78,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         if (VKSdk.isLoggedIn()) {
             startMainActivity();
         } else {
-            login();
+            showLogin();
         }
     }
 
@@ -117,5 +127,19 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DocumentsActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public static class LoginFragment extends android.support.v4.app.Fragment {
+        public LoginFragment() {
+            super();
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View v = inflater.inflate(R.layout.fragment_login, container, false);
+            v.findViewById(R.id.sign_in_button).setOnClickListener(view -> VKSdk.login(getActivity(), APP_PERMISSIONS_SCOPE));
+            return v;
+        }
+
     }
 }

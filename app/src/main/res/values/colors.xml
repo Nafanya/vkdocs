@@ -18,6 +18,11 @@
     <!--<color name="colorAccent">@color/md_white_1000</color>FF86A9D1-->
     <color name="colorAccent">#FF4081</color>
 
+    <color name="m_splash_background">#3C79A8</color>
+    <color name="m_splash_button_blue">#6393BB</color>
+    <color name="m_splash_button_white">#E2F0FB</color>
+    <color name="m_splash_text_blue">#7E9DB1</color>
+
     <color name="m_cool_grey_70">#ff4c4c4c</color>
 
     <color name="m_app_primary_text">@color/m_cool_grey_70</color>
