@@ -295,7 +295,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         documentType = type;
         presenter.setFilter(getFilter());
         presenter.getDocuments();
-        //adapter.setData(adapter.getData());
         setupEmptyView();
     }
 

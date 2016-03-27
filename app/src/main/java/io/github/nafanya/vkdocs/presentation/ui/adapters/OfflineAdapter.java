@@ -34,6 +34,11 @@ public class OfflineAdapter extends BaseSortedAdapter {
         this.listener = listener;
     }
 
+    @Override
+    public Comparator<VkDocument> getComparator() {
+        return DocumentComparator.offlineComparator(sortMode);
+    }
+
     public List<VkDocument> getData() {
         return documents;
     }
