@@ -56,6 +56,9 @@
                 android:value=".presentation.ui.activities.DocumentsActivity" />
         </activity>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="dd7f815c220841e342bdf16de37b3f53b30033b0" />
     </application>
 
 </manifest>

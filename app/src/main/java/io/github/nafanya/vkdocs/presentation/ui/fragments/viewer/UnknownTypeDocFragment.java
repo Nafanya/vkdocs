@@ -120,8 +120,15 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         try {
             context.startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            Snackbar noApp = Snackbar.make(rootView, R.string.no_app, Snackbar.LENGTH_LONG);
-            noApp.show();
+            newIntent.setType("*/*");
+            try {
+                context.startActivity(newIntent);
+            } catch (ActivityNotFoundException ee) {
+                Snackbar noApp = Snackbar.make(rootView, R.string.no_app, Snackbar.LENGTH_LONG);
+                noApp.show();
+            }
+
+
         }
     }
 

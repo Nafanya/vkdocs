@@ -48,7 +48,7 @@
             app:srcCompat="@drawable/ic_offline_green"/>
 
         <ImageView
-            android:id="@+id/ic_document_cache_offline_progress"
+            android:id="@+id/ic_document_offline_progress"
             android:layout_width="@dimen/m_entry_icon_type_size"
             android:layout_height="@dimen/m_entry_icon_type_size"
             android:layout_alignBottom="@id/ic_document_type"

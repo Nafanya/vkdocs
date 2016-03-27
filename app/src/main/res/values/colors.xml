@@ -23,6 +23,8 @@
     <color name="m_splash_button_white">#E2F0FB</color>
     <color name="m_splash_text_blue">#7E9DB1</color>
 
+    <color name="m_anim_download_progress">@color/colorAccent</color>
+
     <color name="m_cool_grey_70">#ff4c4c4c</color>
 
     <color name="m_app_primary_text">@color/m_cool_grey_70</color>

@@ -79,10 +79,8 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_cache_offline_progress)
-        ImageView documentCacheOfflineInProgressIcon;
-        @Bind(R.id.ic_document_cached)
-        ImageView documentCachedIcon;
+        @Bind(R.id.ic_document_offline_progress)
+        ImageView documentOfflineInProgressIcon;
 
         @Bind(R.id.text_document_title)
         TextView title;
@@ -111,8 +109,7 @@ public class OfflineAdapter extends BaseSortedAdapter {
             ButterKnife.bind(this, view);
 
             documentOfflineIcon.setVisibility(View.GONE);
-            documentCacheOfflineInProgressIcon.setVisibility(View.GONE);
-            documentCachedIcon.setVisibility(View.GONE);
+            documentOfflineInProgressIcon.setVisibility(View.GONE);
 
             downloadProgress.setVisibility(View.VISIBLE);
             sortLabel.setVisibility(View.GONE);
