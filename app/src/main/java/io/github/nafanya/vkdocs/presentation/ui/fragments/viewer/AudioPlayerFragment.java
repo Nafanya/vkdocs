@@ -1,11 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +15,7 @@ import java.io.IOException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.nafanya.vkdocs.App;
 import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.base.BaseViewerFragment;
@@ -45,38 +42,22 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
     @OnClick(R.id.play_button)
     void onClickPlay(View v) {
-        if (isPlayerInitialized()) {
-            playButton.setVisibility(View.GONE);
-            pauseButton.setVisibility(View.VISIBLE);
-            playerService.resume();
-        }
+        if (playerService.isCompleted())
+            playerService.seekTo(0);
+        playButton.setVisibility(View.GONE);
+        pauseButton.setVisibility(View.VISIBLE);
+        playerService.resume();
     }
 
     @OnClick(R.id.pause_button)
     void onClickPause(View v) {
-        if (isPlayerInitialized()) {
-            pauseButton.setVisibility(View.GONE);
-            playButton.setVisibility(View.VISIBLE);
-            playerService.pause();
-        }
+        pauseButton.setVisibility(View.GONE);
+        playButton.setVisibility(View.VISIBLE);
+        playerService.pause();
     }
 
     private VkDocument audioDocument;
     private AudioPlayerService playerService;
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
-            if (isBecameVisible())
-                startPlaying();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            playerService = null;
-        }
-    };
 
     public static AudioPlayerFragment newInstance(VkDocument document) {
         AudioPlayerFragment fragment = new AudioPlayerFragment();
@@ -86,16 +67,11 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         return fragment;
     }
 
-    public boolean isPlayerInitialized() {
-        return playerService != null;
-    }
-
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-
-        Intent intent = new Intent(activity, AudioPlayerService.class);
-        activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        App app = (App)activity.getApplicationContext();
+        playerService = app.getPlayerService();
     }
 
 
@@ -109,7 +85,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     private Subscription subscription = Subscriptions.empty();
     private void startPlaying() {
         Timber.d("ON START AUDIO " + audioDocument.title);
-        if (!playerService.isNowPlaying(audioDocument)) {
+        if (!playerService.isNowInPlayer(audioDocument)) {
             try {
                 playerService.play(audioDocument, this);
             } catch (IOException ignore) {
@@ -129,14 +105,14 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
         View rootView = inflater.inflate(R.layout.fragment_audio_player, null);
         ButterKnife.bind(this, rootView);
-        seekBar.setMax(100);
+        seekBar.setMax(CustomMediaPlayer.PERCENTAGE);
         fileName.setText(audioDocument.title);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (isPlayerInitialized() && playerService.isPrepared() && fromUser) {
-                    int toTime = (int) (playerService.getDuration() * progress / 100.0);
+                if (playerService.isPrepared() && fromUser) {
+                    int toTime = playerService.getDuration() * progress / CustomMediaPlayer.PERCENTAGE;
                     playerService.seekTo(toTime);
                 }
             }
@@ -151,21 +127,26 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
             }
         });
-        Timber.d("on create view");
+        if (!playerService.isNowInPlayer(audioDocument))
+            setEnabledControls(false);
         return rootView;
     }
 
-    private void enableControlButton(boolean enable) {
+    private void setEnabledControls(boolean enable) {
         seekBar.setEnabled(enable);
-        if (!enable)
-            seekBar.setProgress(0);
         playButton.setEnabled(enable);
         pauseButton.setEnabled(enable);
     }
 
+    private void resetViewToInitialState() {
+        seekBar.setProgress(0);
+        playButton.setVisibility(View.GONE);
+        pauseButton.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onPlayerPrepared() {
-        //enableControlButton(true);
+        setEnabledControls(true);
     }
 
     private class SeekBarUpdater extends CustomMediaPlayer.PlayingListener {
@@ -174,7 +155,6 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
          ***/
         @Override
         public void onCompleted() {
-            Timber.d("on complete seek bar");
         }
 
         @Override
@@ -185,6 +165,10 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         @Override
         public void onNext(Integer integer) {
             seekBar.setProgress(integer);
+            if (integer == CustomMediaPlayer.PERCENTAGE) {
+                playButton.setVisibility(View.VISIBLE);
+                pauseButton.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -192,28 +176,31 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     public void onBecameVisible() {
         super.onBecameVisible();
 
-        /*if (isPlayerInitialized() && playerService.isNowPlaying(audioDocument))
-            enableControlButton(true);
-        else
-            enableControlButton(false);*/
-
-        if (isPlayerInitialized())
-            startPlaying();
+        if (playerService.isNowInPlayer(audioDocument)) {
+            if (playerService.isPlaying()) {
+                playButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.VISIBLE);
+            } else {
+                playButton.setVisibility(View.VISIBLE);
+                pauseButton.setVisibility(View.GONE);
+            }
+        } else
+            setEnabledControls(false);
+        startPlaying();
     }
 
     @Override
     public void onBecameInvisible() {
         super.onBecameInvisible();
-        if (isPlayerInitialized())
-            playerService.stop();
-        //enableControlButton(false);
+        playerService.stop();
         subscription.unsubscribe();
-        seekBar.setOnSeekBarChangeListener(null);
+        resetViewToInitialState();
+        setEnabledControls(false);
     }
 
     @Override
     public void onResume() {
-        if (subscription.isUnsubscribed() && isPlayerInitialized())
+        if (subscription.isUnsubscribed())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
         super.onResume();
     }
@@ -222,11 +209,5 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     public void onPause() {
         subscription.unsubscribe();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        getActivity().unbindService(serviceConnection);
-        super.onDestroy();
     }
 }

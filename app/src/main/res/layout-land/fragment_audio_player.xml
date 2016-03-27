@@ -54,7 +54,6 @@
 
         <ImageButton
             android:id="@+id/play_button"
-            android:enabled="false"
             app:srcCompat="@drawable/play"
             android:layout_above="@id/seek_bar"
             android:layout_centerHorizontal="true"
@@ -62,7 +61,6 @@
 
         <ImageButton
             android:id="@+id/pause_button"
-            android:enabled="false"
             app:srcCompat="@drawable/pause"
             android:layout_above="@id/seek_bar"
             android:layout_centerHorizontal="true"

@@ -53,7 +53,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
         setTitle(documentsPagerAdapter.getPageTitle(position));
         viewPager.setCurrentItem(position);
         BaseViewerFragment.destroySnackbar();
-        Timber.d("after destroy snackbar");
     }
 
     @Override

@@ -1,8 +1,12 @@
 package io.github.nafanya.vkdocs;
 
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
@@ -50,6 +54,7 @@ public class App extends Application {
     private OfflineManager offlineManager;
     private UserRepository userRepository;
     private CacheManager cacheManager;
+    private AudioPlayerService playerService;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
@@ -104,7 +109,23 @@ public class App extends Application {
         createIfNotExist(getAppCacheRoot());
         createIfNotExist(getAppOfflineRoot());
 
+
+        Intent intent = new Intent(this, AudioPlayerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            playerService = ((AudioPlayerService.AudioPlayerBinder) service).service();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            playerService = null;
+        }
+    };
+
 
     public File getAppCacheRoot() {
         return getExternalCacheDir();
@@ -151,5 +172,9 @@ public class App extends Application {
 
     public CacheManager getCacheManager() {
         return cacheManager;
+    }
+
+    public AudioPlayerService getPlayerService() {
+        return playerService;
     }
 }
