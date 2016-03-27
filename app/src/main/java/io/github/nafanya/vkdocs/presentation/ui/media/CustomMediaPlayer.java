@@ -115,18 +115,22 @@ public class CustomMediaPlayer extends MediaPlayer implements
             while (sessionId == currentSessionId) {
                 if (!invalidState) {
                     int diff = getCurrentPosition() - fuckingMediaPlayerPosition;
-                    int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
-                    if (isCompleted)
-                        perc = PERCENTAGE;
+                    int perc = realPosition + diff;
+                    if (perc > duration)
+                        perc = duration;
+                    //int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
+                    //if (isCompleted)
+                        //perc = PERCENTAGE;
 
-                    Timber.d("perc = " + perc);
+                    if (isCompleted)
+                        perc = duration;
 
                     if (prevPerc != perc)
                         subscriber.onNext(perc);
                     prevPerc = perc;
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException ignore) {}
             }
             subscriber.onCompleted();

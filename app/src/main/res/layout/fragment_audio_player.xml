@@ -69,6 +69,21 @@
             android:layout_above="@id/seek_bar"
             android:layout_centerHorizontal="true"
             style="@style/Button.Player"/>
+
+
+        <TextView
+            style="@style/PlayerTimeLabel"
+            android:id="@+id/current_timestamp"
+            app:srcCompat="@drawable/play"
+            android:layout_above="@id/seek_bar"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            style="@style/PlayerTimeLabel"
+            android:id="@+id/duration"
+            app:srcCompat="@drawable/play"
+            android:layout_above="@id/seek_bar"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
 </RelativeLayout>

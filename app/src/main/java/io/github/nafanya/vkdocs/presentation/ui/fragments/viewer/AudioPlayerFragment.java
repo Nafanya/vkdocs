@@ -40,6 +40,12 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     @Bind(R.id.file_name)
     TextView fileName;
 
+    @Bind(R.id.current_timestamp)
+    TextView currentTimestamp;
+
+    @Bind(R.id.duration)
+    TextView durationTimestamp;
+
     @OnClick(R.id.play_button)
     void onClickPlay(View v) {
         if (playerService.isCompleted())
@@ -79,7 +85,6 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         audioDocument = getArguments().getParcelable(MUSIC_KEY);
-        Timber.d("on create " + this);
     }
 
     private Subscription subscription = Subscriptions.empty();
@@ -105,31 +110,53 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
         View rootView = inflater.inflate(R.layout.fragment_audio_player, null);
         ButterKnife.bind(this, rootView);
-        seekBar.setMax(CustomMediaPlayer.PERCENTAGE);
+        //seekBar.setMax(CustomMediaPlayer.PERCENTAGE);
         fileName.setText(audioDocument.title);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private boolean wasPlaying = false;
+            private int lastTime;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (playerService.isPrepared() && fromUser) {
-                    int toTime = playerService.getDuration() * progress / CustomMediaPlayer.PERCENTAGE;
-                    playerService.seekTo(toTime);
+                    //int toTime = duration * progress / CustomMediaPlayer.PERCENTAGE;
+                    lastTime = progress;
+                    //currentTimestamp.setText(formatTime(progress));
+                    playerService.seekTo(progress);
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                wasPlaying = playerService.isPlaying();
+                playerService.pause();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (wasPlaying)
+                    playerService.resume();
+                playerService.seekTo(lastTime);
             }
         });
         if (!playerService.isNowInPlayer(audioDocument))
             setEnabledControls(false);
         return rootView;
+    }
+
+
+    private String formatTime(int millis) {
+        int secs = millis / 1000;
+        return String.format("%d:%02d", secs / 60, secs % 60);
+    }
+
+    private int duration;
+    private void initializeTimestamps() {
+        duration = playerService.getDuration();
+        durationTimestamp.setText(formatTime(duration));
+        currentTimestamp.setText(formatTime(0));
+        seekBar.setMax(duration);
     }
 
     private void setEnabledControls(boolean enable) {
@@ -142,11 +169,16 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         seekBar.setProgress(0);
         playButton.setVisibility(View.GONE);
         pauseButton.setVisibility(View.VISIBLE);
+        currentTimestamp.setVisibility(View.GONE);
+        durationTimestamp.setVisibility(View.GONE);
     }
 
     @Override
     public void onPlayerPrepared() {
         setEnabledControls(true);
+        currentTimestamp.setVisibility(View.VISIBLE);
+        durationTimestamp.setVisibility(View.VISIBLE);
+        initializeTimestamps();
     }
 
     private class SeekBarUpdater extends CustomMediaPlayer.PlayingListener {
@@ -163,9 +195,12 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         }
 
         @Override
-        public void onNext(Integer integer) {
-            seekBar.setProgress(integer);
-            if (integer == CustomMediaPlayer.PERCENTAGE) {
+        public void onNext(Integer timestamp) {
+            //int progress = (int)(CustomMediaPlayer.PERCENTAGE * (1.0 * timestamp / duration));
+            seekBar.setProgress(timestamp);
+            currentTimestamp.setText(formatTime(timestamp));
+
+            if (timestamp == duration) {
                 playButton.setVisibility(View.VISIBLE);
                 pauseButton.setVisibility(View.GONE);
             }
@@ -177,6 +212,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         super.onBecameVisible();
 
         if (playerService.isNowInPlayer(audioDocument)) {
+            Timber.d("is now pl = " + playerService.isNowInPlayer(audioDocument));
             if (playerService.isPlaying()) {
                 playButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
@@ -184,8 +220,15 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
                 playButton.setVisibility(View.VISIBLE);
                 pauseButton.setVisibility(View.GONE);
             }
-        } else
+
+            currentTimestamp.setVisibility(View.VISIBLE);
+            durationTimestamp.setVisibility(View.VISIBLE);
+            initializeTimestamps();
+        } else {
             setEnabledControls(false);
+            currentTimestamp.setVisibility(View.INVISIBLE);
+            durationTimestamp.setVisibility(View.INVISIBLE);
+        }
         startPlaying();
     }
 
@@ -195,6 +238,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         playerService.stop();
         subscription.unsubscribe();
         resetViewToInitialState();
+        initializeTimestamps();
         setEnabledControls(false);
     }
 
