@@ -7,5 +7,5 @@
     <item android:drawable="@drawable/download_png_4" android:duration="150"/>
     <item android:drawable="@drawable/download_png_5" android:duration="150"/>
     <item android:drawable="@drawable/download_png_6" android:duration="150"/>
-    <item android:drawable="@drawable/download_png_7" android:duration="150"/>
+    <item android:drawable="@drawable/download_png_6" android:duration="150"/>
 </animation-list>
