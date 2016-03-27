@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.crashlytics.android.Crashlytics;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
+import io.fabric.sdk.android.Fabric;
 import io.github.nafanya.vkdocs.data.DocumentRepositoryImpl;
 import io.github.nafanya.vkdocs.data.UserRepositoryImpl;
 import io.github.nafanya.vkdocs.data.database.DbRequestStorage;
@@ -66,6 +68,7 @@ public class App extends Application {
 
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         vkAccessTokenTracker.startTracking();
         //VKSdk.initialize(this).withPayments();
