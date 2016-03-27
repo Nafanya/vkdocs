@@ -130,4 +130,8 @@ public class DocumentViewerPresenter extends BasePresenter {
                 document.getRequest().addListener(downloadingProgressListener);
         }
     }
+
+    public void unsubscribe() {
+        unsubscribeIfNot(cacheSubscriber);
+    }
 }

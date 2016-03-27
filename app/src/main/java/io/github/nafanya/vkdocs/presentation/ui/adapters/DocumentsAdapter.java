@@ -6,15 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Collections;
-import java.util.List;
-
 import io.github.nafanya.vkdocs.R;
-import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.CommonItemEventListener;
-import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 
 public class DocumentsAdapter extends BaseSortedAdapter {
@@ -39,18 +34,5 @@ public class DocumentsAdapter extends BaseSortedAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder hold, int position) {
         DocumentViewHolder holder = (DocumentViewHolder)hold;
         setListener(position, holder.setup(position, documents.get(position)));
-    }
-
-    public void setSortMode(SortMode sortMode) {
-        this.sortMode = sortMode;
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void setData(List<VkDocument> documents) {
-        super.setData(documents);
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
-        notifyDataSetChanged();
     }
 }
