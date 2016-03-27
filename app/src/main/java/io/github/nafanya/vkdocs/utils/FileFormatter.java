@@ -23,6 +23,7 @@ public class FileFormatter {
     private Drawable archive;
     private Drawable gif;
     private Drawable text;
+    private Drawable word;
 
     public FileFormatter(Context context) {
         from = context.getString(R.string.from);
@@ -31,37 +32,60 @@ public class FileFormatter {
     public Drawable getIcon(VkDocument doc, Context context) {
         if (musicBox == null) {
             musicBox = ContextCompat.getDrawable(context, R.drawable.music_box);
-            movie = ContextCompat.getDrawable(context, R.drawable.movie);
-            filePdfBox = ContextCompat.getDrawable(context, R.drawable.file_pdf_box);
-            image = ContextCompat.getDrawable(context, R.drawable.image);
+            movie = ContextCompat.getDrawable(context, R.drawable.movie_box);
+            filePdfBox = ContextCompat.getDrawable(context, R.drawable.file_pdf);
+            image = ContextCompat.getDrawable(context, R.drawable.image_box);
             file = ContextCompat.getDrawable(context, R.drawable.file);
             archive = ContextCompat.getDrawable(context, R.drawable.zip_box);
             gif = ContextCompat.getDrawable(context, R.drawable.image_vintage);
             text = ContextCompat.getDrawable(context, R.drawable.text_box);
+            word = ContextCompat.getDrawable(context, R.drawable.file_word_box);
         }
-
         if (doc.getExtType() == VkDocument.ExtType.AUDIO)
             return musicBox;
-
         if (doc.getExtType() == VkDocument.ExtType.VIDEO)
             return movie;
-
         if (doc.getExt().equals("pdf"))
             return filePdfBox;
-
+        if (doc.getExt().equals("doc") || doc.getExt().equals("docx") || doc.title.endsWith(".doc") || doc.title.equals("docx"))
+            return word;
         if (doc.getExtType() == VkDocument.ExtType.GIF)
             return gif;
-
         if (doc.getExtType() == VkDocument.ExtType.IMAGE)
             return image;
-
         if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
             return archive;
-
         if (doc.getExtType() == VkDocument.ExtType.TEXT)
             return text;
-
         return file;
+    }
+
+    public Drawable getIconDialog(VkDocument doc, Context context) {
+        if (doc.getExtType() == VkDocument.ExtType.AUDIO)
+            return ContextCompat.getDrawable(context, R.drawable.music_box_dialog);
+
+        if (doc.getExtType() == VkDocument.ExtType.VIDEO)
+            return ContextCompat.getDrawable(context, R.drawable.movie_box_dialog);
+
+        if (doc.getExt().equals("pdf"))
+            return ContextCompat.getDrawable(context, R.drawable.file_pdf_dialog);
+
+        if (doc.getExt().equals("doc") || doc.getExt().equals("docx") || doc.title.endsWith(".doc") || doc.title.endsWith(".docx"))
+            return ContextCompat.getDrawable(context, R.drawable.file_word_box_dialog);
+
+        if (doc.getExtType() == VkDocument.ExtType.GIF)
+            return ContextCompat.getDrawable(context, R.drawable.image_vintage_dialog);
+
+        if (doc.getExtType() == VkDocument.ExtType.IMAGE)
+            return ContextCompat.getDrawable(context, R.drawable.image_dialog);
+
+        if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)
+            return ContextCompat.getDrawable(context, R.drawable.zip_box_dialog);
+
+        if (doc.getExtType() == VkDocument.ExtType.TEXT)
+            return ContextCompat.getDrawable(context, R.drawable.text_box_dialog);
+
+        return ContextCompat.getDrawable(context, R.drawable.file_dialog);
     }
 
     public String formatFrom(long cur, long total) {

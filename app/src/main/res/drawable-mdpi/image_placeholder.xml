@@ -1,4 +1,4 @@
-<!-- drawable/image.xml -->
+<!-- drawable/image_box.xml.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="@dimen/m_image_preview_splash_size"
     android:width="@dimen/m_image_preview_splash_size"

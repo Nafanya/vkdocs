@@ -58,7 +58,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         args.putBoolean(OFFLNE_KEY, isOffline);
         args.putSerializable(EXT_TYPE_KEY, type);
         args.putSerializable(SORT_MODE_KEY, sortMode);
-        args.putString(SEARCH_QUERY_KEY, searchQuery);
+        //args.putString(SEARCH_QUERY_KEY, searchQuery);
         fragment.setArguments(args);
         return fragment;
     }
@@ -138,7 +138,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     @Override
     public void onClick(int position, VkDocument document) {
         if (document.isDownloaded() && !weCanOpen(document)) {
-            UnknownTypeDocFragment.throwIntentToOpen(getActivity(), document);
+            UnknownTypeDocFragment.throwIntentToOpen(getActivity(), rootView, document);
         } else {
             Intent intent = new Intent(getActivity(), DocumentViewerActivity.class);
             intent.putParcelableArrayListExtra(DocumentViewerActivity.DOCUMENTS_KEY, (ArrayList<VkDocument>) adapter.getData());
@@ -295,7 +295,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         documentType = type;
         presenter.setFilter(getFilter());
         presenter.getDocuments();
-        //adapter.setData(adapter.getData());
         setupEmptyView();
     }
 

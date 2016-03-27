@@ -218,6 +218,15 @@
         <item name="android:padding">6dp</item>
     </style>
 
+    <style name="DialogIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:layout_marginTop">@dimen/m_grid_2x</item>
+        <item name="android:layout_marginLeft">@dimen/m_grid_2x</item>
+        <item name="android:layout_marginRight">@dimen/m_grid_2x</item>
+    </style>
+
     <style name="FixedSizeIcon.Large">
         <item name="android:layout_width">@dimen/m_entry_icon_size</item>
         <item name="android:layout_height">@dimen/m_entry_icon_size</item>

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,14 +73,12 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         fileName.setText(document.title);
         typeIcon.setOnClickListener(v -> {
             if (presenter.isDownloaded())
-                throwIntentToOpen(getActivity(), document);
+                throwIntentToOpen(getActivity(), rootView, document);
         });
         if (!presenter.isDownloaded())
             downloadedSize.setText(fileFormatter.formatFrom(0, document.size));
-        else {
+        else
             hideProgress();
-            //downloadedSize.setText(fileFormatter.formatSize(document.size));
-        }
         return rootView;
     }
 
@@ -107,10 +106,10 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
     protected void whenDownloaded() {
         hideProgress();
 
-        showSnackBar(v -> throwIntentToOpen(getActivity(), document));
+        showSnackBar(v -> throwIntentToOpen(getActivity(), rootForSnackbar(), document));
     }
 
-    public static void throwIntentToOpen(Context context, VkDocument document) {
+    public static void throwIntentToOpen(Context context, View rootView, VkDocument document) {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         String mimeType = myMime.getMimeTypeFromExtension(document.getExt());
@@ -121,14 +120,15 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         try {
             context.startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            //TODO do something
-            //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
             newIntent.setType("*/*");
             try {
                 context.startActivity(newIntent);
             } catch (ActivityNotFoundException ee) {
-                // Can't really do anything else
+                Snackbar noApp = Snackbar.make(rootView, R.string.no_app, Snackbar.LENGTH_LONG);
+                noApp.show();
             }
+
+
         }
     }
 

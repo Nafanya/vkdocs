@@ -86,9 +86,11 @@
     <string name="delete_document_title">Deleting document</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="retry">RETRY</string>
-    <string name="cant_open">Could not open file</string>
+    <string name="couldnt_open">Could not open file</string>
     <string name="open_in_other_app">Open in other app</string>
     <string name="open_button">OPEN</string>
     <string name="all_title_tab">ALL</string>
     <string name="offline_title_tab">OFFLINE</string>
+    <string name="no_app">Could not open file</string>
+    <string name="couldnt_open_audio">Could not open audio</string>
 </resources>

@@ -2,16 +2,11 @@ package io.github.nafanya.vkdocs.domain.interactor;
 
 import com.vk.sdk.api.model.VKApiUser;
 
-import java.util.List;
-
 import io.github.nafanya.vkdocs.domain.events.EventBus;
 import io.github.nafanya.vkdocs.domain.interactor.base.UseCase;
-import io.github.nafanya.vkdocs.domain.model.VkDocument;
-import io.github.nafanya.vkdocs.domain.repository.DocumentRepository;
 import io.github.nafanya.vkdocs.domain.repository.UserRepository;
 import rx.Observable;
 import rx.Scheduler;
-import timber.log.Timber;
 
 /**
  * Created by nafanya on 3/20/16.
@@ -28,7 +23,6 @@ public class GetUserInfo extends UseCase<VKApiUser> {
     @Override
     public Observable<VKApiUser> buildUseCase() {
         return Observable.create(subscriber -> {
-            Timber.d("cur thread = " + Thread.currentThread().getId());
             subscriber.onNext(repository.getUserInfo());
             try {
                 repository.synchronize();

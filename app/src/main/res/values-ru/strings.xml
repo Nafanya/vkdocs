@@ -75,7 +75,7 @@
     <string name="delete_document_title">Удаление документа</string>
     <string name="no_internet_connection">Нет интернет соединения</string>
     <string name="retry">ПОВТОРИТЬ</string>
-    <string name="cant_open">Не удалось открыть файл</string>
+    <string name="couldnt_open">Не удалось открыть файл</string>
     <string name="open_in_other_app">Открыть другим приложением</string>
     <string name="open_button">ОТКРЫТЬ</string>
     <string name="clear_offline_title">Удалить оффлайн документы</string>
@@ -104,4 +104,6 @@
     <string name="size">Размеру</string>
     <string name="text">Текст</string>
     <string name="video">Видео</string>
+    <string name="no_app">Не удалось открыть файл</string>
+    <string name="couldnt_open_audio">Не удалось открыть аудио</string>
 </resources>

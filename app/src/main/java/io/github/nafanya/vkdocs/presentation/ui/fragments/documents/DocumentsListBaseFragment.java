@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -29,7 +30,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
     public static final String OFFLNE_KEY = "offlne_key";
     public static final String EXT_TYPE_KEY = "ext_type_key";
     public static final String SORT_MODE_KEY = "sort_mode_key";
-    public static final String SEARCH_QUERY_KEY = "search_query_key";
+    //public static final String SEARCH_QUERY_KEY = "search_query_key";
 
     protected boolean isOffline;
     protected VkDocument.ExtType documentType;
@@ -43,6 +44,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
     @Bind(R.id.empty_view_image) ImageView emptyViewImage;
     @Bind(R.id.empty_view_text) TextView emptyViewText;
     @Bind(R.id.swipe_container) SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.rootLayout) RelativeLayout rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,14 +54,14 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
             isOffline = getArguments().getBoolean(OFFLNE_KEY);
             documentType = (VkDocument.ExtType) getArguments().getSerializable(EXT_TYPE_KEY);
             sortMode = (SortMode) getArguments().getSerializable(SORT_MODE_KEY);
-            searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
+            ////searchQuery = getArguments().getString(SEARCH_QUERY_KEY);
         }
 
         if (savedInstanceState != null) {
             isOffline = savedInstanceState.getBoolean(OFFLNE_KEY);
             documentType = (VkDocument.ExtType) savedInstanceState.getSerializable(EXT_TYPE_KEY);
             sortMode = (SortMode) savedInstanceState.getSerializable(SORT_MODE_KEY);
-            searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY);
+            //searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY);
         }
     }
 
@@ -68,7 +70,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         state.putBoolean(OFFLNE_KEY, isOffline);
         state.putSerializable(EXT_TYPE_KEY, documentType);
         state.putSerializable(SORT_MODE_KEY, sortMode);
-        state.putString(SEARCH_QUERY_KEY, searchQuery);
+        //state.putString(SEARCH_QUERY_KEY, searchQuery);
         super.onSaveInstanceState(state);
     }
 
@@ -104,13 +106,13 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
                 emptyViewImage.setImageResource(R.drawable.music_box);
                 emptyViewText.setText(R.string.no_audios); break;
             case VIDEO:
-                emptyViewImage.setImageResource(R.drawable.movie);
+                emptyViewImage.setImageResource(R.drawable.movie_box);
                 emptyViewText.setText(R.string.no_videos); break;
             case GIF:
                 emptyViewImage.setImageResource(R.drawable.image_vintage);
                 emptyViewText.setText(R.string.no_gifs); break;
             case IMAGE:
-                emptyViewImage.setImageResource(R.drawable.image);
+                emptyViewImage.setImageResource(R.drawable.image_box);
                 emptyViewText.setText(R.string.no_images); break;
             case BOOK: case TEXT:
                 emptyViewImage.setImageResource(R.drawable.book);

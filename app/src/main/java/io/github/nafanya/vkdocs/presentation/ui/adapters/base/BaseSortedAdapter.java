@@ -13,6 +13,7 @@ import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -21,7 +22,6 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
-import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -261,6 +261,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyDataSetChanged();
     }
 
+    public abstract Comparator<VkDocument> getComparator();
+
     /**
      * Don't forget to call super method since it sets documents variables.
      * @param documents
@@ -269,27 +271,22 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
     public void setData(List<VkDocument> documents, String searchQuery, SortMode sortMode) {
         this.documentsOriginal = documents;
         this.documents = new ArrayList<>(documentsOriginal);
+        this.sortMode = sortMode;
         onlySetFilter(searchQuery);
-        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+        Collections.sort(documents, getComparator());
         notifyDataSetChanged();
     }
 
     public void setData(List<VkDocument> documents) {
-        //Timber.d("set data document in all docs");
         this.documentsOriginal = documents;
         this.documents = new ArrayList<>(documentsOriginal);
-        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+        Collections.sort(documents, getComparator());
         notifyDataSetChanged();
-    }
-
-    public void removeData() {
-        documents.clear();
-        resetRequestsAndListeners();
     }
 
     public void setSortMode(SortMode sortMode) {
         this.sortMode = sortMode;
-        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        Collections.sort(documents, getComparator());
         notifyDataSetChanged();
     }
 

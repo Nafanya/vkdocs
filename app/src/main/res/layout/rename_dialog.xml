@@ -9,15 +9,15 @@
     <ImageView
         android:id="@+id/ic_document_type"
         android:focusable="false"
-        style="@style/FixedSizeIcon"
-        app:srcCompat="@drawable/file_document"/>
+        style="@style/DialogIcon"
+        app:srcCompat="@drawable/file"/>
 
     <EditText
         android:id="@+id/text_document_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Lilka"
+        android:text=""
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"/>
 

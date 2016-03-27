@@ -84,5 +84,6 @@
     <dimen name="m_grid_9x">72dp</dimen>
     <dimen name="splashscreen_logo_size">100dp</dimen>
     <dimen name="splashscreen_left_color_width">@dimen/m_grid_1x</dimen>
+    <dimen name="m_icon_dialog">48dp</dimen>
 
 </resources>

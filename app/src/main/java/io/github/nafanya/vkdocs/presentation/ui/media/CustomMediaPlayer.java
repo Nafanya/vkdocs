@@ -11,9 +11,8 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class CustomMediaPlayer extends MediaPlayer implements
-        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
-    public static final int PERCENTAGE = 1000;
     private volatile int fuckingMediaPlayerPosition;
     private volatile int realPosition;
     private volatile boolean invalidState = false;
@@ -28,13 +27,43 @@ public class CustomMediaPlayer extends MediaPlayer implements
         setOnSeekCompleteListener(this);
         setOnCompletionListener(this);
         super.setOnPreparedListener(this);
+        setOnErrorListener(this);
     }
 
     public boolean isCompleted() {
         return isCompleted;
     }
 
+    private volatile int sessionError = -1;
+    private PlayingException lastException;
+
+    public static class PlayingException extends RuntimeException {
+        private int what;
+        private int extra;
+        public PlayingException(int what, int extra) {
+            this.what = what;
+            this.extra = extra;
+        }
+
+        public int getWhat() {
+            return what;
+        }
+
+        public int getExtra() {
+            return extra;
+        }
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        sessionError = currentSessionId;
+        lastException = new PlayingException(what, extra);
+        progressObserver.connect();
+        return true;
+    }
+
     public static abstract class PlayingListener extends Subscriber<Integer> {
+
     }
 
     public Subscription setPlayingListener(PlayingListener s) {
@@ -43,7 +72,6 @@ public class CustomMediaPlayer extends MediaPlayer implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Timber.d("on completion");
         isCompleted = true;
     }
 
@@ -112,15 +140,13 @@ public class CustomMediaPlayer extends MediaPlayer implements
         public void call(Subscriber<? super Integer> subscriber) {
             int prevPerc = -1;
             int duration = getDuration();
-            while (sessionId == currentSessionId) {
+            Timber.d("IN THREAD PLA");
+            while (sessionId == currentSessionId && sessionError != currentSessionId) {
                 if (!invalidState) {
                     int diff = getCurrentPosition() - fuckingMediaPlayerPosition;
                     int perc = realPosition + diff;
                     if (perc > duration)
                         perc = duration;
-                    //int perc = (int) (PERCENTAGE * ((realPosition + diff) * 1.0 / duration));
-                    //if (isCompleted)
-                        //perc = PERCENTAGE;
 
                     if (isCompleted)
                         perc = duration;
@@ -133,7 +159,11 @@ public class CustomMediaPlayer extends MediaPlayer implements
                     Thread.sleep(50);
                 } catch (InterruptedException ignore) {}
             }
-            subscriber.onCompleted();
+            Timber.d("ERROR PLAYING THREAD");
+            if (sessionError == currentSessionId)
+                subscriber.onError(lastException);
+            else
+                subscriber.onCompleted();
         }
     }
 }
