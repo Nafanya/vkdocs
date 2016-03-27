@@ -44,7 +44,6 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
 
     private VkDocument doc;
     private int position;
-    private FileFormatter fileFormatter;
 
     private MenuEventListener listener;
 
@@ -52,7 +51,6 @@ public class BottomMenu extends BottomSheetDialog implements CompoundButton.OnCh
         super(context);
         this.position = position;
         this.doc = doc;
-        this.fileFormatter = fileFormatter;
         this.listener = listener;
         setContentView(R.layout.dialog_bottom);
         ButterKnife.bind(this);
