@@ -6,7 +6,7 @@ package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import io.github.nafanya.vkdocs.R;
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private boolean isResumed = false;
 
@@ -70,11 +70,8 @@ public class LoginActivity extends FragmentActivity {
         });
     }
 
-    private void showLogout() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new LogoutFragment())
-                .commitAllowingStateLoss();
+    private void login() {
+        VKSdk.login(this, APP_PERMISSIONS_SCOPE);
     }
 
     private void showLogin() {
@@ -144,25 +141,5 @@ public class LoginActivity extends FragmentActivity {
             return v;
         }
 
-    }
-
-    public static class LogoutFragment extends android.support.v4.app.Fragment {
-        public LogoutFragment() {
-            super();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.fragment_logout, container, false);
-            v.findViewById(R.id.continue_button).setOnClickListener(view -> ((LoginActivity) getActivity()).startMainActivity());
-
-            v.findViewById(R.id.logout).setOnClickListener(view -> {
-                VKSdk.logout();
-                if (!VKSdk.isLoggedIn()) {
-                    ((LoginActivity) getActivity()).showLogin();
-                }
-            });
-            return v;
-        }
     }
 }

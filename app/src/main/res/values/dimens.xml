@@ -82,5 +82,7 @@
     <dimen name="m_grid_7x">56dp</dimen>
     <dimen name="m_grid_8x">64dp</dimen>
     <dimen name="m_grid_9x">72dp</dimen>
+    <dimen name="splashscreen_logo_size">100dp</dimen>
+    <dimen name="splashscreen_left_color_width">@dimen/m_grid_1x</dimen>
 
 </resources>

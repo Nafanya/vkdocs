@@ -1,17 +1,64 @@
-<LinearLayout
-    style="@style/Container"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.ui.activities.LoginActivity">
 
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:weightSum="4"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="@dimen/splashscreen_left_color_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/md_red_500"/>
+
+        <View
+            android:layout_width="@dimen/splashscreen_left_color_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/md_green_500"/>
+
+        <View
+            android:layout_width="@dimen/splashscreen_left_color_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/md_amber_500"/>
+
+        <View
+            android:layout_width="@dimen/splashscreen_left_color_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/md_purple_500"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:src="@mipmap/vk_logo_en"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_width="@dimen/splashscreen_logo_size"
+        android:layout_height="@dimen/splashscreen_logo_size"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imageView2" /> -->
+
     <Button
+        style="@style/ButtonSplash"
+        android:background="@color/m_splash_button_white"
+        android:textColor="@color/m_splash_text_blue"
         android:id="@+id/sign_in_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginTop="16dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:text="@string/action_sign_in_short"/>
-</LinearLayout>
+        android:text="@string/action_sign_in_short"
+        android:textSize="16sp"
+        android:layout_marginBottom="@dimen/m_grid_4x"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
 

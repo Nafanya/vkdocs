@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -35,8 +36,11 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.model.VKApiUser;
 
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.UserPresenter;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.presentation.ui.dialogs.LogoutDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.SortByDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.documents.DocumentsListFragment;
 import timber.log.Timber;
@@ -56,15 +61,19 @@ import timber.log.Timber;
 public class DocumentsActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SortByDialog.Callback,
-        DocumentsListFragment.Callbacks, UserPresenter.Callback {
+        DocumentsListFragment.Callbacks, UserPresenter.Callback,
+        LogoutDialog.Callback {
 
     @Bind(R.id.coordinator_layout) CoordinatorLayout cooridnatorLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.viewpager) ViewPager viewPager;
     @Bind(R.id.tab_layout) TabLayout tabLayout;
 
+    private static final int NAVDRAWER_ITEM_LOGOUT = 11;
+    private static final int NAVDRAWER_ITEM_ACCOUNT = 12;
     private Drawer drawer;
     protected AccountHeader accountHeader;
+    protected ProfileDrawerItem account;
 
     private static final String CONTEXT_DOC_KEY = "context_doc_key";
     private static final String CONTEXT_POS_KEY = "context_pos_key";
@@ -140,6 +149,11 @@ public class DocumentsActivity extends AppCompatActivity implements
         super.onSaveInstanceState(state);
     }
 
+    private void logoutAccount() {
+        DialogFragment dialog = new LogoutDialog();
+        dialog.show(getSupportFragmentManager(), "logout");
+    }
+
     private void initNavigationDrawer() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
@@ -154,12 +168,24 @@ public class DocumentsActivity extends AppCompatActivity implements
         });
 
         accountHeader = new AccountHeaderBuilder()
-                .withSelectionListEnabledForSingleProfile(false)
-                .withSelectionListEnabled(false)
+//                .withSelectionListEnabledForSingleProfile(false)
+//                .withSelectionListEnabled(false)
                 .withSelectionSecondLineShown(false)
                 .withTypeface(Typeface.DEFAULT_BOLD)
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header1)
+                .addProfiles(
+                    new ProfileSettingDrawerItem()
+                            .withName(getString(R.string.logout))
+                            .withIcon(R.drawable.logout)
+                            .withIdentifier(NAVDRAWER_ITEM_LOGOUT)
+                )
+                .withOnAccountHeaderListener((view, profile, current) -> {
+                    if (profile instanceof IDrawerItem && profile.getIdentifier() == NAVDRAWER_ITEM_LOGOUT) {
+                        logoutAccount();
+                    }
+                    return false; // closes drawer
+                })
                 .build();
 
         drawer = new DrawerBuilder()
@@ -375,12 +401,25 @@ public class DocumentsActivity extends AppCompatActivity implements
             fullName = userInfo.first_name + " " + userInfo.last_name;
         }
 
-        ProfileDrawerItem account = new ProfileDrawerItem()
+        account = new ProfileDrawerItem()
                 .withName(fullName)
-                .withIcon(userInfo.photo_100);
+                .withIcon(userInfo.photo_100)
+                .withIdentifier(NAVDRAWER_ITEM_ACCOUNT);
 
-        accountHeader.clear();
+        accountHeader.removeProfileByIdentifier(NAVDRAWER_ITEM_ACCOUNT);
         accountHeader.addProfile(account, 0);
+    }
+
+    @Override
+    public void onLogoutConfirmed() {
+        VKSdk.logout();
+        App app = (App) getApplication();
+        app.getCacheManager().clear();
+        app.getOfflineManager().clear();
+        getSharedPreferences(getString(R.string.preference_user_repository), Context.MODE_PRIVATE).edit().clear().commit();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {

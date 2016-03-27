@@ -4,10 +4,11 @@
     android:id="@+id/empty_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerInParent="true"
     android:gravity="center">
 
     <ImageView
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:id="@+id/empty_view_image"
         android:layout_width="@dimen/m_grid_8x"
         android:layout_height="@dimen/m_grid_8x"

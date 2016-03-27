@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -38,6 +40,8 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
 
     @Bind(R.id.list_documents) EmptyRecyclerView recyclerView;
     @Bind(R.id.empty_view) View emptyView;
+    @Bind(R.id.empty_view_image) ImageView emptyViewImage;
+    @Bind(R.id.empty_view_text) TextView emptyViewText;
     @Bind(R.id.swipe_container) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -74,13 +78,47 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_document_list, container, false);
         ButterKnife.bind(this, rootView);
+
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        setupEmptyView();
         initRecyclerView();
         initSwipeRefreshLayout();
+    }
+
+    protected void setupEmptyView() {
+        if (documentType == null) {
+            emptyViewImage.setImageResource(R.drawable.ic_folder);
+            emptyViewText.setText(R.string.no_documents);
+            return;
+        }
+        switch (documentType) {
+            case ARCHIVE:
+                emptyViewImage.setImageResource(R.drawable.zip_box);
+                emptyViewText.setText(R.string.no_archives); break;
+            case AUDIO:
+                emptyViewImage.setImageResource(R.drawable.music_box);
+                emptyViewText.setText(R.string.no_audios); break;
+            case VIDEO:
+                emptyViewImage.setImageResource(R.drawable.movie);
+                emptyViewText.setText(R.string.no_videos); break;
+            case GIF:
+                emptyViewImage.setImageResource(R.drawable.image_vintage);
+                emptyViewText.setText(R.string.no_gifs); break;
+            case IMAGE:
+                emptyViewImage.setImageResource(R.drawable.image);
+                emptyViewText.setText(R.string.no_images); break;
+            case BOOK: case TEXT:
+                emptyViewImage.setImageResource(R.drawable.book);
+                emptyViewText.setText(R.string.no_books); break;
+            case UNKNOWN:
+                emptyViewImage.setImageResource(R.drawable.file_multiple);
+                emptyViewText.setText(R.string.no_others); break;
+        }
     }
 
     private void initRecyclerView() {

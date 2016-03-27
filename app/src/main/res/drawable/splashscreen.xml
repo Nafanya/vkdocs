@@ -4,10 +4,10 @@
     <item
         android:drawable="@color/colorPrimary"/>
 
-    <item>
+    <!--<item>
         <bitmap
             android:gravity="center"
             android:src="@drawable/ic_ab_app"/>
-    </item>
+    </item>-->
 
 </layer-list>
