@@ -53,7 +53,8 @@
     <Button
         style="@style/ButtonSplash"
         android:background="@color/m_splash_button_white"
-        android:textColor="@color/m_splash_text_blue"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
         android:id="@+id/sign_in_button"
         android:text="@string/action_sign_in_short"
         android:textSize="16sp"

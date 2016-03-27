@@ -58,6 +58,9 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
     }
 
     public void showSnackBar(View.OnClickListener onClickListener) {
+        if (isDetached())
+            return;
+
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(" ");
         builder.setSpan(new ImageSpan(getActivity(), R.drawable.open_in_new), 0, 1, ImageSpan.ALIGN_BASELINE);
