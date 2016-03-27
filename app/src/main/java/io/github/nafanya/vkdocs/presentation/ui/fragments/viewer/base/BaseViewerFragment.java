@@ -62,7 +62,7 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
         builder.append(" ");
         builder.setSpan(new ImageSpan(getActivity(), R.drawable.open_in_new), 0, 1, ImageSpan.ALIGN_BASELINE);
         builder.append(" ");
-        builder.append("Open in other app");
+        builder.append(getResources().getString(R.string.open_in_other_app));
 
         if (snackbar == null) {
             View view = rootForSnackbar();
@@ -71,7 +71,7 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
             snackbar.setActionTextColor(Color.YELLOW);
         }
 
-        snackbar.setAction("OPEN", onClickListener);
+        snackbar.setAction(R.string.open_button, onClickListener);
         if (!snackbar.isShown())
             snackbar.show();
     }

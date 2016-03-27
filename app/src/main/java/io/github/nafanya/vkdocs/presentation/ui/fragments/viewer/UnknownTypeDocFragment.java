@@ -105,7 +105,6 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
     }
 
     protected void whenDownloaded() {
-        Timber.d("wnen downloaded = " + document.title);
         hideProgress();
 
         showSnackBar(v -> throwIntentToOpen(getActivity(), document));
@@ -142,7 +141,7 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         whenDownloaded();
     }
 
-    /***Fragment callbacsk***/
+    /***Fragment callbacks***/
 
     @Override
     public void onBecameVisible() {

@@ -107,7 +107,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Timber.d("on destroy and hide snackbar  ");
         BaseViewerFragment.destroySnackbar();
         super.onDestroy();
     }

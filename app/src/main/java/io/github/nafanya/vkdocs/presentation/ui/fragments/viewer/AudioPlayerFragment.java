@@ -212,7 +212,6 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         super.onBecameVisible();
 
         if (playerService.isNowInPlayer(audioDocument)) {
-            Timber.d("is now pl = " + playerService.isNowInPlayer(audioDocument));
             if (playerService.isPlaying()) {
                 playButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);

@@ -23,7 +23,6 @@ import io.github.nafanya.vkdocs.presentation.ui.adapters.OfflineAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.BottomMenu;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.DeleteDialog;
-import io.github.nafanya.vkdocs.presentation.ui.dialogs.ErrorOpenDialog;
 import io.github.nafanya.vkdocs.presentation.ui.dialogs.RenameDialog;
 import io.github.nafanya.vkdocs.presentation.ui.fragments.viewer.UnknownTypeDocFragment;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
@@ -34,7 +33,6 @@ import timber.log.Timber;
  */
 public class DocumentsListFragment extends DocumentsListPresenterFragment implements
         BottomMenu.MenuEventListener,
-        ErrorOpenDialog.Callback,
         OfflineAdapter.ItemEventListener,
         RenameDialog.Callback,
         DeleteDialog.Callback {
@@ -264,19 +262,6 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     public void onUpdatedDocument(VkDocument document) {
         adapter.notifyItemChanged(adapter.getData().indexOf(document));
         activity.notifyOther();
-    }
-
-    /***ErrorOpen dialog callbacks***/
-    @Override
-    public void onRetry(VkDocument document, boolean isAlreadyDownloading) {
-        presenter.retryDownloadDocument(document);
-    }
-
-    @Override
-    public void onCancel(VkDocument document, boolean isAlreadyDownloading) {
-        if (!isAlreadyDownloading) {
-            presenter.cancelDownloading(document);
-        }
     }
 
     /***Rename dialog callbacks***/

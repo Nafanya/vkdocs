@@ -10,7 +10,7 @@
     <string name="cache_size">Cache size</string>
     <string name="current_cache_size_label">"Current cache size: "</string>
     <string name="clear_cache">Clear cache</string>
-    <string name="clear_cache_comment">Remove all documents from cache</string>
+    <string name="clear_cache_comment">Remove all cached documents</string>
 
     <string name="document_offline">Offline</string>
     <string name="clear_offline">Remove offline documents</string>
@@ -56,21 +56,29 @@
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_sort_by">Sort by</string>
-    <string name="label_added">Added:</string>
+    <string name="label_added">Uploaded:</string>
     <string name="label_size">Size:</string>
     <string name="title_activity_document_viewer">DocumentViewerActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="no_items">No items</string>
     <string name="title_activity_settings">Settings</string>
     <string name="settings_activity_title">Settings</string>
-    <string name="clear_offline_message">All available offline documents will be removed.</string>
+    <string name="clear_offline_message">All documents available offline will be removed.</string>
     <string name="clear_cache_message">Document cache will be cleared.</string>
     <string name="default_confirm_button">OK</string>
     <string name="default_cancel_button">CANCEL</string>
     <string name="clear_cache_title">Clear cache</string>
-    <string name="clear_offline_title">Remove offline</string>
+    <string name="clear_offline_title">Remove offline documents</string>
     <string name="file1_label">file</string>
     <string name="file24_label">files</string>
     <string name="files">files</string>
     <string name="cache_size_title">Cache size</string>
+    <string name="delete_document_title">Deleting document</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="retry">RETRY</string>
+    <string name="cant_open">Could not open file</string>
+    <string name="open_in_other_app">Open in other app</string>
+    <string name="open_button">OPEN</string>
+    <string name="all_title_tab">ALL</string>
+    <string name="offline_title_tab">OFFLINE</string>
 </resources>

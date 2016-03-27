@@ -89,7 +89,6 @@ public class DocumentsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        Timber.d("ON CREATE DOCUMENTS ACTIVITY");
         if (state != null) {
             sortMode = (SortMode)state.getSerializable(SORT_MODE_KEY);
             documentType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
@@ -384,7 +383,7 @@ public class DocumentsActivity extends AppCompatActivity implements
         accountHeader.addProfile(account, 0);
     }
 
-    static class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
+    class DocumentListFragmentPagerAdapter extends FragmentPagerAdapter {
         private final List<DocumentsListFragment> fragments = new ArrayList<>();
         private FragmentManager manager;
 
@@ -409,11 +408,10 @@ public class DocumentsActivity extends AppCompatActivity implements
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                // TODO: string res
                 case 0:
-                    return "ALL";
+                    return getString(R.string.all_title_tab);
                 default:
-                    return "OFFLINE";
+                    return getString(R.string.offline_title_tab);
             }
         }
         private DocumentsListFragment getFragment(int pos) {

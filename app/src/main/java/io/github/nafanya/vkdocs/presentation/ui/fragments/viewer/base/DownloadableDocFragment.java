@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 
 import io.github.nafanya.vkdocs.App;
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.presenter.DocumentViewerPresenter;
 
@@ -35,8 +36,8 @@ public abstract class DownloadableDocFragment extends BaseViewerFragment impleme
     @Override
     public void onError(Exception e) {
         errorSnackbar = Snackbar
-                .make(rootForSnackbar(), "No internet connection", Snackbar.LENGTH_INDEFINITE)
-                .setAction("RETRY", view -> {
+                .make(rootForSnackbar(), R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.retry,view -> {
                     presenter.retryOpen();
                 });
         errorSnackbar.setActionTextColor(Color.YELLOW);

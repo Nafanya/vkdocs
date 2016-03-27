@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 
 import io.github.nafanya.vkdocs.App;
+import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 
@@ -48,21 +49,20 @@ public class DeleteDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        //LayoutInflater inflater = getActivity().getLayoutInflater();
-        //View rootView = inflater.inflate(R.layout.rename_dialog, null);
-        builder.setMessage("Delete " + doc.title + "?").
-                setNegativeButton("Cancel", (dialog, which) -> {
+
+        String title = getResources().getString(R.string.delete_document_title);
+        String delete_label = getResources().getString(R.string.delete) + " ";
+
+        builder.setTitle(title).setMessage(delete_label + doc.title + "?").
+                setNegativeButton(R.string.default_cancel_button, (dialog, which) -> {
                     callback.onCancelDelete(doc);
                     dismiss();
-            }).setPositiveButton("Delete", (dialog, which) -> {
+            }).setPositiveButton(R.string.delete, (dialog, which) -> {
                 callback.onDelete(position, doc);
                 dismiss();
             });
         Dialog dialog = builder.create();
-        //ButterKnife.bind(this, rootView);
         dialog.setCanceledOnTouchOutside(false);
-        //documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));
-        //docTitle.setText(doc.title);
         return dialog;
     }
 }
