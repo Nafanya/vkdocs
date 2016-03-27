@@ -22,6 +22,10 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     private Uri playingUri;
     private OnPrepared listener;
 
+    public void setOnPrepareListener(OnPrepared onPrepareListener) {
+        this.listener = onPrepareListener;
+    }
+
     public interface OnPrepared {
         void onPlayerPrepared();
     }

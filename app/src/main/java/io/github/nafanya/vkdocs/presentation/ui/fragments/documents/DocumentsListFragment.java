@@ -247,7 +247,8 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
     }
 
     public void dismissContextMenu() {
-        dialog.dismiss();
+        if (dialog != null)
+            dialog.dismiss();
         dialog = null;
         restoreContextMenuDoc = null;
         restoreDocPosition = -1;

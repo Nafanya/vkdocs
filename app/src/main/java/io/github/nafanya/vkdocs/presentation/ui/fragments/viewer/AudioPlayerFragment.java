@@ -99,8 +99,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
             } catch (IOException ignore) {
                 //TODO wtf7
             }
-        }
-        Timber.d("start playing!!!!!");
+        } else
+            playerService.setOnPrepareListener(this);
         subscription = playerService.setPlayingListener(new SeekBarUpdater());
     }
 
@@ -203,10 +203,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
         @Override
         public void onNext(Integer timestamp) {
-            //int progress = (int)(CustomMediaPlayer.PERCENTAGE * (1.0 * timestamp / duration));
             seekBar.setProgress(timestamp);
             currentTimestamp.setText(formatTime(timestamp));
-
             if (timestamp == duration) {
                 playButton.setVisibility(View.VISIBLE);
                 pauseButton.setVisibility(View.GONE);
@@ -218,7 +216,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     public void onBecameVisible() {
         super.onBecameVisible();
 
-        if (playerService.isNowInPlayer(audioDocument)) {
+        if (playerService.isNowInPlayer(audioDocument) && playerService.isPrepared()) {
             if (playerService.isPlaying()) {
                 playButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
@@ -232,8 +230,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
             initializeTimestamps();
         } else {
             setEnabledControls(false);
-            currentTimestamp.setVisibility(View.INVISIBLE);
-            durationTimestamp.setVisibility(View.INVISIBLE);
+            currentTimestamp.setVisibility(View.GONE);
+            durationTimestamp.setVisibility(View.GONE);
         }
         startPlaying();
     }
@@ -241,11 +239,15 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     @Override
     public void onBecameInvisible() {
         super.onBecameInvisible();
-        playerService.stop();
+        if (playerService != null) {
+            playerService.stop();
+            playerService.setOnPrepareListener(null);
+        }
         subscription.unsubscribe();
         resetViewToInitialState();
         initializeTimestamps();
         setEnabledControls(false);
+
     }
 
     private boolean isPlayerServiceInit() {
@@ -267,7 +269,10 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
     @Override
     public void onReleaseResources() {
-        playerService.stop();
+        if (playerService != null) {
+            playerService.stop();
+            playerService.setOnPrepareListener(null);
+        }
         subscription.unsubscribe();
     }
 }
