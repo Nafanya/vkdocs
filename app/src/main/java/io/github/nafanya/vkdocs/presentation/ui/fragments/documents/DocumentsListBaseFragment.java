@@ -19,7 +19,6 @@ import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView;
 import io.github.nafanya.vkdocs.presentation.ui.decorators.DividerItemDecorator;
-import io.github.nafanya.vkdocs.presentation.ui.decorators.EndOffsetItemDecorator;
 
 /**
  * Created by nafanya on 3/25/16.
@@ -129,7 +128,7 @@ public abstract class DocumentsListBaseFragment extends Fragment implements
         recyclerView.setEmptyView(emptyView);
         // Convert dp to px
         final int px = (int) (this.getResources().getDimension(R.dimen.recyclerview_bottom_padding) * getResources().getDisplayMetrics().density);
-        recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));
+        //recyclerView.addItemDecoration(new EndOffsetItemDecorator(px));
     }
 
     private void initSwipeRefreshLayout() {
