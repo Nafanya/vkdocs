@@ -224,7 +224,9 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             @Override
             public void onProgress(int percentage) {
-
+                if (document.isOfflineInProgress()) {
+                    documentOfflineInProgressIcon.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -237,7 +239,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             @Override
             public void onError(Exception e) {
-                downloadAnimation.stop();
+//                downloadAnimation.stop();
+                documentOfflineInProgressIcon.setVisibility(View.GONE);
             }
         };
     }

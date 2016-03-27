@@ -78,15 +78,9 @@ public class DocumentsPresenter extends BasePresenter {
     }
 
     public void downloadDocumentToDownloads(VkDocument document) {
-        Uri uri = null;
+        Uri uri;
         try {
-            if (document.isCached() || document.isOffline()) {
-                Timber.d("[download document] already downloaded as local file");
-                uri = Uri.parse(document.getPath());
-            } else {
-                Timber.d("[download document] not downloaded");
-                uri = Uri.parse(document.url);
-            }
+            uri = Uri.parse(document.url);
         } catch (NullPointerException ignored) {
             return;
             // TODO: tell about invalid Uri back to UI

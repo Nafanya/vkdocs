@@ -87,9 +87,9 @@ public class App extends Application {
         // enable logging
         Timber.plant(new Timber.DebugTree());
 
-        eventBus = new LruEventBus(10);
+        eventBus = new LruEventBus(100);
         downloadManager = new InterruptableDownloadManager(
-                Schedulers.from(Executors.newFixedThreadPool(5)),
+                Schedulers.from(Executors.newFixedThreadPool(8)),
                 new DbRequestStorage(new DownloadRequestMapper()));
 
         fileFormatter = new FileFormatter(this);
