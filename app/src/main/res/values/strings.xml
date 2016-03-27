@@ -63,10 +63,10 @@
     <string name="no_items">No items</string>
     <string name="title_activity_settings">Settings</string>
     <string name="settings_activity_title">Settings</string>
-    <string name="clear_offline_message">All documents available offline will be removed.</string>
+    <string name="clear_offline_message">This will delete all saved offline documents from this device.</string>
     <string name="clear_cache_message">Document cache will be cleared.</string>
     <string name="default_confirm_button">OK</string>
-    <string name="default_cancel_button">CANCEL</string>
+    <string name="default_cancel_button">@android:string/cancel</string>
     <string name="clear_cache_title">Clear cache</string>
     <string name="clear_offline_title">Remove offline documents</string>
     <string name="file1_label">file</string>
