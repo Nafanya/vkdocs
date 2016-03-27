@@ -17,6 +17,7 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 
 /**
  * Created by nafanya on 3/25/16.
@@ -81,7 +82,7 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
         adapter.setSearchFilter(searchQuery);
         adapter.setSortMode(sortMode);
         if (recyclerView.getAdapter() != adapter) {
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(new SlideInBottomAnimationAdapter(adapter));
         }
     }
 
