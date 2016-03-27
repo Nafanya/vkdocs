@@ -40,8 +40,8 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:src="@mipmap/vk_logo_en"
+    <!--<ImageView
+        android:src="@mipmap/vk_logo"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:layout_width="@dimen/splashscreen_logo_size"
