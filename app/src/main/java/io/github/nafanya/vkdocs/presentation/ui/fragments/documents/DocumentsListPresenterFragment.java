@@ -75,15 +75,12 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
     }
 
     private void updateData(List<VkDocument> documents) {
-        if (adapter == null) {
-            adapter = newAdapter();
-        }
-        adapter.setData(documents);
-        adapter.setSearchFilter(searchQuery);
-        adapter.setSortMode(sortMode);
-        if (recyclerView.getAdapter() != adapter) {
-            recyclerView.setAdapter(new SlideInBottomAnimationAdapter(adapter));
-        }
+        if (adapter == null)
+            adapter = new SlideInBottomAnimationAdapter(newAdapter());
+
+        adapter.setData(documents, searchQuery, sortMode);
+        if (recyclerView.getAdapter() != adapter)
+            recyclerView.setAdapter(adapter);
     }
 
     @Override

@@ -9,7 +9,6 @@
     <ImageView
         android:id="@+id/ic_document_type"
         android:focusable="false"
-        android:scaleType="fitXY"
         style="@style/FixedSizeIcon"
         app:srcCompat="@drawable/file_document"/>
 

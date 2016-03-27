@@ -46,10 +46,11 @@ public abstract class DownloadableDocFragment extends BaseViewerFragment impleme
 
     @Override
     public void onBecameInvisible() {
+        super.onBecameInvisible();
         hideErrorSnackbar();
         if (presenter.isDownloading())
             presenter.cancelDownloading();
-        super.onBecameInvisible();
+        presenter.unsubscribe();
     }
 
     @Override

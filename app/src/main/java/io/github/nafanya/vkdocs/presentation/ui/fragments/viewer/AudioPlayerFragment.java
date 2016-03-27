@@ -119,10 +119,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (playerService.isPrepared() && fromUser) {
-                    //int toTime = duration * progress / CustomMediaPlayer.PERCENTAGE;
+                if (isPlayerServiceInit() && playerService.isPrepared() && fromUser) {
                     lastTime = progress;
-                    //currentTimestamp.setText(formatTime(progress));
                     playerService.seekTo(progress);
                 }
             }
@@ -241,9 +239,13 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
         setEnabledControls(false);
     }
 
+    private boolean isPlayerServiceInit() {
+        return playerService != null;
+    }
+
     @Override
     public void onResume() {
-        if (subscription.isUnsubscribed())
+        if (isPlayerServiceInit() && subscription.isUnsubscribed())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
         super.onResume();
     }

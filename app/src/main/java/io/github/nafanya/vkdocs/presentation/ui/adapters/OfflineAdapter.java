@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,25 +34,12 @@ public class OfflineAdapter extends BaseSortedAdapter {
         this.listener = listener;
     }
 
-    public void setData(List<VkDocument> documents) {
-        super.setData(documents);
-        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
-        notifyDataSetChanged();
-    }
-
     public List<VkDocument> getData() {
         return documents;
     }
 
-    public void setSortMode(SortMode sortMode) {
-        this.sortMode = sortMode;
-        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemViewType(int position) {
-//        Timber.d("[offlineadapter] pos: %d, title: %s", position, documents.get(position).title);
         if (documents.get(position).isOfflineInProgress())
             return DOCUMENT_STATE_DOWNLOADING;
         return DOCUMENT_STATE_NORMAL;
@@ -61,16 +47,14 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        Timber.d("[offlineadapter] viewtype: %d", viewType);
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(R.layout.item_document2, parent, false);
-        if (viewType == DOCUMENT_STATE_NORMAL) {
+        if (viewType == DOCUMENT_STATE_NORMAL)
             return new DocumentViewHolder(view, listener);
-        } else {
+        else
             return new DownloadingDocViewHolder(view, listener);
-        }
     }
 
     @Override
@@ -148,15 +132,12 @@ public class OfflineAdapter extends BaseSortedAdapter {
 
             @Override
             public void onProgress(int percentage) {
-                //Timber.d("adapter on update: " + percentage + ", title = " + doc.title);
                 size.setText(fileFormatter.formatFrom(doc.getRequest()));
                 downloadProgress.setProgress(percentage);
             }
 
             @Override
             public void onComplete() {
-//                Timber.d("[adapter] onComplete");
-//                Timber.d("on complete doc = " + doc + ", request = " + doc.getRequest());
                 doc.setPath(doc.getRequest().getDest());
                 doc.resetRequest();
                 listener.onCompleteDownloading(getAdapterPosition(), doc);

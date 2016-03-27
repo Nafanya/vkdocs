@@ -40,8 +40,6 @@ public class DocumentViewerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_document_viewer);
         ButterKnife.bind(this);
 
-//        setSupportActionBar(toolbar);
-
         if (state == null)
             state = getIntent().getExtras();
         position = state.getInt(POSITION_KEY);

@@ -11,6 +11,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -19,6 +20,7 @@ import io.github.nafanya.vkdocs.R;
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
+import io.github.nafanya.vkdocs.utils.DocumentComparator;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
 
@@ -237,18 +239,21 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         };
     }
 
-    public void setSearchFilter(String filter) {
-        if (filter == null) {
+    private void onlySetFilter(String filter) {
+        if (filter == null)
             filter = "";
-        }
         searchFilter = filter;
-        if (documents == null || documentsOriginal == null) {
+        if (documents == null || documentsOriginal == null)
             return;
-        }
+
         documents = Stream.of(documentsOriginal)
                 .filter(doc -> doc.title.toLowerCase().contains(searchFilter.toLowerCase()))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
+    }
+
+    public void setSearchFilter(String filter) {
+        onlySetFilter(filter);
         notifyDataSetChanged();
     }
 
@@ -256,11 +261,21 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
      * Don't forget to call super method since it sets documents variables.
      * @param documents
      */
-    public void setData(List<VkDocument> documents) {
+
+    public void setData(List<VkDocument> documents, String searchQuery, SortMode sortMode) {
         this.documentsOriginal = documents;
         this.documents = new ArrayList<>(documentsOriginal);
-        resetRequestsAndListeners();
-        initializeRequestsAndListeners();
+        onlySetFilter(searchQuery);
+        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+        notifyDataSetChanged();
+    }
+
+    public void setData(List<VkDocument> documents) {
+        //Timber.d("set data document in all docs");
+        this.documentsOriginal = documents;
+        this.documents = new ArrayList<>(documentsOriginal);
+        Collections.sort(documents, DocumentComparator.offlineComparator(sortMode));
+        notifyDataSetChanged();
     }
 
     public void removeData() {
@@ -268,7 +283,11 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         resetRequestsAndListeners();
     }
 
-    public abstract void setSortMode(SortMode sortMode);
+    public void setSortMode(SortMode sortMode) {
+        this.sortMode = sortMode;
+        Collections.sort(documents, DocumentComparator.getComparator(sortMode));
+        notifyDataSetChanged();
+    }
 
     public void removeIndex(int position) {
         documents.remove(position);
