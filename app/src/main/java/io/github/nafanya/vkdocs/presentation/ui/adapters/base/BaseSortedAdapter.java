@@ -229,7 +229,6 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
             @Override
             public void onComplete() {
-                Timber.d("doc on compl base = " + document);
                 document.resetRequest();
                 removeListener(position);
                 notifyItemChanged(position);
@@ -263,13 +262,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public abstract Comparator<VkDocument> getComparator();
 
-    /**
-     * Don't forget to call super method since it sets documents variables.
-     * @param documents
-     */
-
-    public void setData(List<VkDocument> documents, String searchQuery, SortMode sortMode) {
-        this.documentsOriginal = documents;
+    public void setData(List<VkDocument> docs, String searchQuery, SortMode sortMode) {
+        this.documentsOriginal = docs;
         this.documents = new ArrayList<>(documentsOriginal);
         this.sortMode = sortMode;
         onlySetFilter(searchQuery);
@@ -277,8 +271,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyDataSetChanged();
     }
 
-    public void setData(List<VkDocument> documents) {
-        this.documentsOriginal = documents;
+    public void setData(List<VkDocument> docs) {
+        this.documentsOriginal = docs;
         this.documents = new ArrayList<>(documentsOriginal);
         Collections.sort(documents, getComparator());
         notifyDataSetChanged();
