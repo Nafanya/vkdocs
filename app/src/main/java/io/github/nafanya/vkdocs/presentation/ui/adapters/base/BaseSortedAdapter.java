@@ -24,7 +24,7 @@ import io.github.nafanya.vkdocs.net.impl.download.DownloadRequest;
 import io.github.nafanya.vkdocs.presentation.ui.SortMode;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
 import timber.log.Timber;
-
+//NIGGA WE MADE IT!
 public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     protected List<VkDocument> documents;
     protected List<VkDocument> documentsOriginal;
