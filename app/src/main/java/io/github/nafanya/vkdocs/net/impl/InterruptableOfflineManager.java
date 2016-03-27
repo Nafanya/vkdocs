@@ -110,7 +110,11 @@ public class InterruptableOfflineManager implements OfflineManager, InternetServ
             for (VkDocument d: docs)
                 if (d.isOffline()) {
                     d.setOfflineType(VkDocument.NONE);
-                    new File(d.getPath()).delete();
+                    try {
+                        new File(d.getPath()).delete();
+                    } catch (Exception e) {
+                        continue;
+                    }
                     d.setPath(null);
                     updDocs.add(d);
                     currentTotalFiles_++;
