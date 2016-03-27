@@ -80,4 +80,5 @@
     <string name="no_documents">No documents</string>
     <string name="no_books">No books</string>
     <string name="no_others">No items</string>
+    <string name="logout_message">Logging out will delete all data related to this account from this device.</string>
 </resources>
