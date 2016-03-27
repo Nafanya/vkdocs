@@ -40,7 +40,7 @@ public abstract class BaseImageFragment extends DownloadableDocFragment {
     protected void errorWithOpening() {
         progressBar.setVisibility(View.GONE);
         errorOpening = Snackbar
-                .make(rootForSnackbar(), R.string.cant_open, Snackbar.LENGTH_INDEFINITE);
+                .make(rootForSnackbar(), R.string.couldnt_open, Snackbar.LENGTH_INDEFINITE);
         errorOpening.setActionTextColor(Color.YELLOW);
         showSnackbar(errorOpening);
     }

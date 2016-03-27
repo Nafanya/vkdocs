@@ -102,8 +102,8 @@ public class DocumentsActivity extends AppCompatActivity implements
             sortMode = (SortMode)state.getSerializable(SORT_MODE_KEY);
             documentType = (VkDocument.ExtType)state.getSerializable(EXT_TYPE_KEY);
             navDrawerPos = state.getInt(NAV_DRAW_POS);
-//            isRefreshing = state.getBoolean(IS_REFRESHING_KEY);
-            searchQuery = state.getString(SEARCH_FILTER_KEY);
+            //sRefreshing = state.getBoolean(IS_REFRESHING_KEY);
+            //searchQuery = state.getString(SEARCH_FILTER_KEY);
             restoreContextMenuDoc = state.getParcelable(CONTEXT_DOC_KEY);
             restoreDocPosition = state.getInt(CONTEXT_POS_KEY);
             Timber.d("[STATE] Activity restored state doctype: %s", documentType);
@@ -141,7 +141,7 @@ public class DocumentsActivity extends AppCompatActivity implements
         state.putSerializable(EXT_TYPE_KEY, documentType);
         state.putInt(NAV_DRAW_POS, navDrawerPos);
 //        state.putBoolean(IS_REFRESHING_KEY, isRefreshing);
-        state.putString(SEARCH_FILTER_KEY, searchQuery);
+        //state.putString(SEARCH_FILTER_KEY, searchQuery);
 
         state.putParcelable(CONTEXT_DOC_KEY, restoreContextMenuDoc);
         state.putInt(CONTEXT_POS_KEY, restoreDocPosition);
@@ -168,12 +168,10 @@ public class DocumentsActivity extends AppCompatActivity implements
         });
 
         accountHeader = new AccountHeaderBuilder()
-//                .withSelectionListEnabledForSingleProfile(false)
-//                .withSelectionListEnabled(false)
                 .withSelectionSecondLineShown(false)
                 .withTypeface(Typeface.DEFAULT_BOLD)
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header1)
+                .withHeaderBackground(R.drawable.header)
                 .addProfiles(
                     new ProfileSettingDrawerItem()
                             .withName(getString(R.string.logout))
@@ -211,7 +209,7 @@ public class DocumentsActivity extends AppCompatActivity implements
                                 .withIconColorRes(R.color.m_icon_archive),
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_images)
-                                .withIcon(R.drawable.image)
+                                .withIcon(R.drawable.image_box)
                                 .withSelectedTextColorRes(R.color.m_selected_text_image)
                                 .withIconColorRes(R.color.m_icon_image),
                         new PrimaryDrawerItem()
@@ -226,7 +224,7 @@ public class DocumentsActivity extends AppCompatActivity implements
                                 .withIconColorRes(R.color.m_icon_music),
                         new PrimaryDrawerItem()
                                 .withName(R.string.tab_video)
-                                .withIcon(R.drawable.movie)
+                                .withIcon(R.drawable.movie_box)
                                 .withSelectedTextColorRes(R.color.m_selected_text_video)
                                 .withIconColorRes(R.color.m_icon_video),
                         new PrimaryDrawerItem()
@@ -392,7 +390,7 @@ public class DocumentsActivity extends AppCompatActivity implements
     public void onUserInfoLoaded(VKApiUser userInfo) {
         String fullName;
         if (userInfo.first_name == null && userInfo.last_name == null) {
-            fullName = "Unknown";
+            fullName = "";
         } else if (userInfo.first_name == null) {
             fullName = userInfo.last_name;
         } else if (userInfo.last_name == null) {

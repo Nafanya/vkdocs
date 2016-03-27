@@ -31,7 +31,7 @@ public class BaseViewerFragment extends Fragment implements OnPageChanged {
         if (doc.getExt().equals("pdf"))
             return ContextCompat.getDrawable(context, R.drawable.pdf_placeholder);
 
-        if (doc.getExtType().equals("doc") || doc.getExtType().equals("docx"))
+        if (doc.getExtType().equals("doc") || doc.getExtType().equals("docx") || doc.title.endsWith(".doc") || doc.title.endsWith(".docx"))
             return ContextCompat.getDrawable(context, R.drawable.file_word_placeholder);
 
         if (doc.getExtType() == VkDocument.ExtType.ARCHIVE)

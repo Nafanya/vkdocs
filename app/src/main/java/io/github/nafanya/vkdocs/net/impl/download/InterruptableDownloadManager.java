@@ -79,7 +79,7 @@ public class InterruptableDownloadManager implements DownloadManager {
                 connection.setRequestProperty("Range", "bytes=" + request.getBytes() + "-" );
                 connection.setRequestProperty("Connection", "Keep-Alive");
                 connection.setRequestMethod("GET");
-                //connection.addRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                //connection.addRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image_box/webp,*/*;q=0.8");
 
                 //connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
                 //connection.setRequestProperty("Accept-Language", "ru,en-US;q=0.8,en;q=0.6");

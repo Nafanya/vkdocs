@@ -94,7 +94,7 @@
         android:layout_alignTop="@id/body"
         android:orientation="horizontal">
 
-        <!-- TODO separate styles for image button -->
+        <!-- TODO separate styles for image_box button -->
         <ImageButton
             android:id="@+id/buttonContextMenu"
             android:layout_width="match_parent"

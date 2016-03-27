@@ -76,7 +76,7 @@ public class RenameDialog extends DialogFragment {
         ButterKnife.bind(this, rootView);
         dialog.setCanceledOnTouchOutside(false);
 
-        documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, getActivity()));
+        documentTypeIcon.setImageDrawable(fileFormatter.getIconDialog(doc, getActivity()));
         docTitle.setText(doc.title);
         return dialog;
     }

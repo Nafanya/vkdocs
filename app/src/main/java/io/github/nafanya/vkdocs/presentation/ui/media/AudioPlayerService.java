@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import io.github.nafanya.vkdocs.domain.model.VkDocument;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
 public class AudioPlayerService extends Service implements MediaPlayer.OnPreparedListener {
@@ -118,7 +119,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public void onDestroy() {
         playingUri = null;
-        Timber.d("ON DESTORY, on release");
+        Timber.d("ON DESTORY MEDIA PLAYER");
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -128,7 +129,8 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
 
     public Subscription setPlayingListener(CustomMediaPlayer.PlayingListener l) {
-        //TODO: [crash] after left-right swipe on and from music fragment
-        return mediaPlayer.setPlayingListener(l);
+        if (mediaPlayer != null)
+            return mediaPlayer.setPlayingListener(l);
+        return Subscriptions.empty();
     }
 }

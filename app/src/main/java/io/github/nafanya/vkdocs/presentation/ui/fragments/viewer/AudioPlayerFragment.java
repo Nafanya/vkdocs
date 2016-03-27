@@ -3,6 +3,7 @@ package io.github.nafanya.vkdocs.presentation.ui.fragments.viewer;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import timber.log.Timber;
 
 public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlayerService.OnPrepared {
     public static String MUSIC_KEY = "music_key";
+
+    View rootLayout;
 
     @Bind(R.id.seek_bar)
     SeekBar seekBar;
@@ -97,7 +100,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
                 //TODO wtf7
             }
         }
-
+        Timber.d("start playing!!!!!");
         subscription = playerService.setPlayingListener(new SeekBarUpdater());
     }
 
@@ -110,7 +113,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
         View rootView = inflater.inflate(R.layout.fragment_audio_player, null);
         ButterKnife.bind(this, rootView);
-        //seekBar.setMax(CustomMediaPlayer.PERCENTAGE);
+        rootLayout = rootView;
         fileName.setText(audioDocument.title);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -147,6 +150,11 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
     private String formatTime(int millis) {
         int secs = millis / 1000;
         return String.format("%d:%02d", secs / 60, secs % 60);
+    }
+
+    @Override
+    public View rootForSnackbar() {
+        return rootLayout;
     }
 
     private int duration;
@@ -189,7 +197,8 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
         @Override
         public void onError(Throwable e) {
-
+            Snackbar openingError = Snackbar.make(rootForSnackbar(), R.string.couldnt_open_audio, Snackbar.LENGTH_INDEFINITE);
+            showSnackbar(openingError);
         }
 
         @Override
@@ -245,7 +254,7 @@ public class AudioPlayerFragment extends BaseViewerFragment implements AudioPlay
 
     @Override
     public void onResume() {
-        if (isPlayerServiceInit() && subscription.isUnsubscribed())
+        if (isBecameVisible() && subscription.isUnsubscribed())
             subscription = playerService.setPlayingListener(new SeekBarUpdater());
         super.onResume();
     }
