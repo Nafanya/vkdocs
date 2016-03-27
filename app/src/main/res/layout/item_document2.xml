@@ -25,18 +25,17 @@
             style="@style/SmallFixedSizeIcon"/>
 
         <ImageView
-            android:id="@+id/ic_document_cache_offline_progress"
+            android:id="@+id/ic_document_offline_progress"
             android:layout_alignBottom="@id/ic_document_type"
             android:layout_alignRight="@id/ic_document_type"
-            app:srcCompat="@drawable/download_grey"
             style="@style/SmallFixedSizeIcon"/>
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/ic_document_cached"
             android:layout_alignBottom="@id/ic_document_type"
             android:layout_alignRight="@id/ic_document_type"
             app:srcCompat="@drawable/download_blue"
-            style="@style/SmallFixedSizeIcon"/>
+            style="@style/SmallFixedSizeIcon"/> -->
 
         <LinearLayout
             android:orientation="vertical"

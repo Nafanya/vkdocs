@@ -1,6 +1,7 @@
 package io.github.nafanya.vkdocs.presentation.ui.adapters.base;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
@@ -128,11 +129,9 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
 
         @Bind(R.id.ic_document_offline)
         ImageView documentOfflineIcon;
-        @Bind(R.id.ic_document_cache_offline_progress)
-        ImageView documentCacheOfflineInProgressIcon;
+        @Bind(R.id.ic_document_offline_progress)
+        ImageView documentOfflineInProgressIcon;
 
-        @Bind(R.id.ic_document_cached)
-        ImageView documentCachedIcon;
 
         @Bind(R.id.buttonContextMenu)
         ImageButton contextMenu;
@@ -141,6 +140,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         @Bind(R.id.sortLabel) TextView sortLabel;
         @Bind(R.id.statusLabels) TextView statusLables;
 
+        AnimationDrawable downloadAnimation;
+
         private CommonItemEventListener listener;
 
         public DocumentViewHolder(View view, CommonItemEventListener listener) {
@@ -148,6 +149,8 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
             this.listener = listener;
 
             ButterKnife.bind(this, view);
+            documentOfflineInProgressIcon.setBackgroundResource(R.drawable.anim_download_progress);
+            downloadAnimation = (AnimationDrawable) documentOfflineInProgressIcon.getBackground();
             view.setOnClickListener(this);
 
             contextMenu.setOnClickListener(this);
@@ -156,20 +159,20 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
         public DownloadRequest.RequestListener setup(int position, VkDocument doc) {
             setRequest(position, doc.getRequest());
 
+            downloadAnimation.stop();
+
             contextMenu.setOnClickListener(this);
             title.setText(doc.title);
             documentTypeIcon.setImageDrawable(fileFormatter.getIcon(doc, context));
 
             documentOfflineIcon.setVisibility(View.GONE);
-            documentCacheOfflineInProgressIcon.setVisibility(View.GONE);
-            documentCachedIcon.setVisibility(View.GONE);
+            documentOfflineInProgressIcon.setVisibility(View.GONE);
 
             if (doc.isOffline()) {
                 documentOfflineIcon.setVisibility(View.VISIBLE);
-            } else if (doc.isOfflineInProgress() || doc.isCacheInProgress()) {
-                documentCacheOfflineInProgressIcon.setVisibility(View.VISIBLE);
-            } else if (doc.isCached()) {
-                documentCachedIcon.setVisibility(View.VISIBLE);
+            } else if (doc.isOfflineInProgress()) {
+                documentOfflineInProgressIcon.setVisibility(View.VISIBLE);
+                downloadAnimation.start();
             }
 
             final int sortLabelText;
@@ -230,11 +233,12 @@ public abstract class BaseSortedAdapter extends RecyclerView.Adapter<RecyclerVie
                 document.resetRequest();
                 removeListener(position);
                 notifyItemChanged(position);
+                downloadAnimation.stop();
             }
 
             @Override
             public void onError(Exception e) {
-
+                downloadAnimation.stop();
             }
         };
     }

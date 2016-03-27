@@ -17,7 +17,6 @@ import io.github.nafanya.vkdocs.presentation.presenter.base.filter.ExtDocFilter;
 import io.github.nafanya.vkdocs.presentation.presenter.base.filter.OfflineDocFilter;
 import io.github.nafanya.vkdocs.presentation.ui.adapters.base.BaseSortedAdapter;
 import io.github.nafanya.vkdocs.utils.FileFormatter;
-import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 
 /**
  * Created by nafanya on 3/25/16.
@@ -76,7 +75,7 @@ public abstract class DocumentsListPresenterFragment extends DocumentsListBaseFr
 
     private void updateData(List<VkDocument> documents) {
         if (adapter == null)
-            adapter = new SlideInBottomAnimationAdapter(newAdapter());
+            adapter = newAdapter();
 
         adapter.setData(documents, searchQuery, sortMode);
         if (recyclerView.getAdapter() != adapter)

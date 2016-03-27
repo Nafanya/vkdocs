@@ -123,6 +123,12 @@ public class UnknownTypeDocFragment extends DownloadableDocFragment {
         } catch (ActivityNotFoundException e) {
             //TODO do something
             //Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+            newIntent.setType("*/*");
+            try {
+                context.startActivity(newIntent);
+            } catch (ActivityNotFoundException ee) {
+                // Can't really do anything else
+            }
         }
     }
 
