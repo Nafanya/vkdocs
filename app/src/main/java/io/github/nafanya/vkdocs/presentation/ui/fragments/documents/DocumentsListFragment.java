@@ -297,6 +297,7 @@ public class DocumentsListFragment extends DocumentsListPresenterFragment implem
         documentType = type;
         presenter.setFilter(getFilter());
         presenter.getDocuments();
+        setupEmptyView();
     }
 
     public void changeSearchQuery(String query) {

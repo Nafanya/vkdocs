@@ -6,12 +6,18 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView
-        android:id="@+id/list_documents"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"/>
+        android:layout_height="match_parent">
 
-    <include layout="@layout/view_empty_stub" />
+        <io.github.nafanya.vkdocs.presentation.ui.adapters.base.EmptyRecyclerView
+            android:id="@+id/list_documents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"/>
+
+        <include layout="@layout/view_empty_stub" />
+
+    </RelativeLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

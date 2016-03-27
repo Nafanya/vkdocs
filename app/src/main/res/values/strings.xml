@@ -72,4 +72,12 @@
     <string name="file1_label">file</string>
     <string name="file24_label">files</string>
     <string name="files">files</string>
+    <string name="no_archives">No archives</string>
+    <string name="no_audios">No audios</string>
+    <string name="no_videos">No videos</string>
+    <string name="no_gifs">No gifs</string>
+    <string name="no_images">No images</string>
+    <string name="no_documents">No documents</string>
+    <string name="no_books">No books</string>
+    <string name="no_others">No items</string>
 </resources>
