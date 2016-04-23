@@ -1,5 +1,6 @@
 # VKDocs
 VKDocs is a document viewer app for [vk.com](https://vk.com) and was designed for [VK Mobile Challenge](https://vk.com/vkmc).
+Apk can be found [here](https://github.com/Nafanya/vkdocs/raw/master/app/build/outputs/apk/app-release-unaligned.apk).
 
 # Screenshots
 * Convinient sections for different document types
