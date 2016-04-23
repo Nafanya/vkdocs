@@ -14,6 +14,7 @@ VKDocs - document viewer for [vk.com](vk.com). All documents are divided in file
 * Search and sort
 
 <img src="https://github.com/Nafanya/vkdocs/blob/master/screenshots/search.jpg" width="200">
+<img src="https://github.com/Nafanya/vkdocs/blob/master/screenshots/sort.jpg" width="200">
 
 * Quick per-document actions
 
