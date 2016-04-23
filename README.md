@@ -1,5 +1,5 @@
 # VKDocs
-VKDocs - document viewer for [vk.com](vk.com). All documents are divided in filetype categories, can be cached for offline usage and viewed with external applicatons.
+VKDocs is a document viewer app for [vk.com](https://vk.com) and was designed for [VK Mobile Challenge](https://vk.com/vkmc).
 
 # Screenshots
 * Convinient sections for different document types
